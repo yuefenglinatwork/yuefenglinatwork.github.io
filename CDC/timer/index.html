@@ -1,0 +1,678 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>FJU Workshop Timer</title>
+    <link rel="icon" type="img/png" href="./assets/favicon.ico" />
+    <link href="./assets/css/build.css" rel="stylesheet" />
+    <link href="./assets/css/animate.min.css" rel="stylesheet" />
+    <script defer src="./assets/js/alpinejs.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="select-none bg-primary text-center text-base text-primary-black">
+    <div
+      x-data="TimerFunction()"
+      x-init="init()"
+      class="m-plus-rounded-1c-medium h-screen w-full supports-[height:100dvh]:h-dvh"
+    >
+      <div
+        x-show="showAlert"
+        class="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-white"
+      >
+        <div class="space-y-8">
+          <div
+            class="m-plus-rounded-1c-black animate__animated animate__infinite animate__pulse text-center text-6xl sm:text-7xl md:text-8xl lg:text-9xl"
+          >
+            時間到了~
+          </div>
+          <button
+            @click="showAlert=false;playClickSound()"
+            class="rounded bg-amber-500 px-4 py-2 text-white hover:bg-amber-600 active:scale-95"
+          >
+            我知道了
+          </button>
+        </div>
+      </div>
+      <div class="flex h-full w-full flex-col">
+        <div class="w-full bg-white p-4">
+          <div class="flex items-center justify-between">
+            <img src="./assets/img/fju.svg" class="h-14 lg:h-20" />
+            <div>
+              <span
+                class="m-plus-rounded-1c-bold block text-xl lg:inline-block lg:text-5xl xl:text-6xl"
+                x-text="currentDate"
+              ></span>
+              <span
+                class="m-plus-rounded-1c-bold block text-xl lg:inline-block lg:text-5xl xl:text-6xl"
+                x-text="currentTime"
+              ></span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="mx-auto w-full max-w-screen-2xl flex-1 gap-5 space-y-5 p-5 lg:grid lg:grid-cols-5"
+        >
+          <div
+            class="flex flex-col flex-wrap items-center justify-center lg:col-span-3"
+          >
+            <div
+              class="m-plus-rounded-1c-black my-4 flex aspect-[5/1] w-full items-center justify-center text-[16vw] lg:my-8 lg:text-[10vw] 2xl:text-[10rem]"
+              x-bind:class="{ 'hidden': !isRunning && !isPaused || isPaused }"
+              x-text="displayTime"
+            ></div>
+            <div class="w-full">
+              <div
+                class="w-fit rounded-t-md border-4 border-primary-black bg-primary-black px-2 pt-0.5 text-sm leading-none text-white"
+              >
+                倒計時
+              </div>
+              <div
+                class="w-full rounded-b-xl rounded-tr-xl border-4 border-primary-black bg-white p-5"
+              >
+                <div
+                  x-bind:class="{ 'hidden': isRunning && !isPaused }"
+                  class="mb-4 w-full space-y-2"
+                >
+                  <div class="flex items-center justify-center">
+                    <label for="hours" class="mr-2">時:</label>
+                    <button
+                      @mousedown="holdButton('increment', 'hours')"
+                      @mouseup="clearHold()"
+                      @mouseleave="clearHold()"
+                      @mouseover="playHoverSound()"
+                      @click="playClickSound()"
+                      class="mx-2.5 flex size-8 items-center justify-center rounded-full bg-green-500 text-white hover:bg-green-600 active:scale-95"
+                    >
+                      +
+                    </button>
+                    <input
+                      type="number"
+                      min="0"
+                      max="23"
+                      x-model="hours"
+                      @click="playClickSound()"
+                      @focus="storePreviousValue('hours'); hours = ''"
+                      @blur="if (hours === '') hours = previousValues['hours']"
+                      @input="validateInput($event, 'hours', 23)"
+                      class="h-10 rounded-sm border p-1"
+                    />
+
+                    <button
+                      @mousedown="holdButton('decrement', 'hours')"
+                      @mouseup="clearHold()"
+                      @mouseleave="clearHold()"
+                      @mouseover="playHoverSound()"
+                      @click="playClickSound()"
+                      class="mx-2.5 flex size-8 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600 active:scale-95"
+                    >
+                      -
+                    </button>
+                  </div>
+                  <div class="flex items-center justify-center">
+                    <label for="minutes" class="mr-2">分:</label>
+                    <button
+                      @mousedown="holdButton('increment', 'minutes')"
+                      @mouseup="clearHold()"
+                      @mouseleave="clearHold()"
+                      @mouseover="playHoverSound()"
+                      @click="playClickSound()"
+                      class="mx-2.5 flex size-8 items-center justify-center rounded-full bg-green-500 text-white hover:bg-green-600 active:scale-95"
+                    >
+                      +
+                    </button>
+                    <input
+                      type="number"
+                      min="0"
+                      max="59"
+                      @click="playClickSound()"
+                      @focus="storePreviousValue('minutes'); minutes = ''"
+                      @blur="if (minutes === '') minutes = previousValues['minutes']"
+                      @input="validateInput($event, 'minutes', 59)"
+                      x-model="minutes"
+                      class="h-10 rounded-sm border p-1"
+                    />
+
+                    <button
+                      @mousedown="holdButton('decrement', 'minutes')"
+                      @mouseup="clearHold()"
+                      @mouseleave="clearHold()"
+                      @mouseover="playHoverSound()"
+                      @click="playClickSound()"
+                      class="mx-2.5 flex size-8 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600 active:scale-95"
+                    >
+                      -
+                    </button>
+                  </div>
+                  <div class="flex items-center justify-center">
+                    <label for="seconds" class="mr-2">秒:</label>
+                    <button
+                      @mousedown="holdButton('increment', 'seconds')"
+                      @mouseup="clearHold()"
+                      @mouseleave="clearHold()"
+                      @mouseover="playHoverSound()"
+                      @click="playClickSound()"
+                      class="mx-2.5 flex size-8 items-center justify-center rounded-full bg-green-500 text-white hover:bg-green-600 active:scale-95"
+                    >
+                      +
+                    </button>
+                    <input
+                      type="number"
+                      min="0"
+                      max="59"
+                      @click="playClickSound()"
+                      @focus="storePreviousValue('seconds'); seconds = ''"
+                      @blur="if (seconds === '') seconds = previousValues['seconds']"
+                      @input="validateInput($event, 'seconds', 59)"
+                      x-model="seconds"
+                      class="h-10 rounded-sm border p-1"
+                    />
+
+                    <button
+                      @mousedown="holdButton('decrement', 'seconds')"
+                      @mouseup="clearHold()"
+                      @mouseleave="clearHold()"
+                      @mouseover="playHoverSound()"
+                      @click="playClickSound()"
+                      class="mx-2.5 flex size-8 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600 active:scale-95"
+                    >
+                      -
+                    </button>
+                  </div>
+                </div>
+                <div class="mb-4 flex w-full flex-wrap justify-center gap-3">
+                  <button
+                    @click="adjustTime(1800)"
+                    @mouseover="playHoverSound()"
+                    class="rounded-full bg-gray-600 px-3 py-1 text-white hover:bg-primary-black active:scale-95"
+                  >
+                    + 30 分鐘
+                  </button>
+                  <button
+                    @click="adjustTime(600)"
+                    @mouseover="playHoverSound()"
+                    class="rounded-full bg-gray-600 px-3 py-1 text-white hover:bg-primary-black active:scale-95"
+                  >
+                    + 10 分鐘
+                  </button>
+                  <button
+                    @click="adjustTime(300)"
+                    @mouseover="playHoverSound()"
+                    class="rounded-full bg-gray-600 px-3 py-1 text-white hover:bg-primary-black active:scale-95"
+                  >
+                    + 5 分鐘
+                  </button>
+                  <button
+                    @click="adjustTime(30)"
+                    @mouseover="playHoverSound()"
+                    class="rounded-full bg-gray-600 px-3 py-1 text-white hover:bg-primary-black active:scale-95"
+                  >
+                    + 30 秒
+                  </button>
+                  <button
+                    @click="adjustTime(10)"
+                    @mouseover="playHoverSound()"
+                    class="rounded-full bg-gray-600 px-3 py-1 text-white hover:bg-primary-black active:scale-95"
+                  >
+                    + 10 秒
+                  </button>
+                </div>
+                <div
+                  class="mb-4 w-full"
+                  x-bind:class="{ 'hidden': isRunning && !isPaused }"
+                >
+                  <label
+                    @click=" playClickSound()"
+                    @mouseover="playHoverSound()"
+                    class="mx-auto flex w-fit cursor-pointer items-center justify-center"
+                  >
+                    <input
+                      type="checkbox"
+                      x-model="autoplayEnabled"
+                      class="mr-2 rounded-sm border-primary-black text-primary-black shadow-sm transition delay-75 ease-in-out focus:ring focus:ring-primary-black focus:ring-opacity-5 focus:ring-offset-0"
+                    />自動撥放背景音樂
+                  </label>
+                </div>
+                <div class="w-full">
+                  <div x-show="!isRunning && !isPaused">
+                    <button
+                      @click="startTimer()"
+                      @mouseover="playHoverSound()"
+                      class="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 active:scale-95"
+                    >
+                      開始倒數
+                    </button>
+                    <button
+                      @click="resetTimer()"
+                      @mouseover="playHoverSound()"
+                      class="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 active:scale-95"
+                    >
+                      重製
+                    </button>
+                  </div>
+                  <div x-show="isRunning && !isPaused">
+                    <button
+                      @click="pauseTimer()"
+                      @mouseover="playHoverSound()"
+                      class="rounded bg-amber-500 px-4 py-2 text-white hover:bg-amber-600 active:scale-95"
+                    >
+                      暫停
+                    </button>
+                  </div>
+                  <div x-show="isPaused">
+                    <button
+                      @click="resumeTimer()"
+                      @mouseover="playHoverSound()"
+                      class="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 active:scale-95"
+                    >
+                      繼續
+                    </button>
+                    <button
+                      @click="resetTimer()"
+                      @mouseover="playHoverSound()"
+                      class="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 active:scale-95"
+                    >
+                      重製
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="flex flex-col flex-wrap items-center justify-center gap-4 lg:col-span-2 lg:flex-col-reverse lg:gap-0"
+          >
+            <div class="w-full">
+              <div
+                class="w-fit rounded-t-md border-4 border-primary-black bg-primary-black px-2 pt-0.5 text-sm leading-none text-white"
+              >
+                音樂控制
+              </div>
+              <div
+                class="w-full space-y-4 rounded-b-xl rounded-tr-xl border-4 border-primary-black bg-white p-5"
+              >
+                <div class="grid w-full grid-cols-3 gap-2">
+                  <label
+                    @mouseover="playHoverSound()"
+                    @click="playClickSound();pauseSong()"
+                    class="block cursor-pointer rounded-lg border border-gray-100 bg-white p-2 font-medium shadow-sm hover:border-gray-200 has-[:checked]:border-primary-black has-[:checked]:ring-2 has-[:checked]:ring-primary-black"
+                  >
+                    <input
+                      type="radio"
+                      name="song"
+                      value="song1"
+                      x-model="selectedSong"
+                      class="sr-only"
+                    />
+                    輕鬆愉快
+                  </label>
+                  <label
+                    @mouseover="playHoverSound()"
+                    @click="playClickSound();pauseSong()"
+                    class="block cursor-pointer rounded-lg border border-gray-100 bg-white p-2 font-medium shadow-sm hover:border-gray-200 has-[:checked]:border-primary-black has-[:checked]:ring-2 has-[:checked]:ring-primary-black"
+                  >
+                    <input
+                      type="radio"
+                      name="song"
+                      value="song2"
+                      x-model="selectedSong"
+                      class="sr-only"
+                    />
+                    頒授證書
+                  </label>
+                  <label
+                    @mouseover="playHoverSound()"
+                    @click="playClickSound();pauseSong()"
+                    class="block cursor-pointer rounded-lg border border-gray-100 bg-white p-2 font-medium shadow-sm hover:border-gray-200 has-[:checked]:border-primary-black has-[:checked]:ring-2 has-[:checked]:ring-primary-black"
+                  >
+                    <input
+                      type="radio"
+                      name="song"
+                      value="song3"
+                      x-model="selectedSong"
+                      class="sr-only"
+                    />
+                    暖身活動
+                  </label>
+                </div>
+                <div class="w-full">
+                  <button
+                    @click="playSong ; playClickSound()"
+                    x-show="!isPlaying"
+                    @mouseover="playHoverSound()"
+                    class="rounded bg-gray-600 px-4 py-2 text-white hover:bg-primary-black active:scale-95"
+                  >
+                    音樂播放
+                  </button>
+                  <button
+                    @click="pauseSong ; playClickSound()"
+                    x-show="isPlaying"
+                    @mouseover="playHoverSound()"
+                    class="rounded bg-amber-500 px-4 py-2 text-white hover:bg-amber-600 active:scale-95"
+                  >
+                    音樂暫停
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="w-full max-w-lg">
+              <img src="./assets/img/kv.png" />
+            </div>
+          </div>
+        </div>
+        <div
+          class="w-full bg-primary-black px-2 py-1 text-center text-xs text-white md:text-base"
+        >
+          Copyright © 2020 -
+          <script>
+            document.write(new Date().getFullYear());
+          </script>
+          <br class="xs:hidden" />
+          Fu Jen Creative Design Center.&nbsp;<br class="xs:hidden" />
+          All Rights Reserved.
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function TimerFunction() {
+        return {
+          currentTime: "",
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+          time: 0,
+          displayTime: "00:00:00",
+          interval: null,
+          holdInterval: null,
+          isRunning: false,
+          isPaused: false,
+          isPlaying: false,
+          autoplayEnabled: true,
+          showAlert: false,
+          previousValues: {
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+          },
+          selectedSong: "song1",
+          songs: {
+            song1: "./assets/audio/bgm_1.mp3",
+            song2: "./assets/audio/bgm_2.mp3",
+            song3: "./assets/audio/bgm_3.mp3",
+          },
+          audio: null,
+          alarmSound: new Audio("./assets/audio/bgm_complete.mp3"),
+          hoverSound: new Audio("./assets/audio/btn_hover.wav"),
+          clickSound: new Audio("./assets/audio/btn_click.wav"),
+
+          init() {
+            this.updateCurrentTime();
+            setInterval(() => {
+              this.updateCurrentTime();
+            }, 1000);
+            this.alarmSound.load();
+            this.hoverSound.load();
+            this.clickSound.load();
+          },
+
+          updateCurrentTime() {
+            const now = new Date();
+            const month = String(now.getMonth() + 1).padStart(2, "0");
+            const date = String(now.getDate()).padStart(2, "0");
+            const daysOfWeek = ["日", "一", "二", "三", "四", "五", "六"];
+            const dayOfWeek = daysOfWeek[now.getDay()];
+            let hh = now.getHours();
+            const mm = String(now.getMinutes()).padStart(2, "0");
+            const ss = String(now.getSeconds()).padStart(2, "0");
+            const period = hh >= 12 ? "下午" : "上午";
+            hh = hh % 12 || 12;
+            hh = String(hh).padStart(2, "0");
+            this.currentDate = `${month}月${date}日(${dayOfWeek})`;
+            this.currentTime = ` ${period}${hh}時${mm}分`;
+          },
+
+          startTimer() {
+            if (this.autoplayEnabled) {
+              this.playSong();
+            }
+            this.playClickSound();
+            this.clearHold();
+            if (this.interval) {
+              clearInterval(this.interval);
+            }
+            this.time =
+              parseInt(this.hours) * 3600 +
+              parseInt(this.minutes) * 60 +
+              parseInt(this.seconds);
+            this.updateDisplayTime();
+            this.isRunning = true;
+            this.isPaused = false;
+            this.interval = setInterval(() => {
+              if (this.time > 0) {
+                this.time--;
+                this.updateDisplayTime();
+              } else {
+                clearInterval(this.interval);
+                this.isRunning = false;
+                this.playAlarmSound();
+                this.pauseSong();
+              }
+            }, 1000);
+          },
+
+          pauseTimer() {
+            this.playClickSound();
+            this.clearHold();
+            if (this.interval) {
+              clearInterval(this.interval);
+            }
+            this.isPaused = true;
+            this.pauseSong();
+          },
+
+          resumeTimer() {
+            if (this.autoplayEnabled) {
+              this.playSong();
+            }
+            this.playClickSound();
+            this.clearHold();
+            if (this.interval) {
+              clearInterval(this.interval);
+            }
+            this.isPaused = false;
+            this.interval = setInterval(() => {
+              if (this.time > 0) {
+                this.time--;
+                this.updateDisplayTime();
+              } else {
+                clearInterval(this.interval);
+                this.isRunning = false;
+                this.playAlarmSound();
+                this.pauseSong();
+              }
+            }, 1000);
+          },
+
+          resetTimer() {
+            this.playClickSound();
+            this.clearHold();
+            if (this.interval) {
+              clearInterval(this.interval);
+            }
+            this.hours = 0;
+            this.minutes = 0;
+            this.seconds = 0;
+            this.time = 0;
+            this.updateDisplayTime();
+            this.isRunning = false;
+            this.isPaused = false;
+          },
+
+          updateDisplayTime() {
+            const hours = Math.floor(this.time / 3600);
+            const minutes = Math.floor((this.time % 3600) / 60);
+            const seconds = this.time % 60;
+            this.hours = Math.min(hours, 23);
+            this.minutes = Math.min(minutes, 59);
+            this.seconds = Math.min(seconds, 59);
+            this.displayTime = `${String(this.hours).padStart(2, "0")}:${String(
+              this.minutes,
+            ).padStart(2, "0")}:${String(this.seconds).padStart(2, "0")}`;
+          },
+
+          increment(field) {
+            if (field === "hours" && this.hours < 23) {
+              this.hours++;
+            } else if (field === "minutes") {
+              if (this.minutes < 59) {
+                this.minutes++;
+              } else if (this.hours < 23) {
+                this.minutes = 0;
+                this.hours++;
+              }
+            } else if (field === "seconds") {
+              if (this.seconds < 59) {
+                this.seconds++;
+              } else if (this.minutes < 59) {
+                this.seconds = 0;
+                this.minutes++;
+              } else if (this.hours < 23) {
+                this.seconds = 0;
+                this.minutes = 0;
+                this.hours++;
+              }
+            }
+            this.updateTime();
+            this.playClickSound();
+          },
+
+          decrement(field) {
+            if (field === "hours" && this.hours > 0) {
+              this.hours--;
+            } else if (field === "minutes") {
+              if (this.minutes > 0) {
+                this.minutes--;
+              } else if (this.hours > 0) {
+                this.minutes = 59;
+                this.hours--;
+              }
+            } else if (field === "seconds") {
+              if (this.seconds > 0) {
+                this.seconds--;
+              } else if (this.minutes > 0) {
+                this.seconds = 59;
+                this.minutes--;
+              } else if (this.hours > 0) {
+                this.seconds = 59;
+                this.minutes = 59;
+                this.hours--;
+              }
+            }
+            this.updateTime();
+            this.playClickSound();
+          },
+
+          holdButton(action, field) {
+            this.clearHold();
+            this[action](field);
+            this.holdInterval = setInterval(() => {
+              this[action](field);
+              this.playClickSound();
+            }, 200);
+          },
+
+          clearHold() {
+            if (this.holdInterval) {
+              clearInterval(this.holdInterval);
+              this.holdInterval = null;
+            }
+          },
+
+          adjustTime(seconds) {
+            this.time += seconds;
+            const maxTime = 23 * 3600 + 59 * 60 + 59;
+            this.time = Math.max(0, Math.min(this.time, maxTime));
+            this.updateDisplayTime();
+            this.playClickSound();
+          },
+
+          updateTime() {
+            this.time =
+              parseInt(this.hours) * 3600 +
+              parseInt(this.minutes) * 60 +
+              parseInt(this.seconds);
+            this.updateDisplayTime();
+          },
+
+          playSound(sound) {
+            if (this.alarmSound.currentTime > 0 && !this.alarmSound.paused) {
+              this.alarmSound.pause();
+              this.alarmSound.currentTime = 0;
+            }
+            sound.play();
+          },
+
+          playAlarmSound() {
+            this.playSound(this.alarmSound);
+            this.showAlert = true;
+            setTimeout(() => {
+              this.showAlert = false;
+            }, 6000);
+          },
+
+          playHoverSound() {
+            this.playSound(this.hoverSound);
+          },
+
+          playClickSound() {
+            this.playSound(this.clickSound);
+          },
+
+          validateInput(event, field, max) {
+            const value = Math.max(
+              0,
+              Math.min(max, parseInt(event.target.value) || 0),
+            );
+            this[field] = value;
+            this.updateTime();
+          },
+
+          storePreviousValue(field) {
+            this.previousValues[field] = this[field];
+          },
+
+          playSong() {
+            if (this.selectedSong) {
+              if (this.audio) {
+                this.audio.pause();
+              }
+              this.audio = new Audio(this.songs[this.selectedSong]);
+              this.audio.loop = true;
+              this.audio.play().then(() => {
+                this.isPlaying = true;
+              });
+            }
+          },
+
+          pauseSong() {
+            if (this.audio) {
+              this.audio.pause();
+              this.isPlaying = false;
+            }
+          },
+        };
+      }
+    </script>
+  </body>
+</html>
