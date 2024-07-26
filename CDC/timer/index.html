@@ -108,7 +108,7 @@
                   <div class="flex items-center justify-center">
                     <label for="hours" class="mr-2">時:</label>
                     <button
-                      @mousedown="holdButton('increment', 'hours')"
+                      @mousedown="holdButton(3600)"
                       @mouseup="clearHold()"
                       @mouseleave="clearHold()"
                       @mouseover="playHoverSound()"
@@ -130,7 +130,7 @@
                     />
 
                     <button
-                      @mousedown="holdButton('decrement', 'hours')"
+                      @mousedown="holdButton(-3600)"
                       @mouseup="clearHold()"
                       @mouseleave="clearHold()"
                       @mouseover="playHoverSound()"
@@ -143,7 +143,7 @@
                   <div class="flex items-center justify-center">
                     <label for="minutes" class="mr-2">分:</label>
                     <button
-                      @mousedown="holdButton('increment', 'minutes')"
+                      @mousedown="holdButton(60)"
                       @mouseup="clearHold()"
                       @mouseleave="clearHold()"
                       @mouseover="playHoverSound()"
@@ -165,7 +165,7 @@
                     />
 
                     <button
-                      @mousedown="holdButton('decrement', 'minutes')"
+                      @mousedown="holdButton(-60)"
                       @mouseup="clearHold()"
                       @mouseleave="clearHold()"
                       @mouseover="playHoverSound()"
@@ -178,7 +178,7 @@
                   <div class="flex items-center justify-center">
                     <label for="seconds" class="mr-2">秒:</label>
                     <button
-                      @mousedown="holdButton('increment', 'seconds')"
+                      @mousedown="holdButton(1)"
                       @mouseup="clearHold()"
                       @mouseleave="clearHold()"
                       @mouseover="playHoverSound()"
@@ -200,7 +200,7 @@
                     />
 
                     <button
-                      @mousedown="holdButton('decrement', 'seconds')"
+                      @mousedown="holdButton(-1)"
                       @mouseup="clearHold()"
                       @mouseleave="clearHold()"
                       @mouseover="playHoverSound()"
@@ -606,11 +606,11 @@
             this.playClickSound();
           },
 
-          holdButton(action, field) {
+          holdButton(seconds) {
             this.clearHold();
-            this[action](field);
+            this.adjustTime(seconds);
             this.holdInterval = setInterval(() => {
-              this[action](field);
+              this.adjustTime(seconds);
               this.playClickSound();
             }, 200);
           },
