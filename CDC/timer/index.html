@@ -8,14 +8,14 @@
     <meta name="keywords" content="設計思考, 計時器, 輔大苗圃" />
     <meta
       name="description"
-      content="輔大苗圃工作坊計時器可以是一個非常有用的工具，幫助您更有效地管理時間，提升活動效率，並營造良好的腦力激盪氛圍!"
+      content="這是一個實用的小工具，幫助您更有效地掌控時間，提升活動效率，並營造良好的腦力激盪氛圍!"
     />
     <meta
       name="url"
       content="https://yuefenglinatwork.github.io/CDC/timer/index.html"
     />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="輔大苗圃工作坊計時器" />
+    <meta property="og:title" content="輔大苗圃計時器" />
     <meta
       property="og:url"
       content="https://yuefenglinatwork.github.io/CDC/timer/index.html"
@@ -26,11 +26,11 @@
     />
     <meta
       property="og:description"
-      content="輔大苗圃工作坊計時器可以是一個非常有用的工具，幫助您更有效地管理時間，提升活動效率，並營造良好的腦力激盪氛圍！"
+      content="這是一個實用的小工具，幫助您更有效地掌控時間，提升活動效率，並營造良好的腦力激盪氛圍!"
     />
-    <title>輔大苗圃工作坊計時器</title>
+    <title>輔大苗圃計時器</title>
     <link rel="icon" type="img/png" href="./assets/img/favicon.ico" />
-    <link href="./assets/css/build.css" rel="stylesheet" />
+    <link href="./assets/css/build.css?v=240726" rel="stylesheet" />
     <link href="./assets/css/animate.min.css" rel="stylesheet" />
     <script defer src="./assets/js/alpinejs.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -59,7 +59,7 @@
           </div>
           <button
             @click="showAlert=false;playClickSound()"
-            class="rounded bg-amber-500 px-4 py-2 text-white hover:bg-amber-600 active:scale-95"
+            class="rounded bg-amber-500 px-4 py-2 text-white transition ease-in-out hover:bg-amber-600 active:scale-95"
           >
             我知道了
           </button>
@@ -113,7 +113,7 @@
                       @mouseleave="clearHold()"
                       @mouseover="playHoverSound()"
                       @click="playClickSound()"
-                      class="mx-2.5 flex size-8 items-center justify-center rounded-full bg-green-500 text-white hover:bg-green-600 active:scale-95"
+                      class="mx-2.5 flex size-8 items-center justify-center rounded-full bg-green-500 text-white transition ease-in-out hover:bg-green-600 active:scale-95"
                     >
                       +
                     </button>
@@ -126,7 +126,7 @@
                       @focus="storePreviousValue('hours'); hours = ''"
                       @blur="if (hours === '') hours = previousValues['hours']"
                       @input="validateInput($event, 'hours', 23)"
-                      class="h-10 rounded-sm border p-1"
+                      class="h-10 rounded-sm border border-primary-black p-1 text-primary-black transition ease-in-out focus:border-primary-black focus:ring-2 focus:ring-primary-black focus:ring-offset-0"
                     />
 
                     <button
@@ -135,7 +135,7 @@
                       @mouseleave="clearHold()"
                       @mouseover="playHoverSound()"
                       @click="playClickSound()"
-                      class="mx-2.5 flex size-8 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600 active:scale-95"
+                      class="mx-2.5 flex size-8 items-center justify-center rounded-full bg-red-500 text-white transition ease-in-out hover:bg-red-600 active:scale-95"
                     >
                       -
                     </button>
@@ -148,7 +148,7 @@
                       @mouseleave="clearHold()"
                       @mouseover="playHoverSound()"
                       @click="playClickSound()"
-                      class="mx-2.5 flex size-8 items-center justify-center rounded-full bg-green-500 text-white hover:bg-green-600 active:scale-95"
+                      class="mx-2.5 flex size-8 items-center justify-center rounded-full bg-green-500 text-white transition ease-in-out hover:bg-green-600 active:scale-95"
                     >
                       +
                     </button>
@@ -161,7 +161,7 @@
                       @blur="if (minutes === '') minutes = previousValues['minutes']"
                       @input="validateInput($event, 'minutes', 59)"
                       x-model="minutes"
-                      class="h-10 rounded-sm border p-1"
+                      class="h-10 rounded-sm border border-primary-black p-1 text-primary-black transition ease-in-out focus:border-primary-black focus:ring-2 focus:ring-primary-black focus:ring-offset-0"
                     />
 
                     <button
@@ -170,7 +170,7 @@
                       @mouseleave="clearHold()"
                       @mouseover="playHoverSound()"
                       @click="playClickSound()"
-                      class="mx-2.5 flex size-8 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600 active:scale-95"
+                      class="mx-2.5 flex size-8 items-center justify-center rounded-full bg-red-500 text-white transition ease-in-out hover:bg-red-600 active:scale-95"
                     >
                       -
                     </button>
@@ -183,7 +183,7 @@
                       @mouseleave="clearHold()"
                       @mouseover="playHoverSound()"
                       @click="playClickSound()"
-                      class="mx-2.5 flex size-8 items-center justify-center rounded-full bg-green-500 text-white hover:bg-green-600 active:scale-95"
+                      class="mx-2.5 flex size-8 items-center justify-center rounded-full bg-green-500 text-white transition ease-in-out hover:bg-green-600 active:scale-95"
                     >
                       +
                     </button>
@@ -196,7 +196,7 @@
                       @blur="if (seconds === '') seconds = previousValues['seconds']"
                       @input="validateInput($event, 'seconds', 59)"
                       x-model="seconds"
-                      class="h-10 rounded-sm border p-1"
+                      class="h-10 rounded-sm border border-primary-black p-1 text-primary-black transition ease-in-out focus:border-primary-black focus:ring-2 focus:ring-primary-black focus:ring-offset-0"
                     />
 
                     <button
@@ -205,7 +205,7 @@
                       @mouseleave="clearHold()"
                       @mouseover="playHoverSound()"
                       @click="playClickSound()"
-                      class="mx-2.5 flex size-8 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600 active:scale-95"
+                      class="mx-2.5 flex size-8 items-center justify-center rounded-full bg-red-500 text-white transition ease-in-out hover:bg-red-600 active:scale-95"
                     >
                       -
                     </button>
@@ -215,35 +215,35 @@
                   <button
                     @click="adjustTime(1800)"
                     @mouseover="playHoverSound()"
-                    class="rounded-full bg-gray-600 px-3 py-1 text-white hover:bg-primary-black active:scale-95"
+                    class="rounded-full bg-gray-600 px-3 py-1 text-white transition ease-in-out hover:bg-primary-black active:scale-95"
                   >
                     + 30 分鐘
                   </button>
                   <button
                     @click="adjustTime(600)"
                     @mouseover="playHoverSound()"
-                    class="rounded-full bg-gray-600 px-3 py-1 text-white hover:bg-primary-black active:scale-95"
+                    class="rounded-full bg-gray-600 px-3 py-1 text-white transition ease-in-out hover:bg-primary-black active:scale-95"
                   >
                     + 10 分鐘
                   </button>
                   <button
                     @click="adjustTime(300)"
                     @mouseover="playHoverSound()"
-                    class="rounded-full bg-gray-600 px-3 py-1 text-white hover:bg-primary-black active:scale-95"
+                    class="rounded-full bg-gray-600 px-3 py-1 text-white transition ease-in-out hover:bg-primary-black active:scale-95"
                   >
                     + 5 分鐘
                   </button>
                   <button
                     @click="adjustTime(30)"
                     @mouseover="playHoverSound()"
-                    class="rounded-full bg-gray-600 px-3 py-1 text-white hover:bg-primary-black active:scale-95"
+                    class="rounded-full bg-gray-600 px-3 py-1 text-white transition ease-in-out hover:bg-primary-black active:scale-95"
                   >
                     + 30 秒
                   </button>
                   <button
                     @click="adjustTime(10)"
                     @mouseover="playHoverSound()"
-                    class="rounded-full bg-gray-600 px-3 py-1 text-white hover:bg-primary-black active:scale-95"
+                    class="rounded-full bg-gray-600 px-3 py-1 text-white transition ease-in-out hover:bg-primary-black active:scale-95"
                   >
                     + 10 秒
                   </button>
@@ -260,7 +260,7 @@
                     <input
                       type="checkbox"
                       x-model="autoplayEnabled"
-                      class="mr-2 rounded-sm border-primary-black text-primary-black shadow-sm transition delay-75 ease-in-out focus:ring focus:ring-primary-black focus:ring-opacity-5 focus:ring-offset-0"
+                      class="mr-2 rounded-sm border-primary-black text-primary-black shadow-sm transition ease-in-out focus:ring focus:ring-primary-black focus:ring-opacity-5 focus:ring-offset-0"
                     />自動撥放背景音樂
                   </label>
                 </div>
@@ -269,14 +269,14 @@
                     <button
                       @click="startTimer()"
                       @mouseover="playHoverSound()"
-                      class="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 active:scale-95"
+                      class="rounded bg-green-500 px-4 py-2 text-white transition ease-in-out hover:bg-green-600 active:scale-95"
                     >
                       開始倒數
                     </button>
                     <button
                       @click="resetTimer()"
                       @mouseover="playHoverSound()"
-                      class="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 active:scale-95"
+                      class="rounded bg-red-500 px-4 py-2 text-white transition ease-in-out hover:bg-red-600 active:scale-95"
                     >
                       重製
                     </button>
@@ -285,7 +285,7 @@
                     <button
                       @click="pauseTimer()"
                       @mouseover="playHoverSound()"
-                      class="rounded bg-amber-500 px-4 py-2 text-white hover:bg-amber-600 active:scale-95"
+                      class="rounded bg-amber-500 px-4 py-2 text-white transition ease-in-out hover:bg-amber-600 active:scale-95"
                     >
                       暫停
                     </button>
@@ -294,14 +294,14 @@
                     <button
                       @click="resumeTimer()"
                       @mouseover="playHoverSound()"
-                      class="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 active:scale-95"
+                      class="rounded bg-green-500 px-4 py-2 text-white transition ease-in-out hover:bg-green-600 active:scale-95"
                     >
                       繼續
                     </button>
                     <button
                       @click="resetTimer()"
                       @mouseover="playHoverSound()"
-                      class="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 active:scale-95"
+                      class="rounded bg-red-500 px-4 py-2 text-white transition ease-in-out hover:bg-red-600 active:scale-95"
                     >
                       重製
                     </button>
@@ -327,7 +327,7 @@
                   <label
                     @mouseover="playHoverSound()"
                     @click="playClickSound();pauseSong()"
-                    class="block cursor-pointer rounded-lg border border-gray-100 bg-white p-2 font-medium shadow-sm hover:border-gray-200 has-[:checked]:border-primary-black has-[:checked]:ring-2 has-[:checked]:ring-primary-black"
+                    class="block cursor-pointer rounded-lg border border-gray-100 bg-white p-2 font-medium shadow-sm transition ease-in-out hover:border-gray-200 has-[:checked]:border-primary-black has-[:checked]:ring-2 has-[:checked]:ring-primary-black"
                   >
                     <input
                       type="radio"
@@ -341,7 +341,7 @@
                   <label
                     @mouseover="playHoverSound()"
                     @click="playClickSound();pauseSong()"
-                    class="block cursor-pointer rounded-lg border border-gray-100 bg-white p-2 font-medium shadow-sm hover:border-gray-200 has-[:checked]:border-primary-black has-[:checked]:ring-2 has-[:checked]:ring-primary-black"
+                    class="block cursor-pointer rounded-lg border border-gray-100 bg-white p-2 font-medium shadow-sm transition ease-in-out hover:border-gray-200 has-[:checked]:border-primary-black has-[:checked]:ring-2 has-[:checked]:ring-primary-black"
                   >
                     <input
                       type="radio"
@@ -355,7 +355,7 @@
                   <label
                     @mouseover="playHoverSound()"
                     @click="playClickSound();pauseSong()"
-                    class="block cursor-pointer rounded-lg border border-gray-100 bg-white p-2 font-medium shadow-sm hover:border-gray-200 has-[:checked]:border-primary-black has-[:checked]:ring-2 has-[:checked]:ring-primary-black"
+                    class="block cursor-pointer rounded-lg border border-gray-100 bg-white p-2 font-medium shadow-sm transition ease-in-out hover:border-gray-200 has-[:checked]:border-primary-black has-[:checked]:ring-2 has-[:checked]:ring-primary-black"
                   >
                     <input
                       type="radio"
@@ -372,7 +372,7 @@
                     @click="playSong ; playClickSound()"
                     x-show="!isPlaying"
                     @mouseover="playHoverSound()"
-                    class="rounded bg-gray-600 px-4 py-2 text-white hover:bg-primary-black active:scale-95"
+                    class="rounded bg-gray-600 px-4 py-2 text-white transition ease-in-out hover:bg-primary-black active:scale-95"
                   >
                     音樂播放
                   </button>
@@ -380,7 +380,7 @@
                     @click="pauseSong ; playClickSound()"
                     x-show="isPlaying"
                     @mouseover="playHoverSound()"
-                    class="rounded bg-amber-500 px-4 py-2 text-white hover:bg-amber-600 active:scale-95"
+                    class="rounded bg-amber-500 px-4 py-2 text-white transition ease-in-out hover:bg-amber-600 active:scale-95"
                   >
                     音樂暫停
                   </button>
