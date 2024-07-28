@@ -369,33 +369,6 @@
                     />
                     中場休息
                   </label>
-                  <label
-                    @mouseover="playHoverSound()"
-                    @click="playClickSound();pauseSong()"
-                    class="col-span-3 block cursor-pointer rounded-lg border border-gray-100 bg-white p-2 font-medium shadow-sm transition ease-in-out hover:border-gray-200"
-                    :class="{ 'border-primary-black hover:border-primary-black ring-2 ring-primary-black': selectedSong === 'song4' }"
-                  >
-                    <input
-                      type="radio"
-                      name="song"
-                      value="song4"
-                      x-model="selectedSong"
-                      class="sr-only"
-                    />
-                    <input
-                      type="url"
-                      placeholder="輸入YouTube網址"
-                      @input="updateYouTubeVideoUrl($event)"
-                      @click="selectedSong = 'song4';playClickSound();pauseSong()"
-                      class="w-full truncate rounded-sm border-none px-1 py-1 text-primary-black transition ease-in-out placeholder:text-gray-400 focus:ring-0"
-                    />
-                    <div
-                      x-show="selectedSong === 'song4' && youtubeErrorMessage"
-                      class="text-sm text-red-500"
-                    >
-                      連結無效
-                    </div>
-                  </label>
                 </div>
                 <div class="w-full">
                   <button
@@ -417,7 +390,6 @@
                 </div>
               </div>
             </div>
-            <div id="embedCode" style="display: none"></div>
 
             <div class="w-full max-w-lg">
               <img src="./assets/img/kv.png" />
@@ -464,13 +436,11 @@
             song1: "./assets/audio/bgm_1.mp3",
             song2: "./assets/audio/bgm_2.mp3",
             song3: "./assets/audio/bgm_3.mp3",
-            song4: "",
           },
           audio: null,
           alarmSound: new Audio("./assets/audio/bgm_complete.mp3"),
           hoverSound: new Audio("./assets/audio/btn_hover.wav"),
           clickSound: new Audio("./assets/audio/btn_click.wav"),
-          youtubeErrorMessage: false,
 
           init() {
             this.updateCurrentTime();
@@ -708,70 +678,23 @@
             this.previousValues[field] = this[field];
           },
 
-          updateYouTubeVideoUrl(event) {
-            const url = event.target.value;
-            const videoId = this.getYouTubeVideoId(url);
-            if (videoId) {
-              this.songs.song4 = videoId;
-              this.youtubeErrorMessage = false;
-            } else {
-              this.youtubeErrorMessage = true;
-            }
-          },
-
-          getYouTubeVideoId(url) {
-            const regex =
-              /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-            const match = url.match(regex);
-            return match ? match[1] : null;
-          },
-
-          generateYouTubeEmbed(videoId) {
-            if (videoId) {
-              const embedCode = `<div><iframe width='0' height='0' src='https://www.youtube-nocookie.com/embed/${videoId}?rel=0&autoplay=1&loop=1&playlist=${videoId}' frameborder='0' allow='autoplay; encrypted-media'></iframe></div>`;
-              document.getElementById("embedCode").innerHTML = embedCode;
-              return true;
-            } else {
-              document.getElementById("embedCode").innerHTML = "";
-              return false;
-            }
-          },
-
           playSong() {
-            if (this.selectedSong === "song4") {
-              const videoId = this.songs.song4;
-              if (this.generateYouTubeEmbed(videoId)) {
-                this.isPlaying = true;
-              } else {
-                this.isPlaying = false;
-              }
-            } else {
+            if (this.selectedSong) {
               if (this.audio) {
                 this.audio.pause();
               }
               this.audio = new Audio(this.songs[this.selectedSong]);
               this.audio.loop = true;
-              this.audio
-                .play()
-                .then(() => {
-                  this.isPlaying = true;
-                })
-                .catch(() => {
-                  this.isPlaying = false;
-                });
+              this.audio.play().then(() => {
+                this.isPlaying = true;
+              });
             }
           },
 
           pauseSong() {
-            if (this.selectedSong === "song4") {
-              document.getElementById("embedCode").innerHTML = "";
+            if (this.audio) {
               this.audio.pause();
               this.isPlaying = false;
-            } else {
-              if (this.audio) {
-                this.audio.pause();
-                this.isPlaying = false;
-              }
             }
           },
         };
