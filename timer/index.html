@@ -247,6 +247,20 @@
                   >
                     + 10 秒
                   </button>
+                  <button
+                    @click="setToNextTimeInterval('fullHour')"
+                    @mouseover="playHoverSound()"
+                    class="rounded-full bg-gray-600 px-3 py-1 text-white transition ease-in-out hover:bg-primary-black active:scale-95"
+                  >
+                    最近整點
+                  </button>
+                  <button
+                    @click="setToNextTimeInterval('halfHour')"
+                    @mouseover="playHoverSound()"
+                    class="rounded-full bg-gray-600 px-3 py-1 text-white transition ease-in-out hover:bg-primary-black active:scale-95"
+                  >
+                    最近半點
+                  </button>
                 </div>
                 <div
                   class="mb-4 w-full"
@@ -696,6 +710,37 @@
               this.audio.pause();
               this.isPlaying = false;
             }
+          },
+
+          setToNextTimeInterval(intervalType) {
+            const now = new Date();
+            const nextTime = new Date(now);
+            if (intervalType === "fullHour") {
+              nextTime.setHours(now.getHours() + 1, 0, 0, 0);
+            } else if (intervalType === "halfHour") {
+              const minutes = now.getMinutes();
+              const minutesToNextHalfHour =
+                Math.ceil(minutes / 30) * 30 - minutes;
+              nextTime.setMinutes(
+                now.getMinutes() + minutesToNextHalfHour,
+                0,
+                0,
+              );
+            }
+            const secondsUntilNextInterval = Math.round(
+              (nextTime - now) / 1000,
+            );
+            const hours = Math.floor(secondsUntilNextInterval / 3600);
+            const minutesRemaining = Math.floor(
+              (secondsUntilNextInterval % 3600) / 60,
+            );
+            const seconds = secondsUntilNextInterval % 60;
+            this.hours = hours;
+            this.minutes = minutesRemaining;
+            this.seconds = seconds;
+            this.time = secondsUntilNextInterval;
+            this.updateDisplayTime();
+            this.playClickSound();
           },
         };
       }
