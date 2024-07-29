@@ -252,14 +252,14 @@
                     @mouseover="playHoverSound()"
                     class="rounded-full bg-gray-600 px-3 py-1 text-white transition ease-in-out hover:bg-primary-black active:scale-95"
                   >
-                    最近整點
+                    最近的整點
                   </button>
                   <button
                     @click="setToNextTimeInterval('halfHour')"
                     @mouseover="playHoverSound()"
                     class="rounded-full bg-gray-600 px-3 py-1 text-white transition ease-in-out hover:bg-primary-black active:scale-95"
                   >
-                    最近半點
+                    最近的30分
                   </button>
                 </div>
                 <div
@@ -719,13 +719,11 @@
               nextTime.setHours(now.getHours() + 1, 0, 0, 0);
             } else if (intervalType === "halfHour") {
               const minutes = now.getMinutes();
-              const minutesToNextHalfHour =
-                Math.ceil(minutes / 30) * 30 - minutes;
-              nextTime.setMinutes(
-                now.getMinutes() + minutesToNextHalfHour,
-                0,
-                0,
-              );
+              if (minutes < 30) {
+                nextTime.setMinutes(30, 0, 0);
+              } else {
+                nextTime.setHours(now.getHours() + 1, 30, 0, 0);
+              }
             }
             const secondsUntilNextInterval = Math.round(
               (nextTime - now) / 1000,
