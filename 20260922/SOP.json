@@ -1,0 +1,168 @@
+{
+  "title": "資訊部與經紀部需求管理流程（AI輔助最佳化版）",
+  "steps": [
+    {
+      "type": "step",
+      "name": "需求提出登記",
+      "time": "30分鐘",
+      "exec": "經紀部（需求提出單位）",
+      "tools": "需求管理系統/工單系統",
+      "output": "需求登記單（含背景說明、期望效益、優先順序）",
+      "notes": "需填寫需求背景、預期效益與優先順序，避免後續多次往返確認才補齊資訊",
+      "aiEnabled": false,
+      "aiSuggestion": "",
+      "aiTimeSaved": "",
+      "sameAsAbove": {
+        "exec": false,
+        "tools": false,
+        "output": false
+      }
+    },
+    {
+      "type": "step",
+      "name": "AI輔助初步需求訪談",
+      "time": "90分鐘",
+      "exec": "資訊部需求分析師",
+      "tools": "需求管理系統/AI訪談助理",
+      "output": "訪談逐字紀錄與需求重點摘要",
+      "notes": "訪談中需確認需求範圍、限制條件與驗收標準，目標一次訪談釐清多數疑點，減少確認次數",
+      "aiEnabled": true,
+      "aiSuggestion": "AI可即時將訪談內容整理成結構化需求重點，並自動列出待釐清問題清單，降低分析師整理時間並減少遺漏",
+      "aiTimeSaved": "60分鐘",
+      "sameAsAbove": {
+        "exec": false,
+        "tools": false,
+        "output": false
+      }
+    },
+    {
+      "type": "step",
+      "name": "需求拆解與規格化",
+      "time": "120分鐘",
+      "exec": "資訊部需求分析師",
+      "tools": "需求管理系統/AI需求拆解工具",
+      "output": "功能項清單、使用情境與初步規格草案",
+      "notes": "需將需求拆解至可開發的最小功能單元，並標示相依性與優先序",
+      "aiEnabled": true,
+      "aiSuggestion": "AI可依訪談重點自動產出功能拆解建議與使用情境草稿，分析師僅需審閱調整，縮短規格草擬時間",
+      "aiTimeSaved": "90分鐘",
+      "sameAsAbove": {
+        "exec": true,
+        "tools": false,
+        "output": false
+      }
+    },
+    {
+      "type": "decision",
+      "question": "需求描述是否清楚一致（雙方認知無落差）？",
+      "branchYesLabel": "是",
+      "branchNoLabel": "否",
+      "branchYes": [
+        {
+          "type": "step",
+          "name": "產出需求規格文件",
+          "time": "60分鐘",
+          "exec": "資訊部需求分析師",
+          "tools": "需求管理系統/AI文件產生工具",
+          "output": "需求規格文件（含功能規格、畫面/流程示意、驗收標準）",
+          "notes": "文件需包含明確驗收標準，避免開發階段再度往返確認，目標將文件製作時間由約8小時大幅縮短",
+          "aiEnabled": true,
+          "aiSuggestion": "AI可依拆解結果自動產生需求規格文件初稿（含章節格式與驗收標準草案），分析師僅需校對補充，將製作時間由約8小時縮短至2小時內",
+          "aiTimeSaved": "300分鐘",
+          "sameAsAbove": {
+            "exec": false,
+            "tools": false,
+            "output": false
+          }
+        },
+        {
+          "type": "step",
+          "name": "產出測試案例",
+          "time": "60分鐘",
+          "exec": "資訊部測試人員",
+          "tools": "需求管理系統/AI測試案例產生工具",
+          "output": "測試案例清單（正常流程、邊界情況、異常情境）",
+          "notes": "測試案例需逐項對應需求規格，作為後續開發驗收依據",
+          "aiEnabled": true,
+          "aiSuggestion": "AI可依需求規格自動產生基本測試案例草稿，測試人員僅需審核與補充特殊情境，減少從零編寫的時間",
+          "aiTimeSaved": "120分鐘",
+          "sameAsAbove": {
+            "exec": false,
+            "tools": false,
+            "output": false
+          }
+        }
+      ],
+      "branchNo": [
+        {
+          "type": "step",
+          "name": "召開需求釐清會議",
+          "time": "60分鐘",
+          "exec": "資訊部需求分析師/經紀部提出單位",
+          "tools": "會議室/視訊會議系統",
+          "output": "釐清會議紀錄與待確認事項清單",
+          "notes": "需邀集雙方關鍵人員當場確認疑義項目，避免多輪信件或訊息往返，這是壓縮確認次數與週期的關鍵步驟",
+          "aiEnabled": false,
+          "aiSuggestion": "",
+          "aiTimeSaved": "",
+          "sameAsAbove": {
+            "exec": false,
+            "tools": false,
+            "output": false
+          }
+        },
+        {
+          "type": "step",
+          "name": "修正需求紀錄並更新規格草案",
+          "time": "60分鐘",
+          "exec": "資訊部需求分析師",
+          "tools": "需求管理系統/AI需求拆解工具",
+          "output": "修正後需求規格草案",
+          "notes": "更新後需請提出單位再次確認，確認無誤後回到「產出需求規格文件」流程",
+          "aiEnabled": true,
+          "aiSuggestion": "AI可比對修正前後的需求差異，自動更新規格草案對應段落，減少人工逐項比對時間",
+          "aiTimeSaved": "30分鐘",
+          "sameAsAbove": {
+            "exec": false,
+            "tools": false,
+            "output": false
+          }
+        }
+      ]
+    },
+    {
+      "type": "step",
+      "name": "需求文件與測試案例會簽確認",
+      "time": "60分鐘",
+      "exec": "資訊部主管/經紀部主管",
+      "tools": "需求管理系統（電子簽核）",
+      "output": "已會簽需求規格文件與測試案例（基準版本）",
+      "notes": "雙方主管簽核後方可進入開發排程，此節點即為「需求確認週期」的終點，目標由10天縮短至5天",
+      "aiEnabled": false,
+      "aiSuggestion": "",
+      "aiTimeSaved": "",
+      "sameAsAbove": {
+        "exec": false,
+        "tools": false,
+        "output": false
+      }
+    },
+    {
+      "type": "step",
+      "name": "需求確認結案並建立基準值歸檔",
+      "time": "30分鐘",
+      "exec": "資訊部需求分析師",
+      "tools": "需求管理系統",
+      "output": "結案歸檔紀錄、案件基準值數據（確認次數、週期天數、是否重工）",
+      "notes": "需記錄本案實際需求確認次數、週期天數與是否因理解落差變更，作為後續追蹤週期縮短（10天→5天）與重工率下降（20%→15%）的基準值依據",
+      "aiEnabled": true,
+      "aiSuggestion": "AI可自動彙整本案歷程數據（確認次數、各步驟耗時、是否重工）並產出案件統計摘要，供月度基準值追蹤報表使用",
+      "aiTimeSaved": "30分鐘",
+      "sameAsAbove": {
+        "exec": false,
+        "tools": false,
+        "output": false
+      }
+    }
+  ]
+}
