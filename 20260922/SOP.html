@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOP 流程圖</title>
+<style>
+  :root{
+    --green:#006747; --green-dark:#004d35; --green-light:#e6efe9;
+    --brown:#8b5e3c; --brown-light:#f1e6d8;
+    --ai:#b0752f; --ai-light:#f5ecd9;
+    --cream:#f5f1e8; --ink:#2b2620; --ink-soft:#5c564c;
+    --line:#ddd4c6; --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; font-family:'Noto Sans TC','Microsoft JhengHei',sans-serif; background:var(--cream); color:var(--ink); }
+
+  .preview-wrap{ padding:36px; display:flex; justify-content:center; }
+  #flowchart{ background:#fff; width:960px; max-width:100%; padding:44px 40px 50px; border-radius:14px; box-shadow:0 2px 24px rgba(0,50,30,0.08); }
+  .fc-header{ display:flex; align-items:center; justify-content:space-between; border-bottom:3px solid var(--green); padding-bottom:14px; margin-bottom:18px; }
+  .fc-title{ font-size:23px; font-weight:900; color:var(--green-dark); }
+  .fc-sub{ font-size:11.5px; color:var(--ink-soft); letter-spacing:.05em; }
+
+  .summary-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:26px; }
+  .stat-card{ background:var(--cream); border-radius:10px; padding:12px 10px; text-align:center; }
+  .stat-card .num{ font-size:20px; font-weight:900; color:var(--green-dark); }
+  .stat-card.ai .num{ color:var(--ai); }
+  .stat-card .lbl{ font-size:10.5px; color:var(--ink-soft); margin-top:2px; }
+
+  .fc-body{ padding-top:4px; display:flex; flex-direction:column; align-items:center; }
+  .fc-node{ width:100%; max-width:620px; display:flex; align-items:stretch; border:1.5px solid var(--line); border-left:6px solid var(--exec-color, var(--green)); border-radius:10px; background:#fdfcfa; overflow:hidden; }
+  .fc-node.ai-on{ box-shadow:0 0 0 1.5px var(--ai) inset; }
+  .fc-node-num{ width:40px; flex-shrink:0; background:var(--exec-color, var(--green)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:15px; }
+  .fc-node-main{ flex:1; padding:12px 14px; }
+  .fc-node-title{ font-size:13.5px; font-weight:700; color:var(--ink); margin-bottom:6px; }
+  .fc-node-meta{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px; }
+  .badge{ display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:700; padding:3px 8px; border-radius:999px; }
+  .badge.time{ background:var(--brown-light); color:var(--brown); }
+  .badge.exec{ background:var(--exec-bg, var(--green-light)); color:var(--exec-color, var(--green-dark)); }
+  .badge.ai{ background:var(--ai-light); color:var(--ai); }
+  .badge.same{ background:#f1efe9; color:var(--ink-soft); font-weight:500; }
+  .fc-node-detail{ font-size:10.5px; color:var(--ink-soft); line-height:1.6; }
+  .fc-node-detail b{ color:var(--ink); font-weight:700; }
+  .fc-node-notes{ font-size:10.5px; color:#946226; margin-top:4px; }
+
+  .fc-arrow{ display:flex; flex-direction:column; align-items:center; padding:2px 0; }
+  .fc-arrow .line{ width:2px; height:16px; background:var(--line); }
+  .fc-arrow .tri{ width:0;height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:8px solid var(--line); }
+
+  .decision-block{ display:flex; flex-direction:column; align-items:center; width:100%; }
+  .decision-diamond-wrap{ display:flex; justify-content:center; padding:8px 0; }
+  .decision-diamond{ width:170px; height:170px; background:#fdfcfa; border:2px solid var(--green); border-radius:16px; transform:rotate(45deg); display:flex; align-items:center; justify-content:center; }
+  .decision-diamond .txt{ transform:rotate(-45deg); width:118px; text-align:center; font-size:12px; font-weight:700; color:var(--green-dark); line-height:1.4; }
+  .branch-fork{ display:flex; gap:140px; margin-top:2px; }
+  .branch-fork-item{ display:flex; flex-direction:column; align-items:center; }
+  .branch-fork-item .lbl{ font-size:11px; font-weight:700; padding:2px 10px; border-radius:999px; margin-bottom:2px; white-space:nowrap; }
+  .branch-fork-item.yes .lbl{ background:var(--green-light); color:var(--green-dark); }
+  .branch-fork-item.no .lbl{ background:var(--brown-light); color:var(--brown); }
+  .branch-fork-item .line{ width:2px; height:16px; background:var(--line); }
+  .branches-row{ display:flex; gap:36px; justify-content:center; align-items:flex-start; margin-top:2px; width:100%; }
+  .branch-col{ flex:1; max-width:280px; display:flex; flex-direction:column; align-items:center; }
+  .branch-empty{ font-size:10.5px; color:var(--ink-soft); padding:14px 8px; border:1px dashed var(--line); border-radius:8px; width:100%; text-align:center; }
+
+  .empty-state{ text-align:center; color:var(--ink-soft); font-size:13px; padding:60px 20px; }
+  .error-state{ text-align:center; color:#a4392c; font-size:13.5px; padding:60px 20px; line-height:1.8; }
+  .error-state code{ background:#f1efe9; padding:2px 6px; border-radius:4px; }
+
+  @media (max-width:640px){
+    .preview-wrap{ padding:16px 10px; overflow-x:auto; }
+    #flowchart{ width:100%; min-width:0; padding:26px 16px 32px; }
+    .fc-title{ font-size:19px; }
+    .summary-grid{ grid-template-columns:repeat(2,1fr); }
+    .decision-diamond{ width:130px; height:130px; }
+    .decision-diamond .txt{ width:92px; font-size:11px; }
+    .branch-fork{ gap:44px; }
+    .branches-row{ flex-direction:column; align-items:center; gap:18px; }
+    .branch-col{ max-width:100%; width:100%; }
+    .fc-node{ max-width:100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="preview-wrap">
+  <div id="flowchart"><div class="empty-state">載入中…</div></div>
+</div>
+
+<script>
+(function(){
+  // ===== 這個檔案只負責「讀取JSON、畫流程圖」，資料請放在跟本HTML同一個資料夾的 SOP.json =====
+  const DATA_FILE = './SOP.json';
+
+  const EXEC_PALETTE = [
+    {color:'#006747', bg:'#e6efe9'}, {color:'#8b5e3c', bg:'#f1e6d8'},
+    {color:'#3d8b6d', bg:'#e9f3ee'}, {color:'#8a5a35', bg:'#f5e9dc'},
+    {color:'#5c7a5e', bg:'#eef2ec'}, {color:'#c19a6b', bg:'#f8f0e3'},
+  ];
+  const UNSET_COLOR = {color:'#7a6f5f', bg:'#efeae1'};
+  let execColorMap = {};
+  function colorFor(exec){
+    const key = (exec||'').trim();
+    if(!key) return UNSET_COLOR;
+    if(!execColorMap[key]){
+      const idx = Object.keys(execColorMap).length % EXEC_PALETTE.length;
+      execColorMap[key] = EXEC_PALETTE[idx];
+    }
+    return execColorMap[key];
+  }
+
+  function esc(str){ return (str||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function blankStep(){
+    return {type:'step', name:'', time:'', exec:'', tools:'', output:'', notes:'',
+      aiEnabled:false, aiSuggestion:'', aiTimeSaved:'',
+      sameAsAbove:{exec:false, tools:false, output:false}};
+  }
+  function normalizeStep(s){
+    const base = blankStep();
+    const merged = Object.assign({}, base, s || {});
+    merged.type = 'step';
+    merged.sameAsAbove = Object.assign({}, base.sameAsAbove, (s && s.sameAsAbove) || {});
+    return merged;
+  }
+  function normalizeItem(item){
+    if(item && item.type === 'decision'){
+      return {
+        type:'decision',
+        question: item.question || '',
+        branchYesLabel: item.branchYesLabel || '是',
+        branchNoLabel: item.branchNoLabel || '否',
+        branchYes: (item.branchYes || []).map(normalizeStep),
+        branchNo: (item.branchNo || []).map(normalizeStep),
+      };
+    }
+    return normalizeStep(item);
+  }
+
+  function effectiveValue(arr, i, field){
+    const s = arr[i];
+    if(i > 0 && s.sameAsAbove && s.sameAsAbove[field]) return effectiveValue(arr, i - 1, field);
+    return (s[field]) || '';
+  }
+
+  function parseMinutes(str){ const m = (str||'').toString().match(/(\d+(\.\d+)?)/); return m ? parseFloat(m[1]) : 0; }
+  function minutesLabel(mins){ if(mins <= 0) return '—'; return mins >= 60 ? (mins/60).toFixed(1)+' 小時' : mins+' 分鐘'; }
+
+  function collectAllSteps(steps){
+    let all = [];
+    steps.forEach(item => {
+      if(item.type === 'decision'){ all = all.concat(item.branchYes, item.branchNo); }
+      else{ all.push(item); }
+    });
+    return all;
+  }
+
+  function computeSummary(steps){
+    const all = collectAllSteps(steps);
+    let totalMinutes = 0, hasUnparsable = false;
+    all.forEach(s => { const m = parseMinutes(s.time); if(m){ totalMinutes += m; } else if(s.time){ hasUnparsable = true; } });
+    const aiSteps = all.filter(s => s.aiEnabled);
+    let aiSavedMinutes = 0, aiSavedUnparsable = false;
+    aiSteps.forEach(s => { const m = parseMinutes(s.aiTimeSaved); if(m){ aiSavedMinutes += m; } else if(s.aiTimeSaved){ aiSavedUnparsable = true; } });
+    return { totalSteps: all.length, totalMinutes, hasUnparsable, aiCount: aiSteps.length, aiSavedMinutes, aiSavedUnparsable };
+  }
+
+  function renderNodeHtml(arr, i){
+    const s = arr[i];
+    const execVal = effectiveValue(arr, i, 'exec');
+    const toolsVal = effectiveValue(arr, i, 'tools');
+    const outputVal = effectiveValue(arr, i, 'output');
+    const c = colorFor(execVal);
+    const detailParts = [];
+    if(toolsVal) detailParts.push('<b>工具：</b>' + esc(toolsVal) + (s.sameAsAbove.tools ? ' <span class="badge same">同上</span>' : ''));
+    if(outputVal) detailParts.push('<b>產出：</b>' + esc(outputVal) + (s.sameAsAbove.output ? ' <span class="badge same">同上</span>' : ''));
+    return `
+      <div class="fc-node${s.aiEnabled ? ' ai-on' : ''}" style="--exec-color:${c.color};--exec-bg:${c.bg};">
+        <div class="fc-node-num">${i+1}</div>
+        <div class="fc-node-main">
+          <div class="fc-node-title">${esc(s.name) || '（未命名步驟）'}</div>
+          <div class="fc-node-meta">
+            ${s.time ? `<span class="badge time">⏱ ${esc(s.time)}</span>` : ''}
+            <span class="badge exec">${esc(execVal) || '未指定執行者'}${s.sameAsAbove.exec ? '（同上）' : ''}</span>
+            ${s.aiEnabled ? `<span class="badge ai">⚡ AI可協助${s.aiTimeSaved ? '（省'+esc(s.aiTimeSaved)+'）' : ''}</span>` : ''}
+          </div>
+          ${detailParts.length ? `<div class="fc-node-detail">${detailParts.join('　')}</div>` : ''}
+          ${s.notes ? `<div class="fc-node-notes">⚠ ${esc(s.notes)}</div>` : ''}
+        </div>
+      </div>`;
+  }
+  const ARROW = `<div class="fc-arrow"><div class="line"></div><div class="tri"></div></div>`;
+
+  function renderBranchColumn(arr){
+    if(arr.length === 0) return '<div class="branch-empty">尚未新增步驟</div>';
+    let html = '';
+    arr.forEach((_, j) => { html += renderNodeHtml(arr, j); if(j < arr.length - 1) html += ARROW; });
+    return html;
+  }
+
+  function renderDecisionBlock(item){
+    return `
+      <div class="decision-block">
+        <div class="decision-diamond-wrap"><div class="decision-diamond"><div class="txt">${esc(item.question) || '（尚未填寫判斷問題）'}</div></div></div>
+        <div class="branch-fork">
+          <div class="branch-fork-item yes"><span class="lbl">${esc(item.branchYesLabel)}</span><div class="line"></div></div>
+          <div class="branch-fork-item no"><span class="lbl">${esc(item.branchNoLabel)}</span><div class="line"></div></div>
+        </div>
+        <div class="branches-row">
+          <div class="branch-col">${renderBranchColumn(item.branchYes)}</div>
+          <div class="branch-col">${renderBranchColumn(item.branchNo)}</div>
+        </div>
+      </div>`;
+  }
+
+  function renderFlowchart(title, steps){
+    const fc = document.getElementById('flowchart');
+    execColorMap = {};
+
+    if(!steps || steps.length === 0){
+      fc.innerHTML = `<div class="fc-header"><div><div class="fc-title">${esc(title)}</div><div class="fc-sub">STANDARD OPERATING PROCEDURE</div></div></div><div class="empty-state">JSON中沒有任何步驟資料</div>`;
+      return;
+    }
+
+    const sum = computeSummary(steps);
+    let nodesHtml = '';
+    steps.forEach((item, i) => {
+      nodesHtml += item.type === 'decision' ? renderDecisionBlock(item) : renderNodeHtml(steps, i);
+      if(i < steps.length - 1) nodesHtml += ARROW;
+    });
+
+    fc.innerHTML = `
+      <div class="fc-header">
+        <div><div class="fc-title">${esc(title)}</div><div class="fc-sub">STANDARD OPERATING PROCEDURE｜共 ${steps.length} 個主要環節</div></div>
+      </div>
+      <div class="summary-grid">
+        <div class="stat-card"><div class="num">${sum.totalSteps}</div><div class="lbl">總步驟數</div></div>
+        <div class="stat-card"><div class="num">${minutesLabel(sum.totalMinutes)}${sum.hasUnparsable ? '＋' : ''}</div><div class="lbl">預估總時長</div></div>
+        <div class="stat-card ai"><div class="num">${sum.aiCount}</div><div class="lbl">可用AI優化步驟</div></div>
+        <div class="stat-card ai"><div class="num">${minutesLabel(sum.aiSavedMinutes)}${sum.aiSavedUnparsable ? '＋' : ''}</div><div class="lbl">AI預估可省時間</div></div>
+      </div>
+      <div class="fc-body">${nodesHtml}</div>
+    `;
+  }
+
+  function showError(msg){
+    document.getElementById('flowchart').innerHTML =
+      `<div class="error-state">⚠ ${msg}<br><br>請確認 <code>SOP.json</code> 與本HTML檔案放在同一個資料夾，並用網頁伺服器方式開啟（例如 VSCode Live Server，或執行 <code>python -m http.server</code> 後用瀏覽器打開 http://localhost 網址），直接雙擊HTML開啟可能因瀏覽器安全限制而無法讀取本機JSON檔。</div>`;
+  }
+
+  function loadAndRender(){
+    document.getElementById('flowchart').innerHTML = '<div class="empty-state">載入中…</div>';
+    fetch(DATA_FILE + '?t=' + Date.now())
+      .then(res => {
+        if(!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(data => {
+        if(!data || !Array.isArray(data.steps)) throw new Error('格式不正確：JSON需包含 steps 陣列');
+        const steps = data.steps.map(normalizeItem);
+        renderFlowchart(data.title || '流程名稱', steps);
+      })
+      .catch(err => {
+        showError('讀取 SOP.json 失敗（' + esc(err.message) + '）');
+      });
+  }
+
+  loadAndRender();
+})();
+</script>
+</body>
+</html>
