@@ -1793,11 +1793,11 @@
                 M(
                   [
                     "西舞鶴站 → 舞鶴港とれとれセンター",
-                    "京都交通巴士（大江線或循環巴士）約 5–10 分鐘，「舞鶴港とれとれセンター前」下車，約 200 日圓；班次不多，等不到車就步行約 25 分鐘（約 2 公里）",
+                    "京都交通巴士（大江線或循環巴士）約 5–10 分鐘，「舞鶴港とれとれセンター前」下車，車資以車上顯示為準、備好零錢；班次不多，等不到車就步行約 25 分鐘（約 2 公里）",
                   ],
                   [
                     "西舞鶴駅 → 舞鶴港とれとれセンター",
-                    "京都交通バス（大江線またはループバス）で約 5〜10 分、「舞鶴港とれとれセンター前」下車、約 200 円。本数が少ないので、待てなければ徒歩約 25 分（約 2 km）",
+                    "京都交通バス（大江線またはループバス）で約 5〜10 分、「舞鶴港とれとれセンター前」下車。運賃は車内表示を確認、小銭を用意。本数が少ないので、待てなければ徒歩約 25 分（約 2 km）",
                   ],
                   [BUS_NISHI],
                 ),
@@ -3090,9 +3090,12 @@
         links,
       });
       const JR_PASS_URL =
-        "https://www.westjr.co.jp/travel-information/en/tickets-passes/jrwest-rail-pass/kansai_wide/";
+        "https://www.westjr.co.jp/travel-information/tc/tickets-passes/jrwest-rail-pass/kansai_wide/";
       const JR_RESERVE_URL =
-        "https://www.westjr.co.jp/global/en/ticket/overview/";
+        "https://www.westjr.co.jp/global/tc/ticket/overview/";
+      const JR_RECEIVE_URL =
+        "https://www.westjr.co.jp/global/tc/howto/train-reservation/receive/";
+      const WILLER_URL = "https://willer-travel.com/tw/train/tantetsu/";
       const CHECKS = [
         C(
           "flight",
@@ -3157,7 +3160,7 @@
             K(
               "黑松號訂位（WILLER）",
               "くろまつ号予約（WILLER）",
-              "https://travel.willer.co.jp/train/tantetsu/",
+              WILLER_URL,
             ),
           ],
         ),
@@ -3206,9 +3209,14 @@
           ),
           [
             K(
+              "WEST QR 登入",
+              "WEST QR ログイン",
+              "https://guest-ui.west-qr.com/",
+            ),
+            K(
               "WEST QR 說明",
               "WEST QR の案内",
-              "https://www.westjr.co.jp/global/en/ticket/westqr/",
+              "https://www.westjr.co.jp/global/tc/ticket/westqr/",
             ),
           ],
         ),
@@ -3273,7 +3281,7 @@
             K(
               "鐵道博物館官網",
               "鉄道博物館公式",
-              "https://www.kyotorailwaymuseum.jp/",
+              "https://www.kyotorailwaymuseum.jp/tc/",
             ),
           ],
         ),
@@ -3390,14 +3398,19 @@
           L("5/21–5/28", "5/21〜5/28"),
           L("出發前 1–2 週", "出発 1〜2 週間前"),
           L(
-            "只認官方網址 vjw.digital.go.jp（小心假網站）。建立帳號 → 登錄護照 → 登錄入境、回國預定（JX820、住 Umekoji Potel）→ 填「外國人入境記錄」和「海關申報」→ 拿到 QR Code，截圖存在手機。確認護照效期涵蓋到 6/11 回國。",
-            "公式サイト vjw.digital.go.jp のみ使用（偽サイトに注意）。アカウント作成 → パスポート登録 → 入国・帰国予定（JX820、Umekoji Potel）登録 → 外国人入国記録と携帯品・別送品申告を入力 → QR コードを取得してスクリーンショット。パスポートの有効期限が 6/11 の帰国まであるか確認。",
+            "只認官方網址 www.vjw.digital.go.jp（小心假網站）。建立帳號 → 登錄護照 → 登錄入境、回國預定（JX820、住 Umekoji Potel）→ 填「外國人入境記錄」和「海關申報」→ 拿到 QR Code，截圖存在手機。確認護照效期涵蓋到 6/11 回國。",
+            "公式サイト www.vjw.digital.go.jp のみ使用（偽サイトに注意）。アカウント作成 → パスポート登録 → 入国・帰国予定（JX820、Umekoji Potel）登録 → 外国人入国記録と携帯品・別送品申告を入力 → QR コードを取得してスクリーンショット。パスポートの有効期限が 6/11 の帰国まであるか確認。",
           ),
           [
             K(
-              "Visit Japan Web 官網",
-              "Visit Japan Web 公式",
-              "https://vjw.digital.go.jp/",
+              "Visit Japan Web 登錄",
+              "Visit Japan Web ログイン",
+              "https://www.vjw.digital.go.jp/",
+            ),
+            K(
+              "Visit Japan Web 使用說明",
+              "Visit Japan Web の案内",
+              "https://services.digital.go.jp/zh-cmn-hant/visit-japan-web/",
             ),
           ],
         ),
@@ -3426,9 +3439,9 @@
           ),
           [
             K(
-              "觀光廳免稅說明（旅客）",
+              "觀光廳退稅新制說明（繁中 PDF）",
               "観光庁 免税制度（旅行者向け）",
-              "https://www.mlit.go.jp/kankocho/tax-free/page01_000001_00021.html",
+              "https://www.mlit.go.jp/kankocho/tax-free/content/001991249.pdf",
             ),
           ],
         ),
@@ -3437,7 +3450,7 @@
       const SHOWS = [
         {
           id: "vjw",
-          url: "https://vjw.digital.go.jp/",
+          url: "https://www.vjw.digital.go.jp/",
           name: L("Visit Japan Web QR Code", "Visit Japan Web QR コード"),
           desc: L(
             "6/4 入境審查、海關；6/11 出境前的退稅海關確認",
@@ -3446,7 +3459,7 @@
         },
         {
           id: "jr",
-          url: JR_RESERVE_URL,
+          url: JR_RECEIVE_URL,
           name: L(
             "JR 訂位紀錄（JR-WEST ONLINE）",
             "JR 予約内容（JR-WEST ONLINE）",
@@ -3458,19 +3471,19 @@
         },
         {
           id: "westqr",
-          url: "https://www.westjr.co.jp/global/en/ticket/westqr/",
+          url: "https://guest-ui.west-qr.com/",
           name: L(
             "WEST QR（6/11 回程 HARUKA）",
             "WEST QR（6/11 復路のはるか）",
           ),
           desc: L(
-            "手機 QR Code 直接刷閘門，不用領票；要開網路即時顯示，截圖無效。買好後把網址改成自己的 WEST QR 頁面",
-            "スマホの QR コードで直接改札を通過、きっぷの受取不要。通信して表示する必要があり、スクリーンショットは不可。購入後は自分の WEST QR のページに URL を変更",
+            "登入 WEST QR 會員網站顯示 QR Code，直接刷閘門，不用領票；要開網路即時顯示，截圖無效",
+            "WEST QR の会員サイトにログインして QR コードを表示し、そのまま改札を通過。きっぷの受取不要。通信して表示する必要があり、スクリーンショットは不可",
           ),
         },
         {
           id: "kuromatsu",
-          url: "https://travel.willer.co.jp/train/tantetsu/",
+          url: WILLER_URL,
           name: L("黑松號訂位確認（WILLER）", "くろまつ号の予約確認（WILLER）"),
           desc: L(
             "6/5 天橋立上車時出示；可以改成確認信裡的網址",
@@ -3483,8 +3496,8 @@
         {
           icon: "card",
           ...L(
-            "<b>ICOCA</b>：市區地鐵、JR、京阪、近鐵、公車都能刷，建議一到就儲值。",
-            "<b>ICOCA</b>：市内の地下鉄・JR・京阪・近鉄・バスすべてで使えます。到着したらすぐチャージ。",
+            "<b>ICOCA</b>：京都市區的地鐵、JR、京阪、近鐵、市巴士都能刷，建議一到就儲值。舞鶴的京都交通巴士（三浜線、とれとれ方向）能不能刷沒有查到，準備零錢比較保險。",
+            "<b>ICOCA</b>：京都市内の地下鉄・JR・京阪・近鉄・市バスで使えます。到着したらすぐチャージ。舞鶴の京都交通バス（三浜線・とれとれ方面）で使えるかは未確認なので、小銭を用意しておくと安心。",
           ),
         },
         {
@@ -3504,8 +3517,8 @@
         {
           icon: "info",
           ...L(
-            "<b>入境日本</b>：台灣護照短期觀光免簽、最多停留 90 天。出發前 1–2 週在 Visit Japan Web（vjw.digital.go.jp）登錄，入境審查和海關共用同一組 QR Code。日本預計 2028 年度才開始實施電子旅行許可「JESTA」，這趟應該還不用，出發前再確認一次。",
-            "<b>日本入国</b>：台湾パスポートは短期観光ならビザ免除、最長 90 日。出発 1〜2 週間前に Visit Japan Web（vjw.digital.go.jp）を登録すれば、入国審査と税関は同じ QR コードで OK。電子渡航認証「JESTA」は 2028 年度導入予定なので今回は不要の見込みですが、出発前に再確認を。",
+            "<b>入境日本</b>：台灣護照短期觀光免簽、最多停留 90 天。出發前 1–2 週在 Visit Japan Web（www.vjw.digital.go.jp）登錄，入境審查和海關共用同一組 QR Code。日本預計 2028 年度才開始實施電子旅行許可「JESTA」，這趟應該還不用，出發前再確認一次。",
+            "<b>日本入国</b>：台湾パスポートは短期観光ならビザ免除、最長 90 日。出発 1〜2 週間前に Visit Japan Web（www.vjw.digital.go.jp）を登録すれば、入国審査と税関は同じ QR コードで OK。電子渡航認証「JESTA」は 2028 年度導入予定なので今回は不要の見込みですが、出発前に再確認を。",
           ),
         },
         {
