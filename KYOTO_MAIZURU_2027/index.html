@@ -1,0 +1,4021 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>京都行程 2027</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Serif+JP:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      try {
+        var s = JSON.parse(localStorage.getItem("kyoto2027-state") || "{}");
+        if (s.theme) document.documentElement.dataset.theme = s.theme;
+        if (s.lang === "ja") document.documentElement.lang = "ja";
+      } catch (e) {}
+    </script>
+    <script src="js/vue.global.prod.js"></script>
+    <style>
+      :root {
+        --bg: #f7f4ee;
+        --card: #ffffff;
+        --ink: #24211d;
+        --muted: #6f685e;
+        --line: #e4ddd1;
+        --accent: #b8442f;
+        --accent-soft: #f6e3dc;
+        --indigo: #2f4a6d;
+        --indigo-soft: #e3e9f2;
+        --green: #3d6b4a;
+        --green-soft: #e2eee4;
+        --amber: #9a6a12;
+        --amber-soft: #f6ecd5;
+        --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.05);
+        --sans:
+          "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui,
+          sans-serif;
+        --serif: "Noto Serif TC", serif;
+      }
+      :root[lang="ja"] {
+        --sans:
+          "Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+        --serif: "Noto Serif JP", serif;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #16151a;
+          --card: #211f25;
+          --ink: #ece7df;
+          --muted: #a49c90;
+          --line: #35323a;
+          --accent: #e57a62;
+          --accent-soft: #3a2622;
+          --indigo: #8fb0dc;
+          --indigo-soft: #232c3a;
+          --green: #8cc39a;
+          --green-soft: #1f2e24;
+          --amber: #e0b45a;
+          --amber-soft: #332a18;
+          --shadow: none;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #16151a;
+        --card: #211f25;
+        --ink: #ece7df;
+        --muted: #a49c90;
+        --line: #35323a;
+        --accent: #e57a62;
+        --accent-soft: #3a2622;
+        --indigo: #8fb0dc;
+        --indigo-soft: #232c3a;
+        --green: #8cc39a;
+        --green-soft: #1f2e24;
+        --amber: #e0b45a;
+        --amber-soft: #332a18;
+        --shadow: none;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--sans);
+        line-height: 1.85;
+        font-size: 17px;
+        -webkit-font-smoothing: antialiased;
+        overflow-x: clip;
+        overflow-wrap: break-word;
+      }
+      a {
+        color: var(--indigo);
+      }
+      img,
+      iframe,
+      table {
+        max-width: 100%;
+      }
+      .wrap {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      .ic {
+        width: 1.1em;
+        height: 1.1em;
+        vertical-align: -0.18em;
+        flex: 0 0 auto;
+      }
+
+      header.hero {
+        padding-top: 72px;
+        padding-bottom: 48px;
+        position: relative;
+      }
+      header.hero::after {
+        content: "";
+        position: absolute;
+        right: -120px;
+        top: -120px;
+        width: 420px;
+        height: 420px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          var(--accent-soft) 0%,
+          transparent 70%
+        );
+        z-index: -1;
+        pointer-events: none;
+      }
+      .eyebrow {
+        font-size: 14px;
+        letter-spacing: 0.3em;
+        color: var(--accent);
+        font-weight: 700;
+        margin: 0 0 10px;
+      }
+      .hero h1 {
+        font-family: var(--serif);
+        font-size: 46px;
+        line-height: 1.3;
+        margin: 0 0 12px;
+        letter-spacing: 0.06em;
+        font-weight: 700;
+      }
+      .hero .sub {
+        color: var(--muted);
+        margin: 0;
+        font-size: 18px;
+      }
+      .flights {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 20px;
+        margin-top: 36px;
+      }
+      .flight {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 22px 26px;
+        box-shadow: var(--shadow);
+      }
+      .flight .lab {
+        font-size: 14px;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .flight .route {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-top: 6px;
+      }
+      .flight .tm {
+        font-size: 30px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.2;
+      }
+      .flight .ap {
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .flight .arrow {
+        flex: 1;
+        height: 2px;
+        background: var(--line);
+        position: relative;
+        margin: 0 4px;
+      }
+      .flight .arrow::after {
+        content: "✈";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -55%);
+        color: var(--accent);
+        background: var(--card);
+        padding: 0 8px;
+        font-size: 18px;
+      }
+      .flight .no {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--accent);
+        margin-top: 8px;
+      }
+
+      nav.days {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: color-mix(in srgb, var(--bg) 90%, transparent);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--line);
+        padding: 12px 0;
+      }
+      .navrow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        position: relative;
+      }
+      nav.days a {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-decoration: none;
+        color: var(--ink);
+        font-size: 15px;
+        padding: 8px 16px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        transition: 0.15s;
+        white-space: nowrap;
+      }
+      nav.days a:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      nav.days a.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+
+      section {
+        margin: 72px 0;
+        scroll-margin-top: 84px;
+      }
+      h2 {
+        font-family: var(--serif);
+        font-size: 28px;
+        margin: 0 0 24px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        letter-spacing: 0.04em;
+      }
+      h2 .ic {
+        color: var(--accent);
+        width: 28px;
+        height: 28px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        box-shadow: var(--shadow);
+      }
+      .pad {
+        padding: 32px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 16px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 16px 14px;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+      th {
+        color: var(--muted);
+        font-weight: 600;
+        font-size: 14px;
+        letter-spacing: 0.05em;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      .tbl-scroll {
+        overflow-x: auto;
+      }
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+      }
+      .day-body > *,
+      .grid2 > * {
+        min-width: 0;
+      }
+      .map-frame {
+        width: 100%;
+        height: 380px;
+        border: 0;
+        border-radius: 16px;
+        display: block;
+        background: var(--line);
+      }
+
+      .day-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 14px;
+        padding: 32px 36px 0;
+      }
+      .day-num {
+        font-size: 15px;
+        font-weight: 700;
+        color: #fff;
+        background: var(--accent);
+        padding: 4px 14px;
+        border-radius: 999px;
+        letter-spacing: 0.05em;
+      }
+      .day-title {
+        font-family: var(--serif);
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+      }
+      .day-date {
+        color: var(--muted);
+        font-size: 17px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .badge {
+        font-size: 14px;
+        padding: 3px 12px;
+        border-radius: 999px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .b-warn {
+        background: var(--amber-soft);
+        color: var(--amber);
+      }
+      .b-ok {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+      .b-opt {
+        background: var(--indigo-soft);
+        color: var(--indigo);
+      }
+      .stay {
+        margin: 12px 36px 0;
+        font-size: 16px;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .stay b {
+        color: var(--ink);
+      }
+      .day-body {
+        display: grid;
+        grid-template-columns: 1.15fr 1fr;
+        gap: 44px;
+        padding: 28px 36px 32px;
+      }
+
+      .tl {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .tl li {
+        display: grid;
+        grid-template-columns: 72px 14px minmax(0, 1fr);
+        column-gap: 16px;
+        padding: 12px 0;
+        position: relative;
+      }
+      .tl li::before {
+        content: "";
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: center;
+        align-self: start;
+        margin-top: 7px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--card);
+        border: 3px solid var(--accent);
+        position: relative;
+        z-index: 1;
+      }
+      .tl li::after {
+        content: "";
+        position: absolute;
+        left: 94px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--line);
+      }
+      .tl li:first-child::after {
+        top: 26px;
+      }
+      .tl li.move:first-child::after {
+        top: 16px;
+      }
+      .tl li:last-child::after {
+        bottom: auto;
+        height: 26px;
+      }
+      .tl li.move:last-child::after {
+        height: 16px;
+      }
+      .tl li.move {
+        padding: 4px 0;
+      }
+      .tl li.move::before {
+        width: 8px;
+        height: 8px;
+        margin-top: 8px;
+        border: none;
+        background: color-mix(in srgb, var(--indigo) 60%, var(--card));
+      }
+      .tl .t {
+        grid-column: 1;
+        grid-row: 1;
+        font-variant-numeric: tabular-nums;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--accent);
+        padding-top: 3px;
+        text-align: right;
+        line-height: 1.4;
+      }
+      .tl .what {
+        grid-column: 3;
+        grid-row: 1;
+      }
+      .tl .what b {
+        display: block;
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 1.6;
+      }
+      .tl .what span {
+        display: block;
+        font-size: 15px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .tl li.move .what b {
+        color: var(--indigo);
+        font-weight: 500;
+        font-size: 15.5px;
+      }
+      .tl li.move .what b .ic {
+        margin-right: 6px;
+      }
+      .tl li.move .what span {
+        font-size: 14px;
+      }
+      .tl-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 8px;
+        margin-top: 6px;
+      }
+      .tl-links a {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 13.5px;
+        line-height: 1.5;
+        padding: 3px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        color: var(--indigo);
+        text-decoration: none;
+        background: var(--card);
+      }
+      .tl-links a:hover {
+        border-color: var(--indigo);
+      }
+
+      .legs {
+        margin-top: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .leg {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 16px;
+        padding: 13px 16px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        text-decoration: none;
+        color: var(--ink);
+        background: var(--bg);
+        transition: 0.15s;
+      }
+      .leg:hover {
+        border-color: var(--indigo);
+        transform: translateX(2px);
+      }
+      .leg .m {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--indigo-soft);
+        color: var(--indigo);
+        flex: 0 0 auto;
+      }
+      .leg .m.walk {
+        background: var(--green-soft);
+        color: var(--green);
+      }
+      .leg .lbl {
+        flex: 1;
+        min-width: 0;
+      }
+      .leg .go {
+        color: var(--indigo);
+        font-weight: 600;
+        flex: 0 0 auto;
+        font-size: 15px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .side h4 {
+        margin: 0 0 12px;
+        font-size: 15px;
+        color: var(--muted);
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .notes {
+        margin: 0 36px 36px;
+        padding: 20px 24px;
+        border-radius: 16px;
+        background: var(--amber-soft);
+        font-size: 16px;
+        line-height: 1.85;
+      }
+      .notes p {
+        margin: 10px 0;
+        display: flex;
+        gap: 10px;
+      }
+      .notes p .ic {
+        color: var(--amber);
+        margin-top: 0.35em;
+      }
+      .notes b {
+        color: var(--amber);
+      }
+      .plan-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 0 0 18px;
+      }
+      .plan-tabs button {
+        font: inherit;
+        font-size: 15px;
+        padding: 8px 18px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--ink);
+        cursor: pointer;
+      }
+      .plan-tabs button[aria-pressed="true"] {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+
+      .check-group {
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        margin: 40px 0 14px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .check-group::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--line);
+      }
+      .check {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .check li {
+        display: grid;
+        grid-template-columns: auto 132px minmax(0, 1fr);
+        gap: 24px;
+        align-items: start;
+        padding: 24px 28px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        box-shadow: var(--shadow);
+        transition: 0.15s;
+      }
+      .check li:hover {
+        border-color: var(--accent);
+      }
+      .check input {
+        width: 22px;
+        height: 22px;
+        margin-top: 6px;
+        accent-color: var(--accent);
+        cursor: pointer;
+      }
+      .check label {
+        cursor: pointer;
+      }
+      .check .date-blk {
+        display: flex;
+        flex-direction: column;
+        padding-right: 20px;
+        border-right: 1px solid var(--line);
+        min-height: 100%;
+      }
+      .check .date-blk .d {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--accent);
+        line-height: 1.25;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.02em;
+      }
+      .check .date-blk .s {
+        font-size: 13.5px;
+        color: var(--muted);
+        margin-top: 6px;
+        line-height: 1.5;
+      }
+      .check .body {
+        display: block;
+      }
+      .check .body label {
+        display: block;
+      }
+      .check .book-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .check .book {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 14px;
+        border: 1px solid var(--accent);
+        border-radius: 999px;
+        color: var(--accent);
+        font-weight: 600;
+        font-size: 14.5px;
+        text-decoration: none;
+      }
+      .check .book:hover {
+        background: var(--accent);
+        color: #fff;
+      }
+      .check .ttl {
+        font-weight: 600;
+        font-size: 18px;
+        margin-right: 10px;
+      }
+      .check .body .badge {
+        vertical-align: 2px;
+      }
+      .check .ds {
+        display: block;
+        font-size: 15.5px;
+        color: var(--muted);
+        margin-top: 8px;
+        line-height: 1.8;
+      }
+      .check li.done {
+        opacity: 0.5;
+      }
+      .check li.done .ttl {
+        text-decoration: line-through;
+      }
+      .prog {
+        font-family: var(--sans);
+        font-size: 15px;
+        color: var(--muted);
+        margin-left: auto;
+        font-weight: 500;
+      }
+      .tips {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .tips li {
+        margin: 0;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        gap: 14px;
+      }
+      .tips li:last-child {
+        border-bottom: none;
+      }
+      .tips li .ic {
+        color: var(--accent);
+        margin-top: 0.35em;
+        width: 20px;
+        height: 20px;
+      }
+      .small {
+        font-size: 15px;
+        color: var(--muted);
+      }
+      .foot {
+        height: 80px;
+      }
+
+      .fab {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .fab-btn {
+        position: relative;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--ink);
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.15s;
+      }
+      .fab-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .fab-btn .ic {
+        width: 22px;
+        height: 22px;
+      }
+      .fab-btn[aria-pressed="true"] {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      .fab-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .fab-dot {
+        position: absolute;
+        right: 2px;
+        top: 2px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--accent);
+        border: 2px solid var(--card);
+      }
+
+      .shop-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 14px;
+      }
+      .shop {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 18px 20px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        box-shadow: var(--shadow);
+        text-decoration: none;
+        color: var(--ink);
+        transition: 0.15s;
+      }
+      .shop:hover {
+        border-color: var(--accent);
+      }
+      .shop .nm {
+        font-weight: 600;
+        font-size: 18px;
+      }
+      .shop .ds {
+        font-size: 15px;
+        color: var(--muted);
+        line-height: 1.7;
+        flex: 1;
+      }
+      .shop .hr {
+        font-size: 14px;
+        color: var(--muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .shop .hr .ic {
+        width: 16px;
+        height: 16px;
+      }
+      .shop .go {
+        color: var(--indigo);
+        font-weight: 600;
+        font-size: 15px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 4px;
+      }
+      .show-main {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        text-decoration: none;
+        color: var(--ink);
+        flex: 1;
+      }
+      .show-tools {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+        padding-top: 10px;
+        border-top: 1px solid var(--line);
+      }
+      .show-tools button {
+        font: inherit;
+        font-size: 13.5px;
+        padding: 4px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--muted);
+        cursor: pointer;
+      }
+      .show-tools button:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .show-add {
+        font: inherit;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--accent);
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+        border-style: dashed;
+        min-height: 120px;
+      }
+      .fab-lab {
+        position: absolute;
+        right: -2px;
+        bottom: -2px;
+        font-size: 11px;
+        font-weight: 700;
+        background: var(--accent);
+        color: #fff;
+        border-radius: 999px;
+        min-width: 20px;
+        height: 20px;
+        line-height: 20px;
+        text-align: center;
+        padding: 0 4px;
+      }
+
+      @media (max-width: 1120px) {
+        header.hero {
+          overflow: hidden;
+        }
+      }
+      @media (max-width: 960px) {
+        .day-body,
+        .grid2 {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .navrow {
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          scrollbar-width: none;
+          -webkit-overflow-scrolling: touch;
+          scroll-snap-type: x proximity;
+          -webkit-mask-image: linear-gradient(90deg, #000 92%, transparent);
+          mask-image: linear-gradient(90deg, #000 92%, transparent);
+        }
+        .navrow::-webkit-scrollbar {
+          display: none;
+        }
+        .navrow::after {
+          content: "";
+          flex: 0 0 24px;
+        }
+        nav.days a {
+          scroll-snap-align: center;
+        }
+      }
+      @media (max-width: 640px) {
+        body {
+          font-size: 16px;
+        }
+        .wrap {
+          padding: 0 16px;
+        }
+        header.hero {
+          padding-top: 44px;
+          padding-bottom: 28px;
+        }
+        header.hero::after {
+          width: 300px;
+          height: 300px;
+          right: -110px;
+          top: -90px;
+        }
+        .hero h1 {
+          font-size: 32px;
+        }
+        .flights {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 14px;
+        }
+        .flight {
+          padding: 18px 20px;
+        }
+        .flight .tm {
+          font-size: 24px;
+        }
+        nav.days {
+          padding: 10px 0;
+        }
+        nav.days a {
+          font-size: 14px;
+          padding: 7px 14px;
+        }
+        section {
+          margin: 48px 0;
+          scroll-margin-top: 72px;
+        }
+        h2 {
+          font-size: 23px;
+        }
+        .pad {
+          padding: 20px;
+        }
+        th,
+        td {
+          padding: 12px 8px;
+        }
+        table.stack thead {
+          display: none;
+        }
+        table.stack tr {
+          display: block;
+          padding: 16px 0;
+          border-bottom: 1px solid var(--line);
+        }
+        table.stack tr:last-child {
+          border-bottom: none;
+        }
+        table.stack td {
+          display: block;
+          padding: 2px 0;
+          border: none;
+        }
+        table.stack td:first-child {
+          display: inline;
+          color: var(--accent);
+          font-weight: 600;
+        }
+        table.stack td:nth-child(2) {
+          display: inline;
+          color: var(--muted);
+          margin-left: 8px;
+        }
+        table.stack td:nth-child(3) {
+          margin-top: 4px;
+          font-size: 17px;
+        }
+        table.stack td:nth-child(4) {
+          color: var(--muted);
+          font-size: 15px;
+        }
+        .day-head {
+          padding: 22px 20px 0;
+        }
+        .day-title {
+          font-size: 21px;
+        }
+        .stay {
+          margin: 10px 20px 0;
+        }
+        .day-body {
+          padding: 20px;
+          gap: 28px;
+        }
+        .notes {
+          margin: 0 20px 20px;
+          padding: 16px 18px;
+        }
+        .tl li {
+          grid-template-columns: 56px 14px minmax(0, 1fr);
+          column-gap: 12px;
+        }
+        .tl li::after {
+          left: 74px;
+        }
+        .tl .t {
+          font-size: 15px;
+        }
+        .leg {
+          padding: 12px 14px;
+          font-size: 15px;
+        }
+        .map-frame {
+          height: 300px;
+        }
+        .check li {
+          grid-template-columns: auto minmax(0, 1fr);
+          gap: 10px 16px;
+          padding: 18px;
+        }
+        .check .date-blk {
+          flex-direction: row;
+          flex-wrap: wrap;
+          align-items: baseline;
+          gap: 10px;
+          padding: 0 0 10px;
+          border-right: none;
+          border-bottom: 1px solid var(--line);
+        }
+        .check .date-blk .d {
+          font-size: 20px;
+        }
+        .check .date-blk .s {
+          margin-top: 0;
+        }
+        .check .body {
+          grid-column: 2;
+        }
+        .check input {
+          margin-top: 4px;
+        }
+        .fab {
+          right: 12px;
+          bottom: 12px;
+        }
+        .fab-btn {
+          width: 44px;
+          height: 44px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script type="text/x-template" id="tpl">
+      <div>
+        <header class="hero wrap">
+          <p class="eyebrow">KYOTO · MAIZURU 2027</p>
+          <h1>{{ u.title }}</h1>
+          <p class="sub">{{ u.sub }}</p>
+          <div class="flights">
+            <div class="flight" v-for="f in flights" :key="f.no">
+              <div class="lab"><x-icon n="plane"/>{{ f.lab[lang] }}</div>
+              <div class="route">
+                <div><div class="tm">{{ f.dep }}</div><div class="ap">{{ f.from[lang] }}</div></div>
+                <div class="arrow"></div>
+                <div style="text-align:right"><div class="tm">{{ f.arr }}</div><div class="ap">{{ f.to[lang] }}</div></div>
+              </div>
+              <div class="no">{{ u.airline }} {{ f.no }}</div>
+            </div>
+          </div>
+        </header>
+
+        <nav class="days">
+          <div class="wrap navrow" ref="navrow">
+            <a v-for="n in navItems" :key="n.id" :href="'#'+n.id" :data-id="n.id"
+               :class="{active: active === n.id}" @click.prevent="go(n.id)">
+              <x-icon v-if="n.icon" :n="n.icon"/>{{ n.label }}
+            </a>
+          </div>
+        </nav>
+
+        <main class="wrap">
+          <section id="overview" data-spy>
+            <h2><x-icon n="grid"/>{{ u.overview }}</h2>
+            <div class="grid2">
+              <div class="card pad">
+                <div class="tbl-scroll">
+                  <table>
+                    <thead><tr><th v-for="h in u.ovTh" :key="h">{{ h }}</th></tr></thead>
+                    <tbody>
+                      <tr v-for="d in days" :key="d.id">
+                        <td style="white-space:nowrap"><a :href="'#'+d.id" @click.prevent="go(d.id)">{{ dateLabel(d) }}</a></td>
+                        <td>{{ d.short[lang] }}</td>
+                        <td>{{ d.stay === 'potel' ? 'Potel' : stayName(d) }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="card pad">
+                <div class="side"><h4><x-icon n="map"/>{{ u.ovMapTitle }}</h4></div>
+                <iframe class="map-frame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" :src="embed(overviewStops)" :title="u.ovMapTitle"></iframe>
+                <p class="small" style="margin:12px 0 0">{{ u.ovMapNote }}</p>
+              </div>
+            </div>
+          </section>
+
+          <section id="stay" data-spy>
+            <h2><x-icon n="bed"/>{{ u.stayTitle }}</h2>
+            <div class="card pad">
+              <div class="tbl-scroll">
+                <table class="stack">
+                  <thead><tr><th v-for="h in u.stayTh" :key="h">{{ h }}</th></tr></thead>
+                  <tbody>
+                    <tr v-for="(s,i) in stays" :key="i">
+                      <td>{{ s.nights[lang] }}</td><td>{{ s.date }}</td><td><b>{{ s.name[lang] }}</b></td><td>{{ s.note[lang] }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section v-for="d in days" :key="d.id" :id="d.id" class="card day" data-spy>
+            <div class="day-head">
+              <span class="day-num">{{ d.n }}</span>
+              <span class="day-title">{{ d.title[lang] }}</span>
+              <span class="day-date"><x-icon n="calendar"/>{{ dateLabel(d) }}</span>
+              <span v-if="d.badge" class="badge" :class="d.badge.cls">{{ d.badge[lang] }}</span>
+            </div>
+            <div class="stay"><x-icon n="bed"/>{{ u.stayLabel }}<b>{{ stayName(d) }}</b></div>
+            <div class="day-body">
+              <div>
+                <div v-if="d.plans" class="plan-tabs" role="group">
+                  <button v-for="(p,k) in d.plans" :key="k" type="button" :aria-pressed="planOf(d) === k" @click="pickPlan(d, k)">{{ p.label[lang] }}<template v-if="isSuggested(d, k)">（{{ u.suggested }}）</template></button>
+                </div>
+                <p v-if="d.plans && cur(d).intro" class="small" style="margin:0 0 14px" v-html="cur(d).intro[lang]"></p>
+                <ol class="tl">
+                  <li v-for="(it,i) in cur(d).timeline" :key="i" :class="{move: it.move}">
+                    <div class="t">{{ it.move ? '' : txt(it.t) }}</div>
+                    <div class="what">
+                      <b><x-icon v-if="it.move" n="route"/>{{ it.title[lang] }}</b>
+                      <span v-if="it.desc">{{ it.desc[lang] }}</span>
+                      <div v-if="it.links" class="tl-links">
+                        <a v-for="(k,i) in it.links" :key="i" :href="k.url" target="_blank" rel="noopener">{{ k.label[lang] }}<x-icon n="ext"/></a>
+                      </div>
+                    </div>
+                  </li>
+                </ol>
+              </div>
+              <div class="side">
+                <h4><x-icon n="map"/>{{ u.dayMap }}</h4>
+                <iframe class="map-frame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" :src="embed(cur(d).map)" :title="d.n"></iframe>
+                <h4 style="margin-top:22px"><x-icon n="nav"/>{{ fromHere ? u.dayNavHere : u.dayNav }}</h4>
+                <div class="legs">
+                  <a v-for="(l,i) in cur(d).legs" :key="i" class="leg" :href="navUrl(l)" target="_blank" rel="noopener">
+                    <span class="m" :class="{walk: l.mode === 'walking'}" :title="u[l.mode] || u.transit">
+                      <x-icon :n="l.mode === 'walking' ? 'walk' : 'train'"/>
+                    </span>
+                    <span class="lbl">{{ legLabel(l) }}</span>
+                    <span class="go">{{ u.go }}<x-icon n="ext"/></span>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="notes">
+              <p v-for="(nt,i) in d.notes" :key="i"><x-icon n="info"/><span v-html="nt[lang]"></span></p>
+            </div>
+          </section>
+
+          <section id="shop" data-spy>
+            <h2><x-icon n="bag"/>{{ u.shopTitle }}</h2>
+            <p class="small" style="margin:-8px 0 8px">{{ u.shopNote }}</p>
+            <template v-for="g in shops" :key="g.id">
+              <h3 class="check-group">{{ g.area[lang] }}</h3>
+              <div class="shop-grid">
+                <a v-for="s in g.items" :key="s.q" class="shop" :href="shopUrl(s)" target="_blank" rel="noopener">
+                  <span class="nm">{{ s.name[lang] }}</span>
+                  <span class="ds">{{ s.desc[lang] }}</span>
+                  <span class="hr"><x-icon n="clock"/>{{ txt(s.hours) }}</span>
+                  <span class="go">{{ u.goHere }}<x-icon n="ext"/></span>
+                </a>
+              </div>
+            </template>
+          </section>
+
+          <section id="show" data-spy>
+            <h2><x-icon n="qr"/>{{ u.showTitle }}</h2>
+            <p class="small" style="margin:-8px 0 8px">{{ u.showNote }}</p>
+            <div class="shop-grid">
+              <div v-for="s in showList" :key="s.key" class="shop">
+                <a class="show-main" :href="s.url" target="_blank" rel="noopener">
+                  <span class="nm">{{ s.name }}</span>
+                  <span v-if="s.desc" class="ds">{{ s.desc }}</span>
+                  <span class="go">{{ u.open }}<x-icon n="ext"/></span>
+                </a>
+                <div class="show-tools">
+                  <button type="button" @click="editShow(s)">{{ u.editUrl }}</button>
+                  <button v-if="s.custom" type="button" @click="showCustom.splice(s.idx, 1)">{{ u.remove }}</button>
+                </div>
+              </div>
+              <button type="button" class="shop show-add" @click="addShow">＋ {{ u.addLink }}</button>
+            </div>
+          </section>
+
+          <section id="tips" data-spy>
+            <h2><x-icon n="bulb"/>{{ u.tipsTitle }}</h2>
+            <div class="card pad">
+              <ul class="tips">
+                <li v-for="(tp,i) in tips" :key="i"><x-icon :n="tp.icon"/><span v-html="tp[lang]"></span></li>
+              </ul>
+            </div>
+          </section>
+
+          <section id="checklist" data-spy>
+            <h2><x-icon n="check"/>{{ u.checkTitle }}<span class="prog">{{ doneCount }} / {{ checks.length }} {{ u.done }}</span></h2>
+            <p class="small" style="margin:-8px 0 8px">{{ u.checkNote }}</p>
+            <template v-for="g in checkGroups" :key="g.key">
+              <h3 class="check-group">{{ g.label }}</h3>
+              <ul class="check">
+                <li v-for="c in g.items" :key="c.id" :class="{done: done[c.id]}">
+                  <input type="checkbox" :id="'c-' + c.id" v-model="done[c.id]">
+                  <label :for="'c-' + c.id" class="date-blk"><span class="d">{{ c.date[lang] }}</span><span class="s">{{ c.sub[lang] }}</span></label>
+                  <div class="body">
+                    <label :for="'c-' + c.id">
+                      <span class="ttl">{{ c.title[lang] }}</span><span class="badge" :class="tags[c.tag].cls">{{ tags[c.tag][lang] }}</span>
+                      <span class="ds">{{ c.ds[lang] }}</span>
+                    </label>
+                    <div v-if="c.links" class="book-row">
+                      <a v-for="(k,i) in c.links" :key="i" class="book" :href="k.url" target="_blank" rel="noopener">{{ k.label[lang] }}<x-icon n="ext"/></a>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </template>
+          </section>
+          <div class="foot"></div>
+        </main>
+
+        <div class="fab">
+          <div class="fab-menu" id="fab-menu" v-show="fabOpen">
+            <button type="button" class="fab-btn" @click="toggleLang" :title="u.langBtn" :aria-label="u.langBtn">
+              <x-icon n="lang"/><span class="fab-lab">{{ lang === 'zh' ? '中' : '日' }}</span>
+            </button>
+            <button type="button" class="fab-btn" @click="toggleTheme" :title="u.themeBtn" :aria-label="u.themeBtn">
+              <x-icon :n="isDark ? 'sun' : 'moon'"/>
+            </button>
+            <button type="button" class="fab-btn" @click="fromHere = !fromHere" :aria-pressed="fromHere" :title="u.hereBtn" :aria-label="u.hereBtn">
+              <x-icon n="locate"/>
+            </button>
+          </div>
+          <button type="button" class="fab-btn" @click="fabOpen = !fabOpen" :aria-expanded="fabOpen" aria-controls="fab-menu" :title="u.menuBtn" :aria-label="u.menuBtn">
+            <x-icon :n="fabOpen ? 'close' : 'gear'"/><span v-if="fromHere && !fabOpen" class="fab-dot"></span>
+          </button>
+          <button type="button" class="fab-btn" @click="toTop" :title="u.topBtn" :aria-label="u.topBtn">
+            <x-icon n="up"/>
+          </button>
+        </div>
+      </div>
+    </script>
+
+    <script>
+      const STORE = "kyoto2027-state";
+      const HOTEL = "Umekoji Potel KYOTO";
+      const BELLMARE = "ホテルベルマーレ 舞鶴市浜2002-3";
+      const TORETORE = "道の駅 舞鶴港とれとれセンター";
+      const L = (zh, ja) => ({ zh, ja });
+      const P = (t, zh, ja, links) => ({
+        t,
+        title: L(zh[0], ja[0]),
+        desc: zh[1] ? L(zh[1], ja[1]) : null,
+        links,
+      });
+      const M = (zh, ja, links) => ({
+        move: true,
+        title: L(zh[0], ja[0]),
+        desc: zh[1] ? L(zh[1], ja[1]) : null,
+        links,
+      });
+      const K = (zh, ja, url) => ({ label: L(zh, ja), url });
+      const BUS_NISHI = K(
+        "西舞鶴站前巴士時刻",
+        "西舞鶴駅前のバス時刻",
+        "https://mb.jorudan.co.jp/os/bus/2611/stop/103019.html",
+      );
+      const BUS_MIHAMA_GO = K(
+        "三浜線 去程時刻",
+        "三浜線 往路の時刻",
+        "https://www.navitime.co.jp/bus/diagram/timelist?departure=00082315&arrival=00110817&line=00026463",
+      );
+      const BUS_MIHAMA_BACK = K(
+        "三浜線 回程時刻",
+        "三浜線 復路の時刻",
+        "https://www.navitime.co.jp/bus/diagram/timelist?departure=00110817&arrival=00082315&line=00026463",
+      );
+      const BOAT_TIME = K(
+        "遊覽船運航時刻・費用",
+        "遊覧船の運航案内・料金",
+        "https://maizuru-yuran.com/detail.html",
+      );
+      const G = (from, to, mode, zh, ja) => ({
+        from,
+        to,
+        mode,
+        label: L(zh, ja),
+      });
+
+      const ICONS = {
+        sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>',
+        moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+        lang: '<path d="m5 8 6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/>',
+        up: '<path d="m18 15-6-6-6 6"/>',
+        locate:
+          '<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>',
+        gear: '<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+        close: '<path d="M18 6 6 18M6 6l12 12"/>',
+        bag: '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/>',
+        clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+        plane:
+          '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
+        bed: '<path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9"/>',
+        map: '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+        nav: '<polygon points="3 11 22 2 13 21 11 13 3 11"/>',
+        ext: '<path d="M7 17 17 7M7 7h10v10"/>',
+        calendar:
+          '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+        check: '<path d="m3 17 2 2 4-4M3 7l2 2 4-4M13 6h8M13 12h8M13 18h8"/>',
+        info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',
+        grid: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',
+        bulb: '<path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/>',
+        train:
+          '<rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 11h16M12 3v8M8 21l2-4M16 21l-2-4"/><circle cx="8.5" cy="14" r=".6"/><circle cx="15.5" cy="14" r=".6"/>',
+        walk: '<circle cx="13" cy="4" r="2"/><path d="m9 20 3-6 3 3v4M6 12l3-4 4 1 3 4M10 8l-1.5 6"/>',
+        route: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+        card: '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',
+        ticket:
+          '<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/>',
+        phone:
+          '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/>',
+        qr: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/>',
+      };
+
+      const UI = {
+        zh: {
+          docTitle: "京都行程 2027",
+          title: "京都・舞鶴 8 天 7 夜",
+          sub: "2027/6/4（五）– 6/11（五）",
+          airline: "星宇",
+          overview: "總覽",
+          stayTitle: "住宿安排",
+          checkTitle: "預訂時程與確認清單",
+          tipsTitle: "旅遊小提醒",
+          navOverview: "總覽",
+          navStay: "住宿",
+          navCheck: "確認清單",
+          navTips: "提醒",
+          navShow: "出示",
+          showTitle: "出示",
+          showNote:
+            "要出示 QR Code、訂位紀錄時，從這裡直接打開。網址可以改成你自己的訂位確認頁或 QR Code 頁面，只存在這台裝置。",
+          open: "打開",
+          editUrl: "改網址",
+          addLink: "新增連結",
+          remove: "刪除",
+          askName: "連結名稱（例如：黑松號訂位確認）",
+          askUrl: "網址（https:// 開頭）",
+          ovTh: ["日期", "行程", "住宿"],
+          ovMapTitle: "全程路線：京都 → 天橋立 → 舞鶴 → 京都",
+          ovMapNote:
+            "地圖上的線只是大略走向；實際怎麼搭車，請點各天的導航按鈕（Google Maps 大眾運輸模式）。",
+          stayTh: ["晚數", "日期", "住宿", "說明"],
+          stayLabel: "住宿：",
+          dayMap: "當日路線圖",
+          dayNav: "分段導航（開啟 Google Maps）",
+          transit: "大眾運輸",
+          walking: "步行",
+          go: "導航",
+          done: "已完成",
+          suggested: "建議",
+          checkNote:
+            "照時間先後排列；開放預訂的時間都是日本時間（比台灣快 1 小時）。",
+          langBtn: "切換成日文",
+          themeBtn: "切換深淺色",
+          topBtn: "回到頂端",
+          menuBtn: "設定",
+          hereBtn: "分段導航改成從目前位置出發",
+          here: "目前位置",
+          dayNavHere: "分段導航（從目前位置出發）",
+          navShop: "購物",
+          shopTitle: "臨時想去買東西",
+          goHere: "從目前位置導航",
+          shopNote:
+            "不在原本行程裡，臨時想逛時用。點卡片會從目前位置用大眾運輸導航過去。營業時間是 2026/10 查到的，出發前再確認。",
+          wd: ["日", "一", "二", "三", "四", "五", "六"],
+        },
+        ja: {
+          docTitle: "京都旅行 2027",
+          title: "京都・舞鶴 7泊8日",
+          sub: "2027/6/4（金）– 6/11（金）",
+          airline: "スターラックス",
+          overview: "概要",
+          stayTitle: "宿泊",
+          checkTitle: "予約スケジュールとチェックリスト",
+          tipsTitle: "旅のメモ",
+          navOverview: "概要",
+          navStay: "宿泊",
+          navCheck: "チェック",
+          navTips: "メモ",
+          navShow: "提示",
+          showTitle: "提示",
+          showNote:
+            "QR コードや予約内容を見せるときに、ここからすぐ開けます。URL は自分の予約確認ページや QR コードのページに変更でき、この端末にだけ保存されます。",
+          open: "開く",
+          editUrl: "URL を変更",
+          addLink: "リンクを追加",
+          remove: "削除",
+          askName: "リンク名（例：くろまつ号の予約確認）",
+          askUrl: "URL（https:// から）",
+          ovTh: ["日付", "行程", "宿泊"],
+          ovMapTitle: "全行程：京都 → 天橋立 → 舞鶴 → 京都",
+          ovMapNote:
+            "地図の線はおおまかなルートです。実際の乗り方は各日のナビボタン（Google マップの公共交通機関モード）で確認してください。",
+          stayTh: ["泊数", "日付", "宿泊先", "メモ"],
+          stayLabel: "宿泊：",
+          dayMap: "この日のルート",
+          dayNav: "区間ナビ（Google マップを開く）",
+          transit: "公共交通機関",
+          walking: "徒歩",
+          go: "ナビ",
+          done: "完了",
+          suggested: "おすすめ",
+          checkNote:
+            "時系列順。受付開始時刻はすべて日本時間（台湾より 1 時間早い）。",
+          langBtn: "中国語（繁体字）に切り替え",
+          themeBtn: "ライト／ダーク切り替え",
+          topBtn: "トップへ戻る",
+          menuBtn: "設定",
+          hereBtn: "区間ナビを現在地から出発に切り替え",
+          here: "現在地",
+          dayNavHere: "区間ナビ（現在地から出発）",
+          navShop: "買い物",
+          shopTitle: "思い立ったら買い物",
+          goHere: "現在地からナビ",
+          shopNote:
+            "予定外に買い物したくなったとき用。カードを押すと現在地から公共交通機関でナビします。営業時間は 2026 年 10 月時点の情報なので、出発前に再確認を。",
+          wd: ["日", "月", "火", "水", "木", "金", "土"],
+        },
+      };
+
+      const FLIGHTS = [
+        {
+          no: "JX820",
+          dep: "08:30",
+          arr: "12:15",
+          lab: L("去程　6/4（五）", "往路　6/4（金）"),
+          from: L("桃園 TPE", "桃園 TPE"),
+          to: L("關西 KIX", "関西 KIX"),
+        },
+        {
+          no: "JX823",
+          dep: "15:10",
+          arr: "17:05",
+          lab: L("回程　6/11（五）", "復路　6/11（金）"),
+          from: L("關西 KIX", "関西 KIX"),
+          to: L("桃園 TPE", "桃園 TPE"),
+        },
+      ];
+
+      const STAYS = [
+        {
+          nights: L("1 晚", "1 泊"),
+          date: "6/4",
+          name: L("Umekoji Potel KYOTO", "Umekoji Potel KYOTO"),
+          note: L(
+            "抵達日入住。訂房時詢問 6/5–6/6 能否寄放大行李。",
+            "到着日にチェックイン。予約時に 6/5〜6/6 の荷物預かりができるか確認。",
+          ),
+        },
+        {
+          nights: L("1 晚", "1 泊"),
+          date: "6/5",
+          name: L(
+            "Hotel BELLMARE（東舞鶴站步行約 18 分鐘）",
+            "ホテルベルマーレ（東舞鶴駅から徒歩約 18 分）",
+          ),
+          note: L(
+            "在東舞鶴，走路約 20–25 分鐘到紅磚公園。下午逛完西舞鶴這側，再搭 JR 過來。只帶一晚的輕便行李。訂房時確認有沒有附早餐。",
+            "東舞鶴にあり、赤れんがパークまで徒歩約 20〜25 分。午後に西舞鶴側を見てから JR で移動。1 泊分の軽い荷物だけで。予約時に朝食の有無を確認。",
+          ),
+        },
+        {
+          nights: L("5 晚", "5 泊"),
+          date: "6/6–6/10",
+          name: L("Umekoji Potel KYOTO", "Umekoji Potel KYOTO"),
+          note: L(
+            "鐵道博物館、水族館都在步行範圍；搭 JR 嵯峨野線 1 站（約 2 分鐘）就到京都站。",
+            "鉄道博物館・水族館は徒歩圏内。JR 嵯峨野線で 1 駅（約 2 分）で京都駅。",
+          ),
+        },
+      ];
+
+      const STAY_NAMES = {
+        potel: L(HOTEL, HOTEL),
+        bellmare: L("Hotel BELLMARE（東舞鶴）", "ホテルベルマーレ（東舞鶴）"),
+        none: L("—", "—"),
+      };
+
+      const D2_HEAD = [
+        P(
+          "09:50",
+          [
+            "Potel 出發（大行李寄放飯店）",
+            "只帶一晚的輕便行李；JR 嵯峨野線 1 站到京都站",
+          ],
+          [
+            "Potel 出発（大きい荷物はホテルに預ける）",
+            "1 泊分の軽い荷物だけ。JR 嵯峨野線で京都駅へ",
+          ],
+        ),
+        M(
+          ["10:25 京都 → 12:36 天橋立", "JR 特急「はしだて 5 號」直達"],
+          ["10:25 京都 → 12:36 天橋立", "JR 特急「はしだて 5 号」直通"],
+        ),
+        P(
+          "12:36",
+          ["抵達天橋立站", "約 30 分鐘後轉搭黑松號，不重複觀光"],
+          ["天橋立駅 到着", "約 30 分後にくろまつ号へ乗り換え。観光はしない"],
+        ),
+        P(
+          "13:05",
+          [
+            "丹後黑松號 午餐方案 天橋立 → 西舞鶴",
+            "木造車廂、沿海風景、車上午餐，13:05 → 14:50",
+          ],
+          [
+            "丹後くろまつ号 ランチコース 天橋立 → 西舞鶴",
+            "木造の車内、海沿いの景色、車内でランチ。13:05 → 14:50",
+          ],
+        ),
+        P(
+          "14:50",
+          ["抵達西舞鶴站", "接下來依選的方案走"],
+          ["西舞鶴駅 到着", "ここから選んだプランへ"],
+        ),
+      ];
+      const D2_LEGS = [
+        G(HOTEL, "京都駅", "transit", "Potel → 京都站", "Potel → 京都駅"),
+        G(
+          "京都駅",
+          "天橋立駅",
+          "transit",
+          "京都站 → 天橋立（特急はしだて）",
+          "京都駅 → 天橋立（特急はしだて）",
+        ),
+        G(
+          "天橋立駅",
+          "西舞鶴駅",
+          "transit",
+          "天橋立 → 西舞鶴（黑松號路段）",
+          "天橋立 → 西舞鶴（くろまつ号区間）",
+        ),
+      ];
+      const D3_TAIL = [
+        M(
+          ["14:28 東舞鶴 → 16:06 京都", "JR 特急「まいづる 10 號」"],
+          ["14:28 東舞鶴 → 16:06 京都", "JR 特急「まいづる 10 号」"],
+        ),
+        P(
+          "16:30",
+          ["回到 Potel 入住", "休息後晚餐在梅小路／京都站一帶解決"],
+          ["Potel にチェックイン", "ひと休みして、夕食は梅小路・京都駅周辺で"],
+        ),
+      ];
+      const D3_TAIL_LEGS = [
+        G(
+          "東舞鶴駅",
+          "京都駅",
+          "transit",
+          "東舞鶴 → 京都站（特急まいづる）",
+          "東舞鶴 → 京都駅（特急まいづる）",
+        ),
+        G("京都駅", HOTEL, "transit", "京都站 → Potel", "京都駅 → Potel"),
+      ];
+
+      const DAYS = [
+        {
+          id: "d1",
+          n: "Day 1",
+          md: "6/4",
+          wd: 5,
+          stay: "potel",
+          title: L("抵達京都", "京都到着"),
+          short: L("抵達、入住、京都站周邊", "到着・チェックイン・京都駅周辺"),
+          timeline: [
+            P(
+              "08:30",
+              ["星宇 JX820 桃園 T1 起飛", "台灣時間；建議 06:30 前到機場"],
+              [
+                "スターラックス JX820 桃園 T1 出発",
+                "台湾時間。06:30 までに空港へ",
+              ],
+            ),
+            P(
+              "12:15",
+              [
+                "抵達關西機場 T1",
+                "日本時間（比台灣快 1 小時）。落地後切換到日本 SIM／eSIM、開數據漫遊，確認有網路再去入境審查",
+              ],
+              [
+                "関西空港 T1 到着",
+                "日本時間（台湾より 1 時間早い）。着陸後に日本用 SIM／eSIM に切り替えてデータローミングをオン、通信できるか確認してから入国審査へ",
+              ],
+            ),
+            P(
+              "12:30",
+              [
+                "入境審查 → 領行李 → 海關",
+                "打開 Visit Japan Web 的 QR Code（入境和海關共用同一組）：入境審查在機台掃 QR、護照、拍照、按指紋；領完行李到海關的電子申報機台再掃一次 QR，走電子申報通道出關",
+              ],
+              [
+                "入国審査 → 荷物受取 → 税関",
+                "Visit Japan Web の QR コード（入国・税関共通）を用意。入国審査は端末で QR・パスポート・顔写真・指紋。荷物を受け取ったら税関の電子申告端末で QR を読み取り、電子申告ゲートへ",
+              ],
+            ),
+            P(
+              "13:15",
+              [
+                "領取關西廣域周遊券、儲值 ICOCA",
+                "關西機場站 JR 售票機（護照要有 IC 晶片）或綠色窗口；要帶護照和訂票用的信用卡。窗口可能排隊，預留 30 分鐘",
+              ],
+              [
+                "関西広域パス受取・ICOCA チャージ",
+                "関西空港駅の JR 券売機（IC チップ付きパスポートが必要）またはみどりの窓口。パスポートと予約時のクレジットカードを持参。窓口は混むことがあるので 30 分を見込む",
+              ],
+            ),
+            M(
+              ["JR HARUKA → 京都站", "約 13:45 發車，約 75–80 分鐘"],
+              ["JR はるか → 京都駅", "13:45 頃発、約 75〜80 分"],
+            ),
+            M(
+              [
+                "京都站 → Potel",
+                "JR 嵯峨野線 1 站到梅小路京都西，再走 3 分鐘（拖著行李不要整段用走的）",
+              ],
+              [
+                "京都駅 → Potel",
+                "JR 嵯峨野線で 1 駅、梅小路京都西から徒歩 3 分（荷物があるので京都駅から歩くのは避ける）",
+              ],
+            ),
+            P(
+              "15:30",
+              ["入住 Umekoji Potel", "休息一下"],
+              ["Umekoji Potel チェックイン", "ひと休み"],
+            ),
+            P(
+              "17:00",
+              ["京都站 Porta 地下街", "熟悉車站周邊：藥妝、伴手禮、生活雜貨"],
+              [
+                "京都駅ポルタ地下街",
+                "ドラッグストア・お土産・生活雑貨をチェック",
+              ],
+            ),
+            P(
+              "19:00",
+              ["京都站周邊晚餐", "吃完早點休息"],
+              ["京都駅周辺で夕食", "早めに休む"],
+            ),
+          ],
+          legs: [
+            G(
+              "関西国際空港",
+              "京都駅",
+              "transit",
+              "機場 → 京都站",
+              "空港 → 京都駅",
+            ),
+            G("京都駅", HOTEL, "transit", "京都站 → Potel", "京都駅 → Potel"),
+            G(
+              HOTEL,
+              "京都駅前地下街ポルタ",
+              "transit",
+              "Potel → Porta",
+              "Potel → ポルタ",
+            ),
+          ],
+          map: ["京都駅", HOTEL, "京都駅前地下街ポルタ"],
+          notes: [
+            L(
+              "入境排隊久、趕不上已劃位的 HARUKA，就在售票機或綠色窗口改劃下一班（大約每 30 分鐘一班）。",
+              "入国審査が混んで予約したはるかに間に合わなければ、券売機かみどりの窓口で次の便に変更（約 30 分間隔）。",
+            ),
+            L(
+              "<b>手機要有網路、有電</b>：下飛機前先截圖 Visit Japan Web 的 QR Code，機場收訊不好也能用。沒登錄的話也可以在機上或現場填紙本入境卡、海關申報書，只是比較慢。",
+              "<b>スマホの通信と充電を確保：</b>降機前に Visit Japan Web の QR コードをスクリーンショット。電波が弱くても使えます。未登録なら紙の入国カード・携帯品申告書でも入国できますが、時間がかかります。",
+            ),
+          ],
+        },
+        {
+          id: "d2",
+          n: "Day 2",
+          md: "6/5",
+          wd: 6,
+          stay: "bellmare",
+          title: L(
+            "京都 → 天橋立 → 丹後黑松號 → 舞鶴",
+            "京都 → 天橋立 → 丹後くろまつ号 → 舞鶴",
+          ),
+          short: L(
+            "黑松號午餐；下午三選一：海鮮市場／田邊城跡＋紅磚公園／海鮮市場＋吉原入江",
+            "くろまつ号ランチ。午後は海鮮市場／田辺城跡＋赤れんが／海鮮市場＋吉原入江から選択",
+          ),
+          plans: {
+            A: {
+              label: L("A 海鮮市場", "A 海鮮市場"),
+              next: { d3: "A" },
+              intro: L(
+                "<b>A 海鮮市場：</b>黑松號到站後先逛西舞鶴這側的とれとれセンター，吃現烤海鮮、買乾貨，傍晚再到東舞鶴入住。最省力，下雨也能玩。",
+                "<b>A 海鮮市場：</b>くろまつ号の到着後、西舞鶴側のとれとれセンターで浜焼きや干物を楽しみ、夕方に東舞鶴でチェックイン。移動が少なく、雨でも OK。",
+              ),
+              timeline: [
+                ...D2_HEAD,
+                M(
+                  [
+                    "西舞鶴站 → 舞鶴港とれとれセンター",
+                    "京都交通巴士（大江線或循環巴士）約 5–10 分鐘，「舞鶴港とれとれセンター前」下車，約 200 日圓；班次不多，等不到車就步行約 25 分鐘（約 2 公里）",
+                  ],
+                  [
+                    "西舞鶴駅 → 舞鶴港とれとれセンター",
+                    "京都交通バス（大江線またはループバス）で約 5〜10 分、「舞鶴港とれとれセンター前」下車、約 200 円。本数が少ないので、待てなければ徒歩約 25 分（約 2 km）",
+                  ],
+                  [BUS_NISHI],
+                ),
+                P(
+                  "15:00",
+                  [
+                    "舞鶴港とれとれセンター（海鮮市場）",
+                    "道の駅裡的海鮮市場：現挑魚貝可以請店家做成生魚片或炭烤，也有海鮮丼、乾貨和伴手禮，大約 1.5 小時",
+                  ],
+                  [
+                    "舞鶴港とれとれセンター（海鮮市場）",
+                    "道の駅の海鮮市場。選んだ魚介を刺身や炭火焼きにしてもらえる。海鮮丼・干物・お土産も、約 1.5 時間",
+                  ],
+                ),
+                M(
+                  [
+                    "16:30 とれとれセンター → 西舞鶴站 → 東舞鶴站",
+                    "巴士回西舞鶴站（或步行約 25 分鐘），再搭 JR 舞鶴線到東舞鶴，約 7 分鐘；JR 大約一小時一班，先查好班次再決定離開市場的時間",
+                  ],
+                  [
+                    "16:30 とれとれセンター → 西舞鶴駅 → 東舞鶴駅",
+                    "バスで西舞鶴駅へ（または徒歩約 25 分）、JR 舞鶴線で東舞鶴まで約 7 分。JR はほぼ 1 時間に 1 本なので、時刻を見てから市場を出る",
+                  ],
+                  [BUS_NISHI],
+                ),
+                M(
+                  ["東舞鶴站 → Hotel BELLMARE", "步行約 18 分鐘"],
+                  ["東舞鶴駅 → ホテルベルマーレ", "徒歩約 18 分"],
+                ),
+                P(
+                  "17:30",
+                  [
+                    "入住 Hotel BELLMARE",
+                    "放下行李；離紅磚公園近，明天不用一早趕 JR",
+                  ],
+                  [
+                    "ホテルベルマーレにチェックイン",
+                    "荷物を置く。赤れんがパークに近いので、翌朝 JR に急がなくて OK",
+                  ],
+                ),
+                P(
+                  "18:30",
+                  ["晚餐：當季丹後とり貝", "東舞鶴站周邊"],
+                  ["夕食：旬の丹後とり貝", "東舞鶴駅周辺で"],
+                ),
+              ],
+              legs: [
+                ...D2_LEGS,
+                G(
+                  "西舞鶴駅",
+                  TORETORE,
+                  "transit",
+                  "西舞鶴站 → とれとれセンター（巴士）",
+                  "西舞鶴駅 → とれとれセンター（バス）",
+                ),
+                G(
+                  TORETORE,
+                  "西舞鶴駅",
+                  "transit",
+                  "とれとれセンター → 西舞鶴站（巴士）",
+                  "とれとれセンター → 西舞鶴駅（バス）",
+                ),
+                G(
+                  "西舞鶴駅",
+                  "東舞鶴駅",
+                  "transit",
+                  "西舞鶴 → 東舞鶴（JR 舞鶴線）",
+                  "西舞鶴 → 東舞鶴（JR 舞鶴線）",
+                ),
+                G(
+                  "東舞鶴駅",
+                  BELLMARE,
+                  "walking",
+                  "東舞鶴站 → Hotel BELLMARE",
+                  "東舞鶴駅 → ホテルベルマーレ",
+                ),
+              ],
+              map: [
+                "京都駅",
+                "天橋立駅",
+                "西舞鶴駅",
+                TORETORE,
+                "東舞鶴駅",
+                BELLMARE,
+              ],
+            },
+            B: {
+              label: L(
+                "B 田邊城跡＋紅磚公園黃昏",
+                "B 田辺城跡＋夕方の赤れんが",
+              ),
+              next: { d3: "B" },
+              intro: L(
+                "<b>B 田邊城跡＋紅磚公園黃昏：</b>西舞鶴站旁的田邊城跡走走，再到東舞鶴入住，傍晚去紅磚公園散步拍照。紅磚公園今天先逛過，6/6 上午就能選 B 方案去引揚記念館。",
+                "<b>B 田辺城跡＋夕方の赤れんが：</b>西舞鶴駅近くの田辺城跡を散策し、東舞鶴でチェックイン。夕方は赤れんがパークを散歩。赤れんがを今日見ておけば、6/6 午前は B プランで引揚記念館へ行けます。",
+              ),
+              timeline: [
+                ...D2_HEAD,
+                M(
+                  ["西舞鶴站 → 田邊城跡（舞鶴公園）", "步行約 10 分鐘"],
+                  ["西舞鶴駅 → 田辺城跡（舞鶴公園）", "徒歩約 10 分"],
+                ),
+                P(
+                  "15:00",
+                  [
+                    "田邊城跡（舞鶴公園）",
+                    "細川家的城跡，有復原的城門和小資料館，繞一圈約 40 分鐘",
+                  ],
+                  [
+                    "田辺城跡（舞鶴公園）",
+                    "細川氏ゆかりの城跡。復元された城門と小さな資料館、ひと回り約 40 分",
+                  ],
+                ),
+                M(
+                  [
+                    "西舞鶴 → 東舞鶴",
+                    "走回西舞鶴站，JR 舞鶴線約 7 分鐘；大約一小時一班，先查好班次",
+                  ],
+                  [
+                    "西舞鶴 → 東舞鶴",
+                    "西舞鶴駅へ戻り JR 舞鶴線で約 7 分。ほぼ 1 時間に 1 本なので時刻を確認",
+                  ],
+                ),
+                P(
+                  "16:30",
+                  ["入住 Hotel BELLMARE", "東舞鶴站步行約 18 分鐘；放下行李"],
+                  [
+                    "ホテルベルマーレにチェックイン",
+                    "東舞鶴駅から徒歩約 18 分。荷物を置く",
+                  ],
+                ),
+                M(
+                  ["Hotel BELLMARE → 紅磚公園", "步行約 20–25 分鐘"],
+                  ["ホテルベルマーレ → 赤れんがパーク", "徒歩約 20〜25 分"],
+                ),
+                P(
+                  "17:15",
+                  [
+                    "紅磚公園黃昏散步",
+                    "人少、光線柔和，適合拍倉庫群和港邊；館內設施傍晚陸續關門，以外觀散步為主（6 月日落約 19:15）",
+                  ],
+                  [
+                    "夕方の赤れんがパーク",
+                    "人が少なく光もやわらか、倉庫群と港の写真に。館内施設は夕方に閉まるので外観散策が中心（6 月の日没は 19:15 頃）",
+                  ],
+                ),
+                P(
+                  "18:30",
+                  ["晚餐：當季丹後とり貝", "東舞鶴站周邊"],
+                  ["夕食：旬の丹後とり貝", "東舞鶴駅周辺で"],
+                ),
+              ],
+              legs: [
+                ...D2_LEGS,
+                G(
+                  "西舞鶴駅",
+                  "舞鶴公園 田辺城跡",
+                  "walking",
+                  "西舞鶴站 → 田邊城跡",
+                  "西舞鶴駅 → 田辺城跡",
+                ),
+                G(
+                  "舞鶴公園 田辺城跡",
+                  "西舞鶴駅",
+                  "walking",
+                  "田邊城跡 → 西舞鶴站",
+                  "田辺城跡 → 西舞鶴駅",
+                ),
+                G(
+                  "西舞鶴駅",
+                  "東舞鶴駅",
+                  "transit",
+                  "西舞鶴 → 東舞鶴（JR 舞鶴線）",
+                  "西舞鶴 → 東舞鶴（JR 舞鶴線）",
+                ),
+                G(
+                  "東舞鶴駅",
+                  BELLMARE,
+                  "walking",
+                  "東舞鶴站 → Hotel BELLMARE",
+                  "東舞鶴駅 → ホテルベルマーレ",
+                ),
+                G(
+                  BELLMARE,
+                  "舞鶴赤れんがパーク",
+                  "walking",
+                  "Hotel BELLMARE → 紅磚公園",
+                  "ホテルベルマーレ → 赤れんがパーク",
+                ),
+                G(
+                  "舞鶴赤れんがパーク",
+                  "東舞鶴駅",
+                  "walking",
+                  "紅磚公園 → 東舞鶴站（晚餐）",
+                  "赤れんがパーク → 東舞鶴駅（夕食）",
+                ),
+              ],
+              map: [
+                "京都駅",
+                "天橋立駅",
+                "西舞鶴駅",
+                "舞鶴公園 田辺城跡",
+                "東舞鶴駅",
+                BELLMARE,
+                "舞鶴赤れんがパーク",
+              ],
+            },
+            C: {
+              label: L("C 海鮮市場＋吉原入江", "C 海鮮市場＋吉原入江"),
+              next: { d3: "A" },
+              intro: L(
+                "<b>C 海鮮市場＋吉原入江：</b>先趁店家還開著逛とれとれセンター，再走到吉原入江。吉原入江是漁船直接停在家門口的小漁村，有「舞鶴的威尼斯」之稱，傍晚光線很好拍。走路比較多，入住會晚一點。",
+                "<b>C 海鮮市場＋吉原入江：</b>店が開いているうちにとれとれセンターを回り、そのあと吉原入江へ。家の前に漁船が並ぶ「舞鶴のベニス」と呼ばれる漁村で、夕方の光がきれい。歩く距離が長く、チェックインは少し遅め。",
+              ),
+              timeline: [
+                ...D2_HEAD,
+                M(
+                  [
+                    "西舞鶴站 → 舞鶴港とれとれセンター",
+                    "京都交通巴士約 5–10 分鐘，「舞鶴港とれとれセンター前」下車；等不到車就步行約 25 分鐘",
+                  ],
+                  [
+                    "西舞鶴駅 → 舞鶴港とれとれセンター",
+                    "京都交通バスで約 5〜10 分、「舞鶴港とれとれセンター前」下車。待てなければ徒歩約 25 分",
+                  ],
+                  [BUS_NISHI],
+                ),
+                P(
+                  "15:00",
+                  [
+                    "舞鶴港とれとれセンター（海鮮市場）",
+                    "現烤海鮮、海鮮丼、乾貨伴手禮；店家傍晚陸續收攤，約 1 小時 15 分",
+                  ],
+                  [
+                    "舞鶴港とれとれセンター（海鮮市場）",
+                    "浜焼き・海鮮丼・干物のお土産。夕方から店じまいが始まるので約 1 時間 15 分",
+                  ],
+                ),
+                M(
+                  [
+                    "とれとれセンター → 吉原入江",
+                    "步行約 15–20 分鐘，過伊佐津川（出發前用 Google Maps 確認路線）",
+                  ],
+                  [
+                    "とれとれセンター → 吉原入江",
+                    "伊佐津川を渡って徒歩約 15〜20 分（出発前に Google マップでルート確認）",
+                  ],
+                ),
+                P(
+                  "16:35",
+                  [
+                    "吉原入江",
+                    "沿著入江散步，看停在家門口的漁船；這裡是居民生活的地方，拍照時不要進入私人碼頭和民宅，約 30 分鐘",
+                  ],
+                  [
+                    "吉原入江",
+                    "入江沿いを散歩し、家の前に並ぶ漁船を見る。住民の生活の場なので、私有の船着き場や民家には入らないように。約 30 分",
+                  ],
+                ),
+                M(
+                  [
+                    "吉原入江 → 西舞鶴站 → 東舞鶴站",
+                    "步行約 25 分鐘回西舞鶴站，再搭 JR 舞鶴線約 7 分鐘；JR 大約一小時一班，先查好班次",
+                  ],
+                  [
+                    "吉原入江 → 西舞鶴駅 → 東舞鶴駅",
+                    "西舞鶴駅まで徒歩約 25 分、JR 舞鶴線で約 7 分。JR はほぼ 1 時間に 1 本なので時刻を確認",
+                  ],
+                ),
+                M(
+                  ["東舞鶴站 → Hotel BELLMARE", "步行約 18 分鐘"],
+                  ["東舞鶴駅 → ホテルベルマーレ", "徒歩約 18 分"],
+                ),
+                P(
+                  "18:30",
+                  ["入住 Hotel BELLMARE", "放下行李"],
+                  ["ホテルベルマーレにチェックイン", "荷物を置く"],
+                ),
+                P(
+                  "19:00",
+                  ["晚餐：當季丹後とり貝", "東舞鶴站周邊"],
+                  ["夕食：旬の丹後とり貝", "東舞鶴駅周辺で"],
+                ),
+              ],
+              legs: [
+                ...D2_LEGS,
+                G(
+                  "西舞鶴駅",
+                  TORETORE,
+                  "transit",
+                  "西舞鶴站 → とれとれセンター（巴士）",
+                  "西舞鶴駅 → とれとれセンター（バス）",
+                ),
+                G(
+                  TORETORE,
+                  "吉原入江 舞鶴",
+                  "walking",
+                  "とれとれセンター → 吉原入江",
+                  "とれとれセンター → 吉原入江",
+                ),
+                G(
+                  "吉原入江 舞鶴",
+                  "西舞鶴駅",
+                  "walking",
+                  "吉原入江 → 西舞鶴站",
+                  "吉原入江 → 西舞鶴駅",
+                ),
+                G(
+                  "西舞鶴駅",
+                  "東舞鶴駅",
+                  "transit",
+                  "西舞鶴 → 東舞鶴（JR 舞鶴線）",
+                  "西舞鶴 → 東舞鶴（JR 舞鶴線）",
+                ),
+                G(
+                  "東舞鶴駅",
+                  BELLMARE,
+                  "walking",
+                  "東舞鶴站 → Hotel BELLMARE",
+                  "東舞鶴駅 → ホテルベルマーレ",
+                ),
+              ],
+              map: [
+                "京都駅",
+                "天橋立駅",
+                "西舞鶴駅",
+                TORETORE,
+                "吉原入江 舞鶴",
+                "東舞鶴駅",
+                BELLMARE,
+              ],
+            },
+          },
+          notes: [
+            L(
+              "<b>怎麼選：</b>想吃海鮮選 A；想多看舞鶴歷史、隔天去引揚記念館選 B；海鮮市場和漁村風景都想看、體力也夠就選 C。三個方案都在東舞鶴的 Hotel BELLMARE 過夜，全程搭電車、巴士和步行。",
+              "<b>選び方：</b>海鮮なら A、舞鶴の歴史を見て翌日に引揚記念館へ行くなら B、海鮮市場と漁村の風景を両方見たくて体力にも余裕があれば C。どれもホテルベルマーレ（東舞鶴）泊で、移動は電車・バス・徒歩のみ。",
+            ),
+            L(
+              "<b>為什麼這樣排：</b>整趟是「京都 → 天橋立 → 舞鶴 → 京都」繞一圈，不走回頭路。黑松號終點在西舞鶴，下午先逛西舞鶴這側，再往東舞鶴住；隔天紅磚公園就在飯店附近。",
+              "<b>この順番の理由：</b>「京都 → 天橋立 → 舞鶴 → 京都」と一周するので戻らずに済みます。くろまつ号の終点は西舞鶴なので、午後は西舞鶴側を見てから東舞鶴に泊まります。翌日の赤れんがパークはホテルのすぐ近く。",
+            ),
+            L(
+              "<b>とれとれセンター（A、C）：</b>海鮮市場週三公休（6/5 週六有開）；營業時間各網站寫法不同，大約平日 9:00–17:00、週末 9:00–18:00，出發前打電話確認（0773-75-6125）。店家傍晚會陸續收攤，盡量 16:30 前逛完。",
+              "<b>とれとれセンター（A・C）：</b>海鮮市場は水曜定休（6/5 は土曜なので営業）。営業時間は情報源によって異なり、概ね平日 9:00〜17:00、土日 9:00〜18:00。出発前に電話で確認（0773-75-6125）。夕方から店じまいが始まるので、16:30 までに見終えるのがおすすめ。",
+            ),
+            L(
+              "<b>巴士班次不多（A、C）：</b>西舞鶴站 ↔ とれとれセンター的京都交通巴士（大江線、循環巴士）一小時不到一班，出發前查好時刻表；搭不上就走路，約 25 分鐘。",
+              "<b>バスは本数が少ない（A・C）：</b>西舞鶴駅 ↔ とれとれセンターの京都交通バス（大江線・ループバス）は 1 時間に 1 本未満。事前に時刻表を確認し、合わなければ徒歩で約 25 分。",
+            ),
+            L(
+              "<b>天橋立轉車：</b>はしだて 5 號到站後約 30 分鐘就轉黑松號，不要離開車站太遠。",
+              "<b>天橋立での乗り換え：</b>はしだて 5 号の到着から約 30 分でくろまつ号へ。駅から離れすぎないように。",
+            ),
+          ],
+        },
+        {
+          id: "d3",
+          n: "Day 3",
+          md: "6/6",
+          wd: 0,
+          stay: "potel",
+          title: L("舞鶴紅磚公園 → 回京都", "舞鶴赤れんがパーク → 京都へ"),
+          short: L(
+            "上午二選一：紅磚公園＋遊覽船／引揚記念館；14:28 回京都",
+            "午前は赤れんが＋遊覧船／引揚記念館から選択。14:28 京都へ",
+          ),
+          plans: {
+            A: {
+              label: L("A 紅磚公園＋遊覽船", "A 赤れんが＋遊覧船"),
+              fits: { d2: ["A", "C"] },
+              intro: L(
+                "<b>A 紅磚公園＋遊覽船：</b>上午逛紅磚公園和北吸碼頭的艦艇，下午搭遊覽船從海上看軍港。6/5 選 A 或 C 時推薦。",
+                "<b>A 赤れんが＋遊覧船：</b>午前は赤れんがパークと北吸桟橋の艦艇、午後は遊覧船で海から軍港を見る。6/5 に A か C を選んだ場合のおすすめ。",
+              ),
+              timeline: [
+                P(
+                  "09:00",
+                  ["吃完早餐後從 Hotel BELLMARE 退房", "輕便行李隨身"],
+                  [
+                    "朝食後ホテルベルマーレをチェックアウト",
+                    "軽い荷物は持ち歩き",
+                  ],
+                ),
+                M(
+                  [
+                    "Hotel BELLMARE → 紅磚公園",
+                    "步行約 20–25 分鐘（出發前用 Google Maps 確認路線）",
+                  ],
+                  [
+                    "ホテルベルマーレ → 赤れんがパーク",
+                    "徒歩約 20〜25 分（出発前に Google マップでルート確認）",
+                  ],
+                ),
+                P(
+                  "09:30",
+                  ["舞鶴紅磚公園", "倉庫建築群、館內展示、特色店家"],
+                  ["舞鶴赤れんがパーク", "倉庫群、館内展示、個性的なお店"],
+                ),
+                P(
+                  "11:00",
+                  [
+                    "北吸碼頭 海上自衛隊艦艇參觀（待確認）",
+                    "紅磚公園旁；過去週六、日開放上艦參觀（舊資料 10:00–15:00）",
+                  ],
+                  [
+                    "北吸桟橋 海上自衛隊 艦艇一般公開（要確認）",
+                    "赤れんがパークのすぐそば。以前は土日に一般公開（過去の情報では 10:00〜15:00）",
+                  ],
+                ),
+                P(
+                  "12:00",
+                  ["紅磚公園一帶午餐", "舞鶴名物海軍咖哩"],
+                  ["赤れんがパーク周辺で昼食", "舞鶴名物の海軍カレー"],
+                ),
+                P(
+                  "13:00",
+                  [
+                    "舞鶴港遊覽船（選擇性）",
+                    "約 30 分鐘，從北吸赤れんが桟橋上船；週末和假日一天 6 班，選 13 點前後的班次。大人 1,800 日圓。可以在まいづる觀光網提前 90 天網路預約，或當天到赤れんが博物館內的乘船券販售處買（9:00 起）",
+                  ],
+                  [
+                    "舞鶴湾遊覧船（任意）",
+                    "約 30 分、北吸赤れんが桟橋から乗船。土日祝は 1 日 6 便、13 時前後の便に。大人 1,800 円。まいづる観光ネットで 90 日前からネット予約、または当日に赤れんが博物館内の乗船券販売所で購入（9:00〜）",
+                  ],
+                  [BOAT_TIME],
+                ),
+                M(
+                  [
+                    "紅磚公園 → 東舞鶴站",
+                    "巴士約 8 分鐘或步行約 20 分鐘；14:10 前到站",
+                  ],
+                  [
+                    "赤れんがパーク → 東舞鶴駅",
+                    "バスで約 8 分、または徒歩約 20 分。14:10 までに駅へ",
+                  ],
+                ),
+                ...D3_TAIL,
+              ],
+              legs: [
+                G(
+                  BELLMARE,
+                  "舞鶴赤れんがパーク",
+                  "walking",
+                  "Hotel BELLMARE → 紅磚公園",
+                  "ホテルベルマーレ → 赤れんがパーク",
+                ),
+                G(
+                  "舞鶴赤れんがパーク",
+                  "北吸桟橋",
+                  "walking",
+                  "紅磚公園 → 北吸碼頭",
+                  "赤れんがパーク → 北吸桟橋",
+                ),
+                G(
+                  "舞鶴赤れんがパーク",
+                  "東舞鶴駅",
+                  "transit",
+                  "紅磚公園 → 東舞鶴站",
+                  "赤れんがパーク → 東舞鶴駅",
+                ),
+                ...D3_TAIL_LEGS,
+              ],
+              map: [BELLMARE, "舞鶴赤れんがパーク", "東舞鶴駅"],
+            },
+            B: {
+              label: L("B 引揚記念館＋紅磚公園", "B 引揚記念館＋赤れんが"),
+              fits: { d2: ["B"] },
+              intro: L(
+                "<b>B 引揚記念館＋紅磚公園：</b>上午先看紅磚公園的館內展示和北吸碼頭艦艇，再從東舞鶴站搭巴士到舞鶴引揚記念館，看二戰後約 66 萬人從舞鶴港回國的歷史（館藏列入 UNESCO 世界記憶）。巴士一天只有幾班，記念館停留約 45 分鐘，不搭遊覽船。6/5 選 B（前一天傍晚已在紅磚公園外圍散步）時推薦。",
+                "<b>B 引揚記念館＋赤れんが：</b>午前は赤れんがパークの館内展示と北吸桟橋の艦艇を見てから、東舞鶴駅からバスで舞鶴引揚記念館へ。戦後約 66 万人が舞鶴港から帰国した歴史を伝える館です（収蔵資料はユネスコ世界の記憶）。バスは 1 日数本なので記念館の滞在は約 45 分、遊覧船はなし。6/5 に B（前日夕方に赤れんがの外観を散策済み）を選んだ場合のおすすめ。",
+              ),
+              timeline: [
+                P(
+                  "09:00",
+                  ["吃完早餐後從 Hotel BELLMARE 退房", "輕便行李隨身"],
+                  [
+                    "朝食後ホテルベルマーレをチェックアウト",
+                    "軽い荷物は持ち歩き",
+                  ],
+                ),
+                M(
+                  ["Hotel BELLMARE → 紅磚公園", "步行約 20–25 分鐘"],
+                  ["ホテルベルマーレ → 赤れんがパーク", "徒歩約 20〜25 分"],
+                ),
+                P(
+                  "09:30",
+                  [
+                    "紅磚公園館內展示＋北吸碼頭艦艇",
+                    "昨天傍晚看過外觀，今天看館內；北吸碼頭有開放就上艦看看（待確認），大約 1 小時",
+                  ],
+                  [
+                    "赤れんがパークの館内展示＋北吸桟橋の艦艇",
+                    "前日夕方に外観は見たので、今日は館内を。北吸桟橋は公開していれば乗艦（要確認）、約 1 時間",
+                  ],
+                ),
+                M(
+                  [
+                    "紅磚公園 → 東舞鶴站",
+                    "步行約 20 分鐘；10:40 前到站前巴士站",
+                  ],
+                  [
+                    "赤れんがパーク → 東舞鶴駅",
+                    "徒歩約 20 分。10:40 までに駅前のバス停へ",
+                  ],
+                ),
+                M(
+                  [
+                    "10:50 東舞鶴站前 → 11:07 引揚記念館前",
+                    "京都交通巴士「三浜線」約 17 分鐘",
+                  ],
+                  [
+                    "10:50 東舞鶴駅前 → 11:07 引揚記念館前",
+                    "京都交通バス「三浜線」で約 17 分",
+                  ],
+                  [BUS_MIHAMA_GO, BUS_MIHAMA_BACK],
+                ),
+                P(
+                  "11:07",
+                  [
+                    "舞鶴引揚記念館",
+                    "展示、影片，旁邊可以看復原的引揚棧橋；約 45 分鐘，11:53 的巴士一定要搭上",
+                  ],
+                  [
+                    "舞鶴引揚記念館",
+                    "展示・映像、近くに復元された引揚桟橋。約 45 分。11:53 のバスに必ず乗る",
+                  ],
+                ),
+                M(
+                  [
+                    "11:53 引揚記念館前 → 12:10 東舞鶴站前",
+                    "京都交通巴士「三浜線」約 17 分鐘",
+                  ],
+                  [
+                    "11:53 引揚記念館前 → 12:10 東舞鶴駅前",
+                    "京都交通バス「三浜線」で約 17 分",
+                  ],
+                  [BUS_MIHAMA_GO, BUS_MIHAMA_BACK],
+                ),
+                P(
+                  "12:15",
+                  [
+                    "東舞鶴站周邊午餐",
+                    "舞鶴名物海軍咖哩；吃完在車站附近休息，14:10 前進站",
+                  ],
+                  [
+                    "東舞鶴駅周辺で昼食",
+                    "舞鶴名物の海軍カレー。食後は駅周辺で休憩、14:10 までに改札へ",
+                  ],
+                ),
+                ...D3_TAIL,
+              ],
+              legs: [
+                G(
+                  BELLMARE,
+                  "舞鶴赤れんがパーク",
+                  "walking",
+                  "Hotel BELLMARE → 紅磚公園",
+                  "ホテルベルマーレ → 赤れんがパーク",
+                ),
+                G(
+                  "舞鶴赤れんがパーク",
+                  "東舞鶴駅",
+                  "walking",
+                  "紅磚公園 → 東舞鶴站",
+                  "赤れんがパーク → 東舞鶴駅",
+                ),
+                G(
+                  "東舞鶴駅",
+                  "舞鶴引揚記念館",
+                  "transit",
+                  "東舞鶴站 → 引揚記念館（巴士）",
+                  "東舞鶴駅 → 引揚記念館（バス）",
+                ),
+                G(
+                  "舞鶴引揚記念館",
+                  "東舞鶴駅",
+                  "transit",
+                  "引揚記念館 → 東舞鶴站（巴士）",
+                  "引揚記念館 → 東舞鶴駅（バス）",
+                ),
+                ...D3_TAIL_LEGS,
+              ],
+              map: [
+                BELLMARE,
+                "舞鶴赤れんがパーク",
+                "東舞鶴駅",
+                "舞鶴引揚記念館",
+              ],
+            },
+          },
+          notes: [
+            L(
+              "<b>搭不上 14:28：</b>改搭 16:26 → 18:07 的特急「まいづる 12 號」。",
+              "<b>14:28 に乗れなければ：</b>16:26 → 18:07 の特急「まいづる 12 号」に。",
+            ),
+            L(
+              "<b>引揚記念館的巴士（B）：</b>三浜線一天只有幾班，上面是 2024 年版時刻；週日班次出發前到京都交通官網或打給記念館（0773-68-0836）確認。記念館 9:00–17:00，週三休館（6/6 週日有開）。11:53 那班沒搭上，下一班要到 14:01，會趕不上 14:28 的特急。",
+              "<b>引揚記念館へのバス（B）：</b>三浜線は 1 日数本で、上記は 2024 年版の時刻。日曜の便は事前に京都交通の公式サイトか記念館（0773-68-0836）で確認。記念館は 9:00〜17:00、水曜休館（6/6 は日曜で開館）。11:53 の便を逃すと次は 14:01 で、14:28 の特急に間に合いません。",
+            ),
+            L(
+              "<b>遊覽船如果停航（A）：</b>改成在紅磚公園和港區散步。港內艦艇的停泊狀況和遊覽船時刻，可能因海上自衛隊的狀況改變，當天以現場公告為準。",
+              "<b>遊覧船が欠航の場合（A）：</b>赤れんがパークと港周辺の散策に変更。海上自衛隊の事情で係留状況や時刻が変わることがあるので、当日の案内を優先。",
+            ),
+            L(
+              "<b>行李：</b>今天輕便行李會跟著走一整天，紅磚公園或東舞鶴站有沒有置物櫃，出發前查一下。",
+              "<b>荷物：</b>この日は軽い荷物を一日持ち歩くので、赤れんがパークや東舞鶴駅のコインロッカーを事前に確認。",
+            ),
+          ],
+        },
+        {
+          id: "d4",
+          n: "Day 4",
+          md: "6/7",
+          wd: 1,
+          stay: "potel",
+          title: L("武田病院 → 京都府立植物園", "武田病院 → 京都府立植物園"),
+          short: L("領證明、看紫陽花", "証明書受取・アジサイ"),
+          timeline: [
+            M(
+              ["09:00 Potel 出發", "JR 嵯峨野線 1 站到京都站，再走約 5 分鐘"],
+              ["09:00 Potel 出発", "JR 嵯峨野線で 1 駅、京都駅から徒歩約 5 分"],
+            ),
+            P(
+              "09:30",
+              ["康生會 武田病院", "領取去年的看診證明（記得帶證件）"],
+              [
+                "康生会 武田病院",
+                "昨年の診断証明書を受け取る（身分証を忘れずに）",
+              ],
+            ),
+            P("11:30", ["京都站周邊午餐", ""], ["京都駅周辺で昼食", ""]),
+            M(
+              [
+                "地鐵烏丸線 京都 → 北山",
+                "約 15 分鐘，北山站 3 號出口出來就是植物園北山門",
+              ],
+              [
+                "地下鉄烏丸線 京都 → 北山",
+                "約 15 分。北山駅 3 番出口を出るとすぐ植物園の北山門",
+              ],
+            ),
+            P(
+              "13:00",
+              [
+                "京都府立植物園",
+                "紫陽花園、溫室（溫室 15:30 停止入室），成人票 500 日圓，溫室不另收費",
+              ],
+              [
+                "京都府立植物園",
+                "アジサイ園、温室（温室は 15:30 最終入室）、大人 500 円（温室は追加料金なし）",
+              ],
+            ),
+            P(
+              "16:00",
+              ["北山通咖啡廳休息", "地鐵回京都站 → Potel"],
+              ["北山通のカフェでひと休み", "地下鉄で京都駅 → Potel"],
+            ),
+          ],
+          legs: [
+            G(
+              HOTEL,
+              "康生会 武田病院",
+              "transit",
+              "Potel → 武田病院",
+              "Potel → 武田病院",
+            ),
+            G(
+              "康生会 武田病院",
+              "京都府立植物園",
+              "transit",
+              "武田病院 → 植物園（地鐵烏丸線）",
+              "武田病院 → 植物園（地下鉄烏丸線）",
+            ),
+            G(
+              "京都府立植物園",
+              HOTEL,
+              "transit",
+              "植物園 → Potel",
+              "植物園 → Potel",
+            ),
+          ],
+          map: [HOTEL, "康生会 武田病院", "京都駅", "北山駅", "京都府立植物園"],
+          notes: [
+            L(
+              "<b>醫院：一定要先確認</b>證明已經做好、領取窗口、可以領的時間、要帶什麼證件。還沒申請的話，出發前先聯絡醫院。",
+              "<b>病院：必ず事前に確認。</b>証明書ができているか、受取窓口、受取できる時間、必要な身分証。まだ申請していなければ出発前に病院へ連絡を。",
+            ),
+            L(
+              "<b>植物園：</b>9:00–17:00（16:00 停止入園）。紫陽花大約 6 月上中旬開，6/10 可以當備用日。",
+              "<b>植物園：</b>9:00〜17:00（16:00 最終入園）。アジサイは 6 月上〜中旬が見頃。6/10 を予備日に。",
+            ),
+          ],
+        },
+        {
+          id: "d5",
+          n: "Day 5",
+          md: "6/8",
+          wd: 2,
+          stay: "potel",
+          title: L("京都鐵道博物館＋水族館", "京都鉄道博物館＋水族館"),
+          short: L("鐵道博物館、水族館", "鉄道博物館・水族館"),
+          timeline: [
+            P(
+              "10:00",
+              [
+                "京都鐵道博物館",
+                "Potel 步行約 5 分鐘。可以看蒸汽機車、扇形車庫、轉車台，搭 SL 蒸汽火車",
+              ],
+              [
+                "京都鉄道博物館",
+                "Potel から徒歩約 5 分。蒸気機関車、扇形車庫、転車台、SL スチーム号に乗車",
+              ],
+            ),
+            P(
+              "12:30",
+              ["梅小路公園一帶午餐", "梅小路京都西站旁有餐廳"],
+              ["梅小路公園周辺で昼食", "梅小路京都西駅そばに飲食店あり"],
+            ),
+            P(
+              "14:00",
+              ["京都水族館（看體力）", "從博物館穿過梅小路公園步行約 10 分鐘"],
+              [
+                "京都水族館（体力次第）",
+                "博物館から梅小路公園を抜けて徒歩約 10 分",
+              ],
+            ),
+            P(
+              "16:30",
+              ["回飯店休息，或去京都站 Porta", "補買食品、藥妝"],
+              [
+                "ホテルで休憩、または京都駅ポルタへ",
+                "食品・ドラッグストアの買い足し",
+              ],
+            ),
+          ],
+          legs: [
+            G(
+              HOTEL,
+              "京都鉄道博物館",
+              "walking",
+              "Potel → 鐵道博物館",
+              "Potel → 鉄道博物館",
+            ),
+            G(
+              "京都鉄道博物館",
+              "京都水族館",
+              "walking",
+              "鐵道博物館 → 水族館",
+              "鉄道博物館 → 水族館",
+            ),
+            G(
+              "京都水族館",
+              HOTEL,
+              "walking",
+              "水族館 → Potel",
+              "水族館 → Potel",
+            ),
+            G(
+              HOTEL,
+              "京都駅前地下街ポルタ",
+              "transit",
+              "Potel → Porta（選擇性）",
+              "Potel → ポルタ（任意）",
+            ),
+          ],
+          map: [HOTEL, "京都鉄道博物館", "京都水族館", HOTEL],
+          notes: [
+            L(
+              "<b>鐵道博物館</b>通常週三休館，6/8 是週二，正常開館，但出發前還是看一下官方公告。今天行程很輕鬆，剛好在舞鶴來回之後休息。",
+              "<b>鉄道博物館</b>は通常水曜休館。6/8 は火曜なので開館していますが、出発前に公式のお知らせを確認してください。舞鶴往復の後なので、この日はゆったり休養日です。",
+            ),
+          ],
+        },
+        {
+          id: "d6",
+          n: "Day 6",
+          md: "6/9",
+          wd: 3,
+          stay: "potel",
+          title: L(
+            "サワダマキ淀店 → 三室戸寺 → 伏見",
+            "サワダマキ淀店 → 三室戸寺 → 伏見",
+          ),
+          short: L(
+            "サワダマキ採購、三室戸寺紫陽花、伏見酒藏",
+            "サワダマキで買い物・三室戸寺のアジサイ・伏見の酒蔵",
+          ),
+          badge: { cls: "b-ok", ...L("固定行程", "固定の予定") },
+          timeline: [
+            M(
+              [
+                "09:15 Potel → 京都站 → 淀站",
+                "近鐵到近鐵丹波橋，步行約 3 分鐘到京阪丹波橋轉車，到淀站約 35 分鐘；京阪快速急行不停淀，要搭會停淀的車。近鐵從京都站開出後不久，右手邊（西側）就能看到東寺五重塔",
+              ],
+              [
+                "09:15 Potel → 京都駅 → 淀駅",
+                "近鉄で近鉄丹波橋へ、徒歩約 3 分の京阪丹波橋で乗り換えて淀駅まで約 35 分。快速急行は淀を通過するので、淀に停まる列車に。近鉄が京都駅を出てすぐ、右手（西側）に東寺の五重塔が見えます",
+              ],
+            ),
+            M(
+              [
+                "淀站 → 店家",
+                "店在淀站北邊的納所一帶，步行時間出發前用 Google Maps 確認；超過 20 分鐘就改搭公車",
+              ],
+              [
+                "淀駅 → お店",
+                "淀駅の北、納所エリア。徒歩時間は出発前に Google マップで確認し、20 分を超えるならバスで",
+              ],
+            ),
+            P(
+              "10:00",
+              [
+                "有限会社サワダマキ 淀店",
+                "留約 1.5 小時：試穿比較 BURTLE AIR CRAFT 空調服、風扇、電池、充電器；最晚 11:45 離開",
+              ],
+              [
+                "有限会社サワダマキ 淀店",
+                "約 1.5 時間：BURTLE AIR CRAFT 空調服、ファン、バッテリー、充電器を試着・比較。遅くとも 11:45 に出発",
+              ],
+            ),
+            M(
+              ["京阪 淀 → 中書島", "約 7 分鐘"],
+              ["京阪 淀 → 中書島", "約 7 分"],
+            ),
+            P(
+              "12:00",
+              ["中書島站周邊午餐", "簡單吃，下午要趕三室戸寺的入園時間"],
+              ["中書島駅周辺で昼食", "三室戸寺の受付時間があるので軽めに"],
+            ),
+            M(
+              [
+                "京阪宇治線 中書島 → 三室戸",
+                "約 15 分鐘，三室戸站步行約 15 分鐘到寺",
+              ],
+              [
+                "京阪宇治線 中書島 → 三室戸",
+                "約 15 分、三室戸駅から寺まで徒歩約 15 分",
+              ],
+            ),
+            P(
+              "13:15",
+              [
+                "三室戸寺 紫陽花園",
+                "約 2 萬株紫陽花，找找看心形的紫陽花；約 1 小時。15:10 停止受理",
+              ],
+              [
+                "三室戸寺 あじさい園",
+                "約 2 万株のアジサイ、ハート形のアジサイ探しも。約 1 時間。受付は 15:10 まで",
+              ],
+            ),
+            M(
+              [
+                "三室戸 → 中書島",
+                "步行約 15 分鐘回三室戸站，京阪宇治線約 15 分鐘",
+              ],
+              [
+                "三室戸 → 中書島",
+                "三室戸駅まで徒歩約 15 分、京阪宇治線で約 15 分",
+              ],
+            ),
+            P(
+              "15:15",
+              [
+                "伏見酒藏街區、月桂冠大倉紀念館",
+                "紀念館 16:00 停止受理，到了先進館；之後沿濠川散步",
+              ],
+              [
+                "伏見の酒蔵エリア・月桂冠大倉記念館",
+                "記念館の受付は 16:00 まで、着いたら先に入館。その後は濠川沿いを散策",
+              ],
+            ),
+            P(
+              "16:15",
+              [
+                "龍馬通 → 寺田屋 → 大手筋商店街",
+                "挑有興趣的店逛，不必全部走完",
+              ],
+              [
+                "竜馬通り → 寺田屋 → 大手筋商店街",
+                "気になる店だけで OK、全部回らなくて大丈夫",
+              ],
+            ),
+            M(
+              [
+                "17:00 近鐵 桃山御陵前 → 京都站",
+                "約 12 分鐘，買的東西多可以直接回飯店",
+              ],
+              [
+                "17:00 近鉄 桃山御陵前 → 京都駅",
+                "約 12 分。荷物が多ければそのままホテルへ",
+              ],
+            ),
+          ],
+          legs: [
+            G(
+              HOTEL,
+              "サワダマキ 京都市伏見区納所和泉屋7",
+              "transit",
+              "Potel → サワダマキ淀店",
+              "Potel → サワダマキ淀店",
+            ),
+            G(
+              "サワダマキ 京都市伏見区納所和泉屋7",
+              "中書島駅",
+              "transit",
+              "淀 → 中書島",
+              "淀 → 中書島",
+            ),
+            G(
+              "中書島駅",
+              "三室戸寺",
+              "transit",
+              "中書島 → 三室戸寺",
+              "中書島 → 三室戸寺",
+            ),
+            G(
+              "三室戸寺",
+              "月桂冠大倉記念館",
+              "transit",
+              "三室戸寺 → 伏見酒藏街區",
+              "三室戸寺 → 伏見の酒蔵エリア",
+            ),
+            G(
+              "月桂冠大倉記念館",
+              "伏見大手筋商店街",
+              "walking",
+              "酒藏街區 → 大手筋商店街",
+              "酒蔵エリア → 大手筋商店街",
+            ),
+            G(
+              "近鉄 桃山御陵前駅",
+              HOTEL,
+              "transit",
+              "桃山御陵前 → Potel",
+              "桃山御陵前 → Potel",
+            ),
+          ],
+          map: [
+            HOTEL,
+            "サワダマキ 京都市伏見区納所和泉屋7",
+            "中書島駅",
+            "三室戸寺",
+            "月桂冠大倉記念館",
+            "伏見大手筋商店街",
+            "近鉄 桃山御陵前駅",
+          ],
+          notes: [
+            L(
+              "<b>店家：先打電話確認</b>（075-632-5208，地址：京都市伏見區納所和泉屋 7）6/9 有沒有營業、尺寸庫存、風扇和電池能不能搭配同一套。網路上查到的營業時間有好幾種版本，以電話確認為準。",
+              "<b>お店：事前に電話で確認</b>（075-632-5208、住所：京都市伏見区納所和泉屋 7）。6/9 の営業、サイズの在庫、ファンとバッテリーが同じセットで使えるか。ネット上の営業時間は情報がまちまちなので、電話で確認した内容を優先してください。",
+            ),
+            L(
+              "<b>月桂冠大倉記念館：</b>9:30–16:30（16:00 停止受理），大人 600 日圓（附 3 種試飲和小禮物）。",
+              "<b>月桂冠大倉記念館：</b>9:30〜16:30（受付 16:00 まで）、大人 600 円（きき酒 3 種・おみやげ付き）。",
+            ),
+            L(
+              "<b>三室戸寺 紫陽花園：</b>2026 年是 5/31–7/5 開放，8:30–15:10 受理入園、16:30 前下山，大人 1,000 日圓，不用預約。2027 年的日期出發前到官網確認（0774-21-2067）。15:10 是硬性截止，サワダマキ待太久就先跳過午餐、直接過去。",
+              "<b>三室戸寺 あじさい園：</b>2026 年は 5/31〜7/5 公開、受付 8:30〜15:10、16:30 までに下山、大人 1,000 円、予約不要。2027 年の日程は出発前に公式サイトで確認（0774-21-2067）。15:10 の受付締切は厳守、サワダマキが長引いたら昼食を後回しにして直行。",
+            ),
+          ],
+        },
+        {
+          id: "d7",
+          n: "Day 7",
+          md: "6/10",
+          wd: 4,
+          stay: "potel",
+          title: L("四條百貨公司＋新風館購物日", "四条デパート巡り＋新風館"),
+          short: L(
+            "大丸、高島屋、UNIQLO、新風館、伊勢丹",
+            "大丸・高島屋・ユニクロ・新風館・伊勢丹",
+          ),
+          timeline: [
+            M(
+              [
+                "09:40 Potel → 四條",
+                "JR 到京都站，轉地鐵烏丸線到四條，約 20 分鐘",
+              ],
+              [
+                "09:40 Potel → 四条",
+                "JR で京都駅、地下鉄烏丸線に乗り換えて四条まで約 20 分",
+              ],
+            ),
+            P(
+              "10:00",
+              [
+                "大丸京都店",
+                "四條站附近，步行約 3 分鐘。地下樓食品街（和菓子、漬物、便當）、化妝品、生活雜貨，大約 1.5 小時；館內有免稅櫃台（先付含稅價、登記退款方式）",
+              ],
+              [
+                "大丸京都店",
+                "四条駅から徒歩約 3 分。デパ地下（和菓子・漬物・お弁当）、化粧品、生活雑貨、約 1.5 時間。館内に免税カウンターあり（税込で支払い、返金方法を登録）",
+              ],
+            ),
+            P(
+              "11:30",
+              [
+                "Hands 京都店",
+                "四條烏丸路口東側，從大丸往西步行約 3 分鐘。收納、文具、旅行小物，大約 45 分鐘",
+              ],
+              [
+                "ハンズ京都店",
+                "四条烏丸の交差点東側、大丸から西へ徒歩約 3 分。収納・文具・旅行小物、約 45 分",
+              ],
+            ),
+            P(
+              "12:15",
+              [
+                "錦市場＋午餐",
+                "從 Hands 往東北步行約 5 分鐘。漬物、調味料、食品伴手禮；市場內禁止邊走邊吃，買了在店門口吃完再走",
+              ],
+              [
+                "錦市場＋昼食",
+                "ハンズから北東へ徒歩約 5 分。漬物・調味料・食品のお土産。市場内は食べ歩き禁止なので、買ったものは店先で食べてから",
+              ],
+            ),
+            P(
+              "13:30",
+              [
+                "京都高島屋 S.C.（高島屋＋T8）",
+                "錦市場東端往四條河原町步行約 5 分鐘。百貨本館的地下食品、和服小物、京都老店；T8 有 Nintendo KYOTO（7 樓）、無印良品等，大約 1 小時 15 分",
+              ],
+              [
+                "京都高島屋 S.C.（高島屋＋T8）",
+                "錦市場の東端から四条河原町まで徒歩約 5 分。本館のデパ地下・和装小物・京都の老舗、T8 には Nintendo KYOTO（7 階）・無印良品など、約 1 時間 15 分",
+              ],
+            ),
+            P(
+              "14:45",
+              [
+                "UNIQLO 京都（PLST）",
+                "沿河原町通往北步行約 8 分鐘，在 mina 京都。2026/11 開幕的全球旗艦店，地下 1 樓到 3 樓共 4 層；改裝前 PLST 在店內，大約 1 小時 15 分",
+              ],
+              [
+                "ユニクロ 京都（プラステ）",
+                "河原町通を北へ徒歩約 8 分、ミーナ京都内。2026 年 11 月オープンのグローバル旗艦店（地下 1 階〜3 階の 4 フロア）。改装前はプラステが店内に、約 1 時間 15 分",
+              ],
+            ),
+            M(
+              [
+                "16:00 地鐵東西線 京都市役所前 → 烏丸御池",
+                "1 站，約 10 分鐘（含步行）；也可以沿御池通往西走約 15 分鐘",
+              ],
+              [
+                "16:00 地下鉄東西線 京都市役所前 → 烏丸御池",
+                "1 駅、徒歩込みで約 10 分。御池通を西へ歩いても約 15 分",
+              ],
+            ),
+            P(
+              "16:15",
+              [
+                "新風館 ShinPuhKan",
+                "烏丸御池站直通。TRAVELER'S FACTORY KYOTO、BEAMS JAPAN、香氛、設計選物，大約 1 小時 15 分",
+              ],
+              [
+                "新風館",
+                "烏丸御池駅直結。TRAVELER'S FACTORY KYOTO、BEAMS JAPAN、香り、デザイン雑貨、約 1 時間 15 分",
+              ],
+            ),
+            M(
+              ["17:30 地鐵烏丸線 烏丸御池 → 京都站", "直達約 6 分鐘"],
+              ["17:30 地下鉄烏丸線 烏丸御池 → 京都駅", "直通約 6 分"],
+            ),
+            P(
+              "17:45",
+              [
+                "JR 京都伊勢丹",
+                "京都站直結，營業到 20:00。地下食品街補買伴手禮、明天要帶走的點心，大約 1.5 小時；可以在 11 樓餐廳街吃晚餐",
+              ],
+              [
+                "ジェイアール京都伊勢丹",
+                "京都駅直結、20:00 まで。デパ地下でお土産や明日用のお菓子を買い足し、約 1.5 時間。11 階のレストラン街で夕食も",
+              ],
+            ),
+            M(
+              [
+                "19:30 JR 京都 → 梅小路京都西 → Potel",
+                "JR 1 站；今晚整理行李：退稅商品集中放在行李箱最上層或一個袋子，收據按店家收好，機場被抽查時才能馬上拿出來",
+              ],
+              [
+                "19:30 JR 京都 → 梅小路京都西 → Potel",
+                "JR で 1 駅。夜は荷造り：免税品はスーツケースの一番上か 1 つの袋にまとめ、レシートは店ごとに保管。空港で検査になってもすぐ出せるように",
+              ],
+            ),
+          ],
+          legs: [
+            G(HOTEL, "大丸京都店", "transit", "Potel → 大丸", "Potel → 大丸"),
+            G(
+              "大丸京都店",
+              "ハンズ 京都店",
+              "walking",
+              "大丸 → Hands",
+              "大丸 → ハンズ",
+            ),
+            G(
+              "ハンズ 京都店",
+              "錦市場",
+              "walking",
+              "Hands → 錦市場",
+              "ハンズ → 錦市場",
+            ),
+            G(
+              "錦市場",
+              "京都高島屋S.C.",
+              "walking",
+              "錦市場 → 高島屋",
+              "錦市場 → 高島屋",
+            ),
+            G(
+              "京都高島屋S.C.",
+              "ミーナ京都",
+              "walking",
+              "高島屋 → UNIQLO 京都",
+              "高島屋 → ユニクロ 京都",
+            ),
+            G(
+              "ミーナ京都",
+              "新風館",
+              "transit",
+              "UNIQLO 京都 → 新風館",
+              "ユニクロ 京都 → 新風館",
+            ),
+            G(
+              "新風館",
+              "ジェイアール京都伊勢丹",
+              "transit",
+              "新風館 → JR 京都伊勢丹",
+              "新風館 → ジェイアール京都伊勢丹",
+            ),
+            G(
+              "ジェイアール京都伊勢丹",
+              HOTEL,
+              "transit",
+              "京都站 → Potel",
+              "京都駅 → Potel",
+            ),
+          ],
+          map: [
+            HOTEL,
+            "大丸京都店",
+            "ハンズ 京都店",
+            "錦市場",
+            "京都高島屋S.C.",
+            "ミーナ京都",
+            "新風館",
+            "ジェイアール京都伊勢丹",
+          ],
+          notes: [
+            L(
+              "<b>營業時間：</b>大丸、高島屋本館、JR 京都伊勢丹大約 10:00–20:00；高島屋 T8 2026/8 起改成 10:30–20:00；Hands 10:00–20:30；UNIQLO 京都 11:00–21:00；新風館多數店家 11:00–20:00，所以排在下午最後；錦市場最好白天去。出發前到各官網確認當天有沒有公休。",
+              "<b>営業時間：</b>大丸・高島屋本館・ジェイアール京都伊勢丹は概ね 10:00〜20:00、高島屋 T8 は 2026 年 8 月から 10:30〜20:00、ハンズ 10:00〜20:30、ユニクロ 京都 11:00〜21:00。新風館は多くの店が 11:00〜20:00 なので午後の最後に。錦市場は日中がおすすめ。出発前に各公式サイトで休業日を確認。",
+            ),
+            L(
+              "<b>藤井大丸本館</b>因改建，2026/5/6 起暫停營業，預計 2030 年度才重新開幕，所以這次不排。",
+              "<b>藤井大丸本館</b>は建て替えのため 2026/5/6 から一時休業、再開は 2030 年度の予定なので今回は外しています。",
+            ),
+            L(
+              "<b>退稅（2026/11 起新制）：</b>同一天同一家消費滿 5,000 日圓（未稅）才能退稅，記得帶護照。結帳時先付<b>含稅價</b>，同時登記退款方式（建議信用卡）；出境時海關確認過，店家才退款。同一家的購買盡量集中結帳。",
+              "<b>免税（2026 年 11 月からの新制度）：</b>同じ店で同日 5,000 円（税抜）以上が対象。パスポートを忘れずに。会計は<b>税込</b>で支払い、返金方法（クレジットカード推奨）を登録。出国時の税関確認後に店から返金されます。同じ店での買い物はまとめて会計を。",
+            ),
+            L(
+              "<b>要在日本吃、用的東西分開結帳：</b>退稅是以「整張收據」為單位，同一張收據裡只要有一件吃掉、用掉或沒帶到機場，整張都不能退。點心、飲料、試用的化妝品請另外不退稅結帳。",
+              "<b>日本で食べる・使うものは別会計に：</b>免税はレシート単位。1 枚のレシートのうち 1 点でも消費・使用したり空港に持っていかなかったりすると、そのレシート全体が返金対象外に。お菓子・飲み物・すぐ使う化粧品は免税なしで別会計に。",
+            ),
+            L(
+              "<b>PLST：</b>原本在 UNIQLO 京都河原町店裡面，這家店 2026/10/4 起改裝，11/6 以「UNIQLO 京都」旗艦店重新開幕。改裝後 PLST 還在不在，出發前到 PLST 官網店舗一覽確認；不在的話，就只逛 UNIQLO。",
+              "<b>プラステ：</b>ユニクロ 京都河原町店の店内にありましたが、同店は 2026/10/4 から改装し、11/6 にグローバル旗艦店「ユニクロ 京都」として再オープン。改装後もプラステがあるかは、出発前に PLST 公式サイトの店舗一覧で確認。なければユニクロだけに。",
+            ),
+            L(
+              "<b>時間不夠時：</b>縮短高島屋。JR 京都伊勢丹 20:00 關門，最晚 18:30 要到，地下食品街才有時間慢慢逛。",
+              "<b>時間が足りなければ：</b>高島屋を短めに。ジェイアール京都伊勢丹は 20:00 閉店なので、デパ地下をゆっくり見るなら遅くとも 18:30 には到着を。",
+            ),
+            L(
+              "6/7 如果紫陽花還沒開，今天可以改回植物園。",
+              "6/7 にアジサイがまだ咲いていなければ、この日に植物園へ。",
+            ),
+          ],
+        },
+        {
+          id: "d8",
+          n: "Day 8",
+          md: "6/11",
+          wd: 5,
+          stay: "none",
+          title: L("退房返程", "チェックアウト・帰国"),
+          short: L("退房、前往機場", "チェックアウト・空港へ"),
+          timeline: [
+            P(
+              "09:00",
+              ["Potel 退房", "行李整理好再出門"],
+              ["Potel チェックアウト", "荷物をまとめてから出発"],
+            ),
+            M(
+              ["Potel → 京都站", "JR 嵯峨野線 1 站"],
+              ["Potel → 京都駅", "JR 嵯峨野線で 1 駅"],
+            ),
+            P(
+              "09:15",
+              [
+                "京都站 Porta 補買伴手禮",
+                "最晚 10:00 結束；大行李先放車站置物櫃。今天買的退稅商品一樣要帶著、收據收好",
+              ],
+              [
+                "京都駅ポルタでお土産の買い足し",
+                "遅くとも 10:00 まで。大きい荷物は駅のコインロッカーへ。今日買った免税品も手元に、レシートも保管",
+              ],
+            ),
+            M(
+              [
+                "JR HARUKA → 關西機場",
+                "搭 10:15 前後的班次，約 11:35 抵達；周遊券已過期，用 WEST QR 或另外買的車票進站",
+              ],
+              [
+                "JR はるか → 関西空港",
+                "10:15 前後の便で、11:35 頃着。パスは期限切れなので WEST QR か別途購入したきっぷで入場",
+              ],
+            ),
+            P(
+              "11:45",
+              [
+                "關西機場 T1：先做退稅海關確認",
+                "託運行李「之前」，到出境大廳的免稅手續機台掃描護照（也可以用 Visit Japan Web 線上辦理）。綠燈就完成；紅燈要帶所有退稅商品和收據到海關櫃台檢查。預留 30–60 分鐘",
+              ],
+              [
+                "関西空港 T1：まず免税の税関確認",
+                "荷物を預ける「前に」、出発ロビーの免税手続き端末でパスポートを読み取り（Visit Japan Web でも可）。緑なら完了、赤なら免税品とレシートをすべて持って税関検査場へ。30〜60 分を見込む",
+              ],
+            ),
+            P(
+              "12:30",
+              [
+                "星宇報到、託運行李",
+                "海關確認完成後才託運；接著安檢、出境、免稅店",
+              ],
+              [
+                "スターラックス チェックイン・荷物を預ける",
+                "税関確認が終わってから預ける。その後、保安検査・出国審査・免税店",
+              ],
+            ),
+            P(
+              "15:10",
+              ["星宇 JX823 關西起飛", "17:05 抵達桃園（台灣時間）"],
+              ["スターラックス JX823 関西 出発", "17:05 桃園着（台湾時間）"],
+            ),
+          ],
+          legs: [
+            G(HOTEL, "京都駅", "transit", "Potel → 京都站", "Potel → 京都駅"),
+            G(
+              "京都駅",
+              "関西国際空港",
+              "transit",
+              "京都站 → 關西機場",
+              "京都駅 → 関西空港",
+            ),
+          ],
+          map: [HOTEL, "京都駅", "関西国際空港"],
+          notes: [
+            L(
+              "<b>最晚的那班 HARUKA 不要搭</b>：退稅新制要在託運前先過海關確認，被抽查會多花時間，所以提早到起飛前約 3.5 小時抵達，搭 10:15 前後的班次。今天不排其他景點。",
+              "<b>ギリギリのはるかは避ける：</b>新しい免税制度では荷物を預ける前に税関確認が必要で、検査になると時間がかかるため、出発約 3 時間半前に着く 10:15 前後の便に。この日は他の観光は入れません。",
+            ),
+            L(
+              "<b>來不及就不能退稅：</b>海關確認沒做完就登機，或做到一半離開，那筆購物都不能退款，航空公司和海關也不會補償。託運後被要求檢查，航空公司不一定能幫你把行李拿回來。",
+              "<b>間に合わなければ返金なし：</b>税関確認を終えずに搭乗したり途中でやめたりすると、その購入分は返金されず、航空会社や税関の補償もありません。預けた後に検査を求められても、荷物を取り出せるとは限りません。",
+            ),
+          ],
+        },
+      ];
+
+      const TAGS = {
+        p1: { cls: "b-warn", ...L("最優先", "最優先") },
+        opt: { cls: "b-opt", ...L("選擇性", "任意") },
+        before: { cls: "b-ok", ...L("出發前確認", "出発前に確認") },
+      };
+      const GROUPS = {
+        now: L("機票、住宿", "航空券・宿泊"),
+        mar: L("2027 年 3 月", "2027 年 3 月"),
+        aprmay: L("2027 年 4–5 月", "2027 年 4〜5 月"),
+        before: L("出發前", "出発前"),
+      };
+      const C = (id, g, tag, title, date, sub, ds, links) => ({
+        id,
+        g,
+        tag,
+        title,
+        date,
+        sub,
+        ds,
+        links,
+      });
+      const JR_PASS_URL =
+        "https://www.westjr.co.jp/travel-information/en/tickets-passes/jrwest-rail-pass/kansai_wide/";
+      const JR_RESERVE_URL =
+        "https://www.westjr.co.jp/global/en/ticket/overview/";
+      const CHECKS = [
+        C(
+          "flight",
+          "now",
+          "p1",
+          L("星宇機票 JX820／JX823", "スターラックス航空券 JX820／JX823"),
+          L("6/4、6/11", "6/4・6/11"),
+          L("航班", "フライト"),
+          L(
+            "去程 6/4 JX820（桃園 08:30 → 關西 12:15）、回程 6/11 JX823（關西 15:10 → 桃園 17:05）。核對護照英文姓名、日期、時刻，選位、預選餐點。",
+            "往路 6/4 JX820（桃園 08:30 → 関西 12:15）、復路 6/11 JX823（関西 15:10 → 桃園 17:05）。パスポートの英字氏名・日付・時刻を確認、座席指定と機内食の事前選択も。",
+          ),
+        ),
+        C(
+          "potel",
+          "now",
+          "p1",
+          L("Umekoji Potel KYOTO", "Umekoji Potel KYOTO"),
+          L("6/4、6/6–6/10", "6/4・6/6〜6/10"),
+          L("共 6 晚", "計 6 泊"),
+          L(
+            "6/4 一晚＋6/6–6/10 五晚。核對日期、人數、取消規定；詢問 6/5–6/6 能否寄放行李。",
+            "6/4 の 1 泊＋6/6〜6/10 の 5 泊。日付・人数・キャンセル規定を確認。6/5〜6/6 に荷物を預けられるか確認。",
+          ),
+        ),
+        C(
+          "maizuru-hotel",
+          "now",
+          "p1",
+          L("Hotel BELLMARE（東舞鶴）", "ホテルベルマーレ（東舞鶴）"),
+          L("6/5", "6/5"),
+          L("1 晚", "1 泊"),
+          L(
+            "6/5 一晚。核對日期、人數、取消規定，確認有沒有附早餐、入住時間。",
+            "6/5 の 1 泊。日付・人数・キャンセル規定、朝食の有無とチェックイン時間を確認。",
+          ),
+        ),
+        C(
+          "takeda",
+          "mar",
+          "p1",
+          L("武田病院", "武田病院"),
+          L("3 月前", "3 月まで"),
+          L("聯絡醫院", "病院に連絡"),
+          L(
+            "確認去年看診證明是否已經做好、領取窗口、可以領的時間、要帶的證件。還沒申請的話，提早申請。代表電話 075-361-1351。",
+            "昨年の診断証明書ができているか、受取窓口、受取時間、必要な身分証を確認。未申請なら早めに申請。代表電話 075-361-1351。",
+          ),
+        ),
+        C(
+          "kuromatsu",
+          "mar",
+          "p1",
+          L("丹後黑松號", "丹後くろまつ号"),
+          L("3/5", "3/5"),
+          L("週五 10:00 開放", "金曜 10:00 受付開始"),
+          L(
+            "規則是「乘車日 3 個月前的同一天、日本時間 10:00 開放預約」（台灣時間 09:00），在 WILLER TRAVEL 官網訂。6/5 天橋立 13:05 → 西舞鶴 14:50 的午餐方案 → 3/5 開放。",
+            "ルールは「乗車日の 3 か月前の同日、日本時間 10:00 に予約開始」（台湾時間 09:00）、WILLER TRAVEL 公式サイトで予約。6/5 天橋立 13:05 → 西舞鶴 14:50 のランチコース → 3/5 受付開始。",
+          ),
+          [
+            K(
+              "黑松號訂位（WILLER）",
+              "くろまつ号予約（WILLER）",
+              "https://travel.willer.co.jp/train/tantetsu/",
+            ),
+          ],
+        ),
+        C(
+          "widepass",
+          "aprmay",
+          "p1",
+          L("關西廣域周遊券（6/4–6/8）", "関西広域パス（6/4〜6/8）"),
+          L("5/4", "5/4"),
+          L("10:00 開放", "10:00 受付開始"),
+          L(
+            "在 JR 西日本官網「JR-WEST ONLINE TRAIN RESERVATION」買，使用開始日 1 個月前的 10:00 開放（日本時間，台灣時間 09:00）。5 天連續、大人 12,000 日圓（官網 2024 年資料，以購買時為準），只能刷實體信用卡。買的時候順便劃 6/4 HARUKA 的指定席。",
+            "JR 西日本の「JR-WEST ONLINE TRAIN RESERVATION」で購入。利用開始日の 1 か月前 10:00 から受付（日本時間、台湾時間 09:00）。連続 5 日間、大人 12,000 円（公式サイト 2024 年時点、購入時の価格を優先）、クレジットカードは実物のカードのみ。購入時に 6/4 のはるかの指定席も予約。",
+          ),
+          [
+            K("周遊券說明・購買", "パスの案内・購入", JR_PASS_URL),
+            K("JR 西日本網路訂票", "JR 西日本ネット予約", JR_RESERVE_URL),
+          ],
+        ),
+        C(
+          "ltdexp",
+          "aprmay",
+          "p1",
+          L(
+            "特急はしだて（6/5）／まいづる（6/6）劃位",
+            "特急はしだて（6/5）／まいづる（6/6）の座席指定",
+          ),
+          L("5/5、5/6", "5/5・5/6"),
+          L("1 個月前 10:00 開放", "1 か月前 10:00 受付開始"),
+          L(
+            "兩班都是全車指定席，周遊券可以免費劃位。在同一個 JR-WEST ONLINE 帳號裡劃：はしだて 5 號 5/5 10:00、まいづる 10 號 5/6 10:00 開放（日本時間）。剛好遇到日本黃金週，開放當天就劃。",
+            "どちらも全車指定席で、パスで座席指定は無料。同じ JR-WEST ONLINE のアカウントで予約：はしだて 5 号は 5/5 10:00、まいづる 10 号は 5/6 10:00 から（日本時間）。ゴールデンウィーク中なので受付開始日に予約を。",
+          ),
+          [K("JR 西日本網路訂票", "JR 西日本ネット予約", JR_RESERVE_URL)],
+        ),
+        C(
+          "haruka",
+          "aprmay",
+          "opt",
+          L("HARUKA 回程（6/11）", "はるか 復路（6/11）"),
+          L("5/11 起", "5/11〜"),
+          L("周遊券不含", "パス対象外"),
+          L(
+            "6/11 已經過了周遊券的 5 天，要另外買。推薦「WEST QR HARUKA 單程票」：在旅遊平台買、登錄 WEST QR 後，用手機 QR Code 直接刷閘門，也能用手機劃 HARUKA 座位；QR Code 要開網路即時顯示，截圖無效。當天在京都站售票機買也可以。",
+            "6/11 はパスの 5 日間を過ぎているので別途購入。おすすめは「WEST QR はるか片道きっぷ」：旅行サイトで購入して WEST QR に登録すれば、スマホの QR コードで直接改札を通れ、はるかの座席指定もスマホで可能。QR コードは通信して表示する必要があり、スクリーンショットは不可。当日に京都駅の券売機で買っても OK。",
+          ),
+          [
+            K(
+              "WEST QR 說明",
+              "WEST QR の案内",
+              "https://www.westjr.co.jp/global/en/ticket/westqr/",
+            ),
+          ],
+        ),
+        C(
+          "sawada",
+          "before",
+          "before",
+          L("サワダマキ淀店", "サワダマキ淀店"),
+          L("5 月下旬", "5 月下旬"),
+          L("出發前 1–2 週", "出発 1〜2 週間前"),
+          L(
+            "打電話確認 6/9 營業時間、從淀站怎麼走、BURTLE 尺寸和庫存、風扇和電池相容性；順便問能不能先保留商品。",
+            "電話で 6/9 の営業時間、淀駅からの行き方、BURTLE のサイズと在庫、ファンとバッテリーの互換性を確認。取り置きできるかも聞いてみる。",
+          ),
+          [
+            K(
+              "Google 地圖",
+              "Google マップ",
+              "https://www.google.com/maps/search/?api=1&query=" +
+                encodeURIComponent("サワダマキ 京都市伏見区納所和泉屋7"),
+            ),
+          ],
+        ),
+        C(
+          "mimuroto",
+          "before",
+          "before",
+          L("三室戸寺 紫陽花園", "三室戸寺 あじさい園"),
+          L("5/28 前後", "5/28 頃"),
+          L("出發前 1 週", "出発 1 週間前"),
+          L(
+            "到官網確認 2027 年紫陽花園的開放期間、受理時間（2026 年是 8:30–15:10）和門票，順便看花況。電話 0774-21-2067。",
+            "公式サイトで 2027 年のあじさい園の公開期間、受付時間（2026 年は 8:30〜15:10）、拝観料と開花状況を確認。電話 0774-21-2067。",
+          ),
+          [K("三室戸寺官網", "三室戸寺公式", "http://www.mimurotoji.com/")],
+        ),
+        C(
+          "garden",
+          "before",
+          "before",
+          L("京都府立植物園", "京都府立植物園"),
+          L("5/28 前後", "5/28 頃"),
+          L("出發前 1 週", "出発 1 週間前"),
+          L(
+            "查紫陽花花況、開園公告、溫室安排。",
+            "アジサイの開花状況、開園のお知らせ、温室の情報を確認。",
+          ),
+          [K("植物園官網", "植物園公式", "https://www.pref.kyoto.jp/plant/")],
+        ),
+        C(
+          "railway",
+          "before",
+          "before",
+          L("京都鐵道博物館", "京都鉄道博物館"),
+          L("5/28 前後", "5/28 頃"),
+          L("出發前 1 週", "出発 1 週間前"),
+          L(
+            "確認 6/8（週二）有沒有臨時休館，查 SL 蒸汽火車的運行時刻和票價。",
+            "6/8（火）に臨時休館がないか、SL スチーム号の運行時刻と料金を確認。",
+          ),
+          [
+            K(
+              "鐵道博物館官網",
+              "鉄道博物館公式",
+              "https://www.kyotorailwaymuseum.jp/",
+            ),
+          ],
+        ),
+        C(
+          "gekkeikan",
+          "before",
+          "before",
+          L("月桂冠大倉紀念館", "月桂冠大倉記念館"),
+          L("5/28 前後", "5/28 頃"),
+          L("出發前 1 週", "出発 1 週間前"),
+          L(
+            "確認 6/9（週三）有沒有臨時休館、受理時間（目前 16:00 截止）和門票。電話 075-623-2056。",
+            "6/9（水）に臨時休館がないか、受付時間（現在は 16:00 まで）と入館料を確認。電話 075-623-2056。",
+          ),
+          [
+            K(
+              "月桂冠紀念館官網",
+              "月桂冠大倉記念館公式",
+              "https://www.gekkeikan.co.jp/enjoy/museum/",
+            ),
+          ],
+        ),
+        C(
+          "toretore",
+          "before",
+          "before",
+          L(
+            "舞鶴港とれとれセンター（6/5 選 A 或 C）",
+            "舞鶴港とれとれセンター（6/5 A・C プラン）",
+          ),
+          L("5/28 前後", "5/28 頃"),
+          L("出發前 1 週", "出発 1 週間前"),
+          L(
+            "打電話確認 6/5（週六）的海鮮市場營業時間（0773-75-6125）；再查京都交通巴士（西舞鶴站 ↔ とれとれセンター）和 JR 舞鶴線（西舞鶴 → 東舞鶴）的時刻，排好去回的班次。",
+            "6/5（土）の海鮮市場の営業時間を電話で確認（0773-75-6125）。京都交通バス（西舞鶴駅 ↔ とれとれセンター）と JR 舞鶴線（西舞鶴 → 東舞鶴）の時刻も調べて、行き帰りの便を決めておく。",
+          ),
+          [
+            K(
+              "とれとれセンター官網",
+              "とれとれセンター公式",
+              "https://www.kkr.mlit.go.jp/road/michi_no_eki/contents/kyoto/toretorecenter.html",
+            ),
+            BUS_NISHI,
+          ],
+        ),
+        C(
+          "hikiage",
+          "before",
+          "before",
+          L(
+            "舞鶴引揚記念館巴士（6/6 選 B）",
+            "舞鶴引揚記念館のバス（6/6 B プラン）",
+          ),
+          L("5/28 前後", "5/28 頃"),
+          L("出發前 1 週", "出発 1 週間前"),
+          L(
+            "到京都交通官網或打給記念館（0773-68-0836）確認 6/6（週日）三浜線的時刻：東舞鶴站前 10:50 去、引揚記念館前 11:53 回（2024 年版時刻）。時刻變了就調整上午的順序，或改選 A。",
+            "京都交通の公式サイトか記念館（0773-68-0836）で 6/6（日）の三浜線の時刻を確認：東舞鶴駅前 10:50 発、引揚記念館前 11:53 発（2024 年版の時刻）。変わっていれば午前の順番を調整するか A に変更。",
+          ),
+          [
+            K(
+              "記念館交通資訊",
+              "記念館アクセス",
+              "https://m-hikiage-museum.jp/access.html",
+            ),
+            BUS_MIHAMA_GO,
+            BUS_MIHAMA_BACK,
+          ],
+        ),
+        C(
+          "boat",
+          "before",
+          "before",
+          L("舞鶴港灣遊覽船（6/6 選 A）", "舞鶴湾遊覧船（6/6 A プラン）"),
+          L("5/28 前後", "5/28 頃"),
+          L("出發前 1 週", "出発 1 週間前"),
+          L(
+            "確認 6/6 當天有沒有營運、有沒有因碼頭工程停航。網路預約在「まいづる觀光網」遊覽船頁面的「ネット予約はこちら」，可以提前 90 天訂；當天也可以在赤れんが博物館內的乘船券販售處買（9:00 起）。洽詢電話 090-5978-8711。停航就改成紅磚公園和港區散步。",
+            "6/6 に運航するか、桟橋工事による運休がないか確認。ネット予約は「まいづる観光ネット」遊覧船ページの「ネット予約はこちら」から、90 日前から可能。当日は赤れんが博物館内の乗船券販売所でも購入可（9:00〜）。問い合わせ 090-5978-8711。欠航なら赤れんがパークと港周辺の散策に。",
+          ),
+          [
+            K(
+              "遊覽船網路預約",
+              "遊覧船ネット予約",
+              "https://maizuru-kanko.net/recommend/cruise",
+            ),
+            BOAT_TIME,
+          ],
+        ),
+        C(
+          "jmsdf",
+          "before",
+          "before",
+          L("北吸碼頭艦艇參觀", "北吸桟橋 艦艇一般公開"),
+          L("5/28 前後", "5/28 頃"),
+          L("出發前 1 週", "出発 1 週間前"),
+          L(
+            "到海上自衛隊舞鶴地方總監部官網確認 6/6（週日）有沒有開放、開放時間、要不要帶證件；沒開就多逛紅磚公園。",
+            "海上自衛隊舞鶴地方総監部の公式サイトで、6/6（日）の公開有無・時間・身分証の要否を確認。なければ赤れんがパークをゆっくり。",
+          ),
+          [
+            K(
+              "海上自衛隊舞鶴地方隊",
+              "海上自衛隊 舞鶴地方隊",
+              "https://www.mod.go.jp/msdf/maizuru/",
+            ),
+          ],
+        ),
+        C(
+          "vjw",
+          "before",
+          "p1",
+          L("Visit Japan Web 入境登錄", "Visit Japan Web 入国手続き"),
+          L("5/21–5/28", "5/21〜5/28"),
+          L("出發前 1–2 週", "出発 1〜2 週間前"),
+          L(
+            "只認官方網址 vjw.digital.go.jp（小心假網站）。建立帳號 → 登錄護照 → 登錄入境、回國預定（JX820、住 Umekoji Potel）→ 填「外國人入境記錄」和「海關申報」→ 拿到 QR Code，截圖存在手機。確認護照效期涵蓋到 6/11 回國。",
+            "公式サイト vjw.digital.go.jp のみ使用（偽サイトに注意）。アカウント作成 → パスポート登録 → 入国・帰国予定（JX820、Umekoji Potel）登録 → 外国人入国記録と携帯品・別送品申告を入力 → QR コードを取得してスクリーンショット。パスポートの有効期限が 6/11 の帰国まであるか確認。",
+          ),
+          [
+            K(
+              "Visit Japan Web 官網",
+              "Visit Japan Web 公式",
+              "https://vjw.digital.go.jp/",
+            ),
+          ],
+        ),
+        C(
+          "sim",
+          "before",
+          "before",
+          L("買日本 SIM 卡／eSIM", "日本用 SIM／eSIM の購入"),
+          L("5/21–5/28", "5/21〜5/28"),
+          L("出發前 1–2 週", "出発 1〜2 週間前"),
+          L(
+            "6/4–6/11 共 8 天，選 8 天以上、走 docomo 或 SoftBank 網路的方案（舞鶴、天橋立收訊比較穩）。手機支援 eSIM 的話買 eSIM，出發前在家連 Wi-Fi 先安裝好、落地再開啟；不支援就買實體 SIM，記得帶退卡針，原本的台灣 SIM 卡收好。導航、Visit Japan Web 都要用網路，流量建議每天 1GB 以上或吃到飽。",
+            "6/4〜6/11 の 8 日間。8 日以上で docomo か SoftBank 回線のプランを（舞鶴・天橋立でも安定）。eSIM 対応機なら eSIM を、出発前に自宅の Wi-Fi でインストールしておき着陸後にオン。非対応なら物理 SIM を買い、SIM ピンを持参、台湾の SIM は大切に保管。ナビや Visit Japan Web で通信を使うので、1 日 1GB 以上か無制限がおすすめ。",
+          ),
+        ),
+        C(
+          "taxfree",
+          "before",
+          "before",
+          L("退稅新制準備", "新しい免税制度の準備"),
+          L("5/28 前後", "5/28 頃"),
+          L("出發前 1 週", "出発 1 週間前"),
+          L(
+            "確認 Visit Japan Web 在關西機場可以線上做退稅海關確認（入境後要依畫面指示補登上陸許可資料）；準備一張可以收退款的信用卡；到觀光廳免稅網站看最新的機場流程。",
+            "関西空港で Visit Japan Web による免税の税関確認ができるか確認（入国後、画面の案内に従って上陸許可の情報を追加登録）。返金を受けるクレジットカードを用意。観光庁の免税サイトで空港での最新の流れを確認。",
+          ),
+          [
+            K(
+              "觀光廳免稅說明（旅客）",
+              "観光庁 免税制度（旅行者向け）",
+              "https://www.mlit.go.jp/kankocho/tax-free/page01_000001_00021.html",
+            ),
+          ],
+        ),
+      ];
+
+      const SHOWS = [
+        {
+          id: "vjw",
+          url: "https://vjw.digital.go.jp/",
+          name: L("Visit Japan Web QR Code", "Visit Japan Web QR コード"),
+          desc: L(
+            "6/4 入境審查、海關；6/11 出境前的退稅海關確認",
+            "6/4 入国審査・税関、6/11 出国前の免税の税関確認",
+          ),
+        },
+        {
+          id: "jr",
+          url: JR_RESERVE_URL,
+          name: L(
+            "JR 訂位紀錄（JR-WEST ONLINE）",
+            "JR 予約内容（JR-WEST ONLINE）",
+          ),
+          desc: L(
+            "周遊券、HARUKA、はしだて、まいづる：在有 e5489 標誌、附 QR 讀取器的 JR 售票機掃訂位確認的 QR Code 領實體票（掃不到就輸入 4 開頭的訂位號碼）；進站用實體票",
+            "パス・はるか・はしだて・まいづる：e5489 マークで QR 読取機付きの JR 券売機で予約確認の QR コードを読み取り、紙のきっぷを受け取る（読めなければ 4 から始まる予約番号を入力）。改札は紙のきっぷで",
+          ),
+        },
+        {
+          id: "westqr",
+          url: "https://www.westjr.co.jp/global/en/ticket/westqr/",
+          name: L(
+            "WEST QR（6/11 回程 HARUKA）",
+            "WEST QR（6/11 復路のはるか）",
+          ),
+          desc: L(
+            "手機 QR Code 直接刷閘門，不用領票；要開網路即時顯示，截圖無效。買好後把網址改成自己的 WEST QR 頁面",
+            "スマホの QR コードで直接改札を通過、きっぷの受取不要。通信して表示する必要があり、スクリーンショットは不可。購入後は自分の WEST QR のページに URL を変更",
+          ),
+        },
+        {
+          id: "kuromatsu",
+          url: "https://travel.willer.co.jp/train/tantetsu/",
+          name: L("黑松號訂位確認（WILLER）", "くろまつ号の予約確認（WILLER）"),
+          desc: L(
+            "6/5 天橋立上車時出示；可以改成確認信裡的網址",
+            "6/5 天橋立で乗車時に提示。確認メールの URL に変更しても OK",
+          ),
+        },
+      ];
+
+      const TIPS = [
+        {
+          icon: "card",
+          ...L(
+            "<b>ICOCA</b>：市區地鐵、JR、京阪、近鐵、公車都能刷，建議一到就儲值。",
+            "<b>ICOCA</b>：市内の地下鉄・JR・京阪・近鉄・バスすべてで使えます。到着したらすぐチャージ。",
+          ),
+        },
+        {
+          icon: "train",
+          ...L(
+            "<b>6/5–6/6 舞鶴繞一圈</b>：去程 10:25 京都 → 12:36 天橋立搭 JR 特急「はしだて 5 號」，接黑松號到西舞鶴；回程 14:28 東舞鶴 → 16:06 京都搭特急「まいづる 10 號」。兩班特急都是全車指定席，要先用周遊券劃位。",
+            "<b>6/5〜6/6 舞鶴を一周</b>：往路は 10:25 京都 → 12:36 天橋立の JR 特急「はしだて 5 号」、くろまつ号で西舞鶴へ。復路は 14:28 東舞鶴 → 16:06 京都の特急「まいづる 10 号」。どちらも全車指定席なので、パスで事前に座席指定を。",
+          ),
+        },
+        {
+          icon: "ticket",
+          ...L(
+            "<b>關西廣域周遊券（6/4–6/8）</b>：涵蓋 6/4 HARUKA、6/5 はしだて（含福知山以北的京都丹後鐵道區間）、6/5 JR 舞鶴線、6/6 まいづる、6/7 JR 嵯峨野線；特急要先劃位。黑松號的餐飲方案要另外付費，方案費用是否已含車資，訂位時確認。<b>不含</b>：地鐵、近鐵、京阪、京都交通巴士、6/11 回程 HARUKA，這些用 ICOCA 或另外買票。",
+            "<b>関西広域パス（6/4〜6/8）</b>：6/4 のはるか、6/5 のはしだて（福知山以北の京都丹後鉄道区間を含む）、6/5 の JR 舞鶴線、6/6 のまいづる、6/7 の JR 嵯峨野線をカバー。特急は事前に座席指定を。くろまつ号の食事プランは別料金で、運賃が含まれるかは予約時に確認。<b>対象外</b>：地下鉄、近鉄、京阪、京都交通バス、6/11 復路のはるか。これらは ICOCA か別途購入で。",
+          ),
+        },
+        {
+          icon: "info",
+          ...L(
+            "<b>入境日本</b>：台灣護照短期觀光免簽、最多停留 90 天。出發前 1–2 週在 Visit Japan Web（vjw.digital.go.jp）登錄，入境審查和海關共用同一組 QR Code。日本預計 2028 年度才開始實施電子旅行許可「JESTA」，這趟應該還不用，出發前再確認一次。",
+            "<b>日本入国</b>：台湾パスポートは短期観光ならビザ免除、最長 90 日。出発 1〜2 週間前に Visit Japan Web（vjw.digital.go.jp）を登録すれば、入国審査と税関は同じ QR コードで OK。電子渡航認証「JESTA」は 2028 年度導入予定なので今回は不要の見込みですが、出発前に再確認を。",
+          ),
+        },
+        {
+          icon: "phone",
+          ...L(
+            "<b>SIM 卡／eSIM</b>：在台灣先買好比較便宜，網路平台或桃園機場都買得到。eSIM 出發前就裝好，落地切換即可；實體 SIM 在飛機上換好。整趟都靠手機導航、看 QR Code，記得帶行動電源。",
+            "<b>SIM／eSIM</b>：台湾で事前に買うほうが安く、ネットや桃園空港で購入可。eSIM は出発前にインストールして着陸後に切り替え、物理 SIM は機内で差し替え。ナビや QR コードでスマホを使い続けるので、モバイルバッテリーも忘れずに。",
+          ),
+        },
+        {
+          icon: "bag",
+          ...L(
+            "<b>退稅新制（2026/11 起）</b>：① 購物時帶護照、先付含稅價（同店同日滿 5,000 日圓未稅），登記退款方式 → ② 商品不拆不用，收據按店家收好，購買後 90 天內出境 → ③ 回程當天在關西機場託運<b>前</b>，用免稅機台或 Visit Japan Web 做海關確認，綠燈完成、紅燈要開箱檢查 → ④ 店家收到確認後退款。回程日要提早約 3.5 小時到機場。",
+            "<b>新しい免税制度（2026 年 11 月〜）</b>：① 買い物時にパスポートを提示し税込で支払い（同じ店で同日 5,000 円税抜以上）、返金方法を登録 → ② 商品は開封・使用せず、レシートは店ごとに保管、購入から 90 日以内に出国 → ③ 帰国日、関西空港で荷物を預ける<b>前に</b>端末か Visit Japan Web で税関確認。緑なら完了、赤なら検査 → ④ 確認後に店から返金。帰国日は約 3 時間半前に空港へ。",
+          ),
+        },
+        {
+          icon: "plane",
+          ...L(
+            "<b>航班</b>：去程星宇 JX820（桃園 08:30 → 關西 12:15），回程 JX823（關西 15:10 → 桃園 17:05）。關西機場 ↔ 京都站搭 JR HARUKA 約 75–80 分鐘；回程因為要做退稅海關確認，HARUKA 改搭 10:15 前後的班次。",
+            "<b>フライト</b>：往路スターラックス JX820（桃園 08:30 → 関西 12:15）、復路 JX823（関西 15:10 → 桃園 17:05）。関西空港 ↔ 京都駅は JR はるかで約 75〜80 分。帰りは免税の税関確認があるので、10:15 前後のはるかに。",
+          ),
+        },
+      ];
+
+      const S = (q, zh, ja, hours) => ({
+        q,
+        name: L(zh[0], ja[0]),
+        desc: L(zh[1], ja[1]),
+        hours,
+      });
+      const SHOPS = [
+        {
+          id: "station",
+          area: L("京都站周邊（離飯店最近）", "京都駅周辺（ホテルから最寄り）"),
+          items: [
+            S(
+              "ジェイアール京都伊勢丹",
+              [
+                "JR 京都伊勢丹",
+                "京都站直結的百貨公司，地下食品街、伴手禮、化妝品",
+              ],
+              [
+                "ジェイアール京都伊勢丹",
+                "京都駅直結のデパート。デパ地下・お土産・化粧品",
+              ],
+              "10:00–20:00",
+            ),
+            S(
+              "京都ポルタ",
+              ["京都 Porta", "京都站地下街，伴手禮、藥妝、書店、餐廳"],
+              [
+                "京都ポルタ",
+                "京都駅の地下街。お土産・ドラッグストア・書店・飲食店",
+              ],
+              L(
+                "約 10:00–20:30（各店不同）",
+                "概ね 10:00〜20:30（店舗により異なる）",
+              ),
+            ),
+            S(
+              "ヨドバシカメラ マルチメディア京都",
+              [
+                "Yodobashi 京都",
+                "京都站北側步行約 3 分鐘，家電、相機、玩具、生活用品",
+              ],
+              [
+                "ヨドバシカメラ マルチメディア京都",
+                "京都駅北側から徒歩約 3 分。家電・カメラ・おもちゃ・日用品",
+              ],
+              "09:30–22:00",
+            ),
+            S(
+              "イオンモールKYOTO",
+              [
+                "AEON MALL KYOTO",
+                "八條口步行約 5 分鐘，服飾、無印良品、藥妝；2026/11 起有 LOFT",
+              ],
+              [
+                "イオンモールKYOTO",
+                "八条口から徒歩約 5 分。ファッション・無印良品・ドラッグストア。2026 年 11 月からロフトも",
+              ],
+              "10:00–21:00",
+            ),
+          ],
+        },
+        {
+          id: "shijo",
+          area: L("四條・河原町", "四条・河原町"),
+          items: [
+            S(
+              "大丸京都店",
+              [
+                "大丸京都店",
+                "四條烏丸，地下食品街、化妝品、生活雜貨，館內有免稅櫃台",
+              ],
+              [
+                "大丸京都店",
+                "四条烏丸。デパ地下・化粧品・生活雑貨、館内に免税カウンターあり",
+              ],
+              "10:00–20:00",
+            ),
+            S(
+              "京都高島屋S.C.",
+              [
+                "京都高島屋 S.C.",
+                "四條河原町，百貨本館＋T8（Nintendo KYOTO、無印良品）",
+              ],
+              [
+                "京都高島屋 S.C.",
+                "四条河原町。本館＋T8（Nintendo KYOTO・無印良品）",
+              ],
+              L(
+                "本館 10:00–20:00／T8 10:30–20:00",
+                "本館 10:00〜20:00／T8 10:30〜20:00",
+              ),
+            ),
+            S(
+              "ハンズ 京都店",
+              ["Hands 京都店", "四條烏丸，收納、文具、旅行小物"],
+              ["ハンズ京都店", "四条烏丸。収納・文具・旅行小物"],
+              "10:00–20:30",
+            ),
+            S(
+              "ミーナ京都",
+              [
+                "UNIQLO 京都",
+                "河原町三條，mina 京都內的全球旗艦店（2026/11 開幕）；PLST 還在不在要再確認",
+              ],
+              [
+                "ユニクロ 京都",
+                "河原町三条、ミーナ京都内のグローバル旗艦店（2026 年 11 月オープン）。プラステの有無は要確認",
+              ],
+              "11:00–21:00",
+            ),
+            S(
+              "ドン・キホーテ 四条河原町店",
+              ["唐吉訶德 四條河原町店", "藥妝、零食、伴手禮，晚上也能逛"],
+              [
+                "ドン・キホーテ 四条河原町店",
+                "ドラッグストア・お菓子・お土産。夜遅くまで",
+              ],
+              L("10:00–翌 1:00", "10:00〜翌 1:00"),
+            ),
+            S(
+              "新京極商店街",
+              ["新京極・寺町商店街", "藥妝、伴手禮、雜貨，有屋頂，下雨也能逛"],
+              [
+                "新京極・寺町商店街",
+                "ドラッグストア・お土産・雑貨。アーケード付きで雨でも OK",
+              ],
+              L("各店不同", "店舗により異なる"),
+            ),
+            S(
+              "錦市場",
+              [
+                "錦市場",
+                "漬物、調味料、食品伴手禮；店家大多傍晚就關門，最好白天去",
+              ],
+              [
+                "錦市場",
+                "漬物・調味料・食品のお土産。夕方に閉まる店が多いので日中に",
+              ],
+              L("白天", "日中"),
+            ),
+          ],
+        },
+        {
+          id: "oike",
+          area: L("烏丸御池", "烏丸御池"),
+          items: [
+            S(
+              "新風館",
+              [
+                "新風館",
+                "烏丸御池站直通，TRAVELER'S FACTORY KYOTO、BEAMS JAPAN、設計選物",
+              ],
+              [
+                "新風館",
+                "烏丸御池駅直結。TRAVELER'S FACTORY KYOTO・BEAMS JAPAN・デザイン雑貨",
+              ],
+              L("多數店家 11:00–20:00", "多くの店が 11:00〜20:00"),
+            ),
+          ],
+        },
+      ];
+
+      function loadState() {
+        let s = {};
+        try {
+          s = JSON.parse(localStorage.getItem(STORE) || "{}");
+        } catch (e) {}
+        if (!s.done) {
+          try {
+            s.done = JSON.parse(
+              localStorage.getItem("kyoto2027-checks") || "{}",
+            );
+          } catch (e) {
+            s.done = {};
+          }
+        }
+        return s;
+      }
+
+      const app = Vue.createApp({
+        template: "#tpl",
+        data() {
+          const s = loadState();
+          return {
+            lang: s.lang === "ja" ? "ja" : "zh",
+            theme: s.theme || null,
+            plan: Object.assign({}, s.plan),
+            fromHere: !!s.fromHere,
+            fabOpen: false,
+            done: s.done || {},
+            showUrl: s.showUrl || {},
+            showCustom: Array.isArray(s.showCustom) ? s.showCustom : [],
+            scrollY: s.scrollY || 0,
+            active: "overview",
+            systemDark: matchMedia("(prefers-color-scheme: dark)").matches,
+            flights: FLIGHTS,
+            stays: STAYS,
+            days: DAYS,
+            checks: CHECKS,
+            tags: TAGS,
+            tips: TIPS,
+            shops: SHOPS,
+            overviewStops: [
+              "京都駅",
+              "天橋立駅",
+              "西舞鶴駅",
+              "東舞鶴駅",
+              "京都駅",
+            ],
+          };
+        },
+        computed: {
+          u() {
+            return UI[this.lang];
+          },
+          isDark() {
+            return this.theme ? this.theme === "dark" : this.systemDark;
+          },
+          navItems() {
+            const u = this.u;
+            return [
+              { id: "overview", label: u.navOverview, icon: "grid" },
+              { id: "stay", label: u.navStay, icon: "bed" },
+              ...this.days.map((d) => ({
+                id: d.id,
+                label: `${d.n} · ${d.md}`,
+              })),
+              { id: "shop", label: u.navShop, icon: "bag" },
+              { id: "show", label: u.navShow, icon: "qr" },
+              { id: "tips", label: u.navTips, icon: "bulb" },
+              { id: "checklist", label: u.navCheck, icon: "check" },
+            ];
+          },
+          showList() {
+            return [
+              ...SHOWS.map((s) => ({
+                key: s.id,
+                name: s.name[this.lang],
+                desc: s.desc[this.lang],
+                url: this.showUrl[s.id] || s.url,
+              })),
+              ...this.showCustom.map((c, idx) => ({
+                key: "c" + idx,
+                name: c.name,
+                desc: "",
+                url: c.url,
+                custom: true,
+                idx,
+              })),
+            ];
+          },
+          doneCount() {
+            return this.checks.filter((c) => this.done[c.id]).length;
+          },
+          checkGroups() {
+            return Object.keys(GROUPS)
+              .map((key) => ({
+                key,
+                label: GROUPS[key][this.lang],
+                items: this.checks.filter((c) => c.g === key),
+              }))
+              .filter((g) => g.items.length);
+          },
+        },
+        watch: {
+          lang: {
+            handler(v) {
+              document.documentElement.lang = v === "ja" ? "ja" : "zh-Hant";
+              document.title = this.u.docTitle;
+              this.save();
+            },
+            immediate: true,
+          },
+          theme(v) {
+            this.applyTheme();
+            this.save();
+          },
+          plan: {
+            handler() {
+              this.save();
+            },
+            deep: true,
+          },
+          showUrl: {
+            handler() {
+              this.save();
+            },
+            deep: true,
+          },
+          showCustom: {
+            handler() {
+              this.save();
+            },
+            deep: true,
+          },
+          fromHere() {
+            this.save();
+          },
+          done: {
+            handler() {
+              this.save();
+            },
+            deep: true,
+          },
+          active(id) {
+            this.centerNav(id);
+          },
+        },
+        methods: {
+          txt(v) {
+            return v && typeof v === "object" ? v[this.lang] : v;
+          },
+          dateLabel(d) {
+            return `${d.md}（${this.u.wd[d.wd]}）`;
+          },
+          stayName(d) {
+            return STAY_NAMES[d.stay][this.lang];
+          },
+          askUrl(cur) {
+            const v = (prompt(this.u.askUrl, cur || "https://") || "").trim();
+            return /^https?:\/\/\S+$/.test(v) ? v : null;
+          },
+          editShow(s) {
+            const url = this.askUrl(s.url);
+            if (!url) return;
+            if (s.custom) this.showCustom[s.idx].url = url;
+            else this.showUrl[s.key] = url;
+          },
+          addShow() {
+            const name = (prompt(this.u.askName) || "").trim();
+            if (!name) return;
+            const url = this.askUrl();
+            if (url) this.showCustom.push({ name, url });
+          },
+          planOf(d) {
+            return d.plans[this.plan[d.id]]
+              ? this.plan[d.id]
+              : Object.keys(d.plans)[0];
+          },
+          pickPlan(d, k) {
+            this.plan[d.id] = k;
+            Object.assign(this.plan, d.plans[k].next);
+            for (const [id, ok] of Object.entries(d.plans[k].fits || {})) {
+              const o = this.days.find((x) => x.id === id);
+              if (!ok.includes(this.planOf(o))) this.plan[id] = ok[0];
+            }
+          },
+          isSuggested(d, k) {
+            return this.days.some(
+              (o) =>
+                o.plans && (o.plans[this.planOf(o)].next || {})[d.id] === k,
+            );
+          },
+          cur(d) {
+            return d.plans ? d.plans[this.planOf(d)] : d;
+          },
+          embed(stops) {
+            const e = encodeURIComponent;
+            const [first, ...rest] = stops;
+            const hl = this.lang === "ja" ? "ja" : "zh-TW";
+            return `https://maps.google.com/maps?saddr=${e(first)}&daddr=${rest.map(e).join("+to:")}&hl=${hl}&output=embed`;
+          },
+          navUrl(l) {
+            const e = encodeURIComponent;
+            const origin = this.fromHere ? "" : `&origin=${e(l.from)}`;
+            return `https://www.google.com/maps/dir/?api=1${origin}&destination=${e(l.to)}&travelmode=${l.mode}`;
+          },
+          legLabel(l) {
+            const s = l.label[this.lang];
+            return this.fromHere
+              ? `${this.u.here} → ${s.split("→").pop().trim()}`
+              : s;
+          },
+          shopUrl(s) {
+            return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(s.q)}&travelmode=transit`;
+          },
+          go(id) {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+          },
+          toTop() {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          },
+          toggleLang() {
+            this.lang = this.lang === "zh" ? "ja" : "zh";
+          },
+          toggleTheme() {
+            this.theme = this.isDark ? "light" : "dark";
+          },
+          applyTheme() {
+            if (this.theme) document.documentElement.dataset.theme = this.theme;
+            else delete document.documentElement.dataset.theme;
+          },
+          save() {
+            if (this._ready) this.scrollY = Math.round(window.scrollY);
+            try {
+              localStorage.setItem(
+                STORE,
+                JSON.stringify({
+                  lang: this.lang,
+                  theme: this.theme,
+                  plan: this.plan,
+                  fromHere: this.fromHere,
+                  done: this.done,
+                  scrollY: this.scrollY,
+                  showUrl: this.showUrl,
+                  showCustom: this.showCustom,
+                }),
+              );
+            } catch (e) {}
+          },
+          centerNav(id) {
+            const row = this.$refs.navrow;
+            if (!row || row.scrollWidth <= row.clientWidth) return;
+            const a = row.querySelector(`[data-id="${id}"]`);
+            if (a)
+              row.scrollTo({
+                left: a.offsetLeft - row.clientWidth / 2 + a.clientWidth / 2,
+                behavior: "smooth",
+              });
+          },
+          onScroll() {
+            if (this._t) return;
+            this._t = setTimeout(() => {
+              this._t = null;
+              this.save();
+            }, 300);
+          },
+        },
+        mounted() {
+          this.applyTheme();
+          matchMedia("(prefers-color-scheme: dark)").addEventListener(
+            "change",
+            (e) => {
+              this.systemDark = e.matches;
+            },
+          );
+
+          const io = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((en) => {
+                if (en.isIntersecting) this.active = en.target.id;
+              });
+            },
+            { rootMargin: "-35% 0px -60% 0px" },
+          );
+          document
+            .querySelectorAll("[data-spy]")
+            .forEach((el) => io.observe(el));
+
+          if ("scrollRestoration" in history)
+            history.scrollRestoration = "manual";
+          const restore = () => {
+            if (this.scrollY > 0)
+              window.scrollTo({ top: this.scrollY, behavior: "instant" });
+          };
+          this.$nextTick(() => {
+            restore();
+            const fonts = document.fonts
+              ? document.fonts.ready
+              : Promise.resolve();
+            Promise.race([fonts, new Promise((r) => setTimeout(r, 1200))]).then(
+              () => {
+                restore();
+                this._ready = true;
+              },
+            );
+          });
+          window.addEventListener("scroll", this.onScroll, { passive: true });
+          window.addEventListener("pagehide", this.save);
+        },
+      });
+
+      app.component("x-icon", {
+        props: { n: String },
+        computed: {
+          p() {
+            return ICONS[this.n] || "";
+          },
+        },
+        template:
+          '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" v-html="p"></svg>',
+      });
+
+      app.mount("#app");
+    </script>
+  </body>
+</html>
