@@ -6,7 +6,7 @@
 
 - `index.html`：單一檔案，含 CSS、Vue 範本（`<script type="text/x-template" id="tpl">`）、資料與程式（第二個 `<script>`）。
 - `js/vue.global.prod.js`：Vue 3 本機檔，必須和 `index.html` 一起部署，路徑不能變。
-- `img/`：`favicon.svg`、`favicon-32.png`、`apple-touch-icon.png`（180px）、`og.jpg`（1200×630，標題＋日期＋青海波；日期用標題色、標題與日期之間不放分隔線）。`<head>` 的 `og:url`／`og:image` 用絕對網址 `https://yuefenglinatwork.github.io/trip/202706-kyoto-maizuru/`，路徑改了要一起改。
+- `img/`：`favicon.svg`、`favicon-32.png`、`apple-touch-icon.png`（180px）、`og.jpg`（1200×630，標題＋日期＋青海波；日期用標題色、標題與日期之間不放分隔線）。`<head>` 的 `og:url`／`og:image` 用絕對網址 `https://yuefenglinatwork.github.io/trip/202706-kyoto-maizuru/`，路徑改了要一起改。重做 `og.jpg` 時把 `og:image` 的 `?v=` 改成當天日期（例：`?v=20261023`），LINE／Facebook 才會抓新圖。
 - 沒有建置流程、沒有伺服器。直接用瀏覽器開 `index.html`。
 - 使用者手動推到 GitHub Pages（公開 repo）。`index.html`、`js/`、`CLAUDE.md` 都會公開，任何人都看得到。
 
