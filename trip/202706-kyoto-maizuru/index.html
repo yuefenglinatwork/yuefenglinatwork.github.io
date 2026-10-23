@@ -45,6 +45,7 @@
         --line: #e4ddd1;
         --accent: #b8442f;
         --accent-soft: #f6e3dc;
+        --on-accent: #fff;
         --indigo: #2f4a6d;
         --indigo-soft: #e3e9f2;
         --green: #3d6b4a;
@@ -71,6 +72,7 @@
           --line: #35323a;
           --accent: #e57a62;
           --accent-soft: #3a2622;
+          --on-accent: #1a1210;
           --indigo: #8fb0dc;
           --indigo-soft: #232c3a;
           --green: #8cc39a;
@@ -88,6 +90,7 @@
         --line: #35323a;
         --accent: #e57a62;
         --accent-soft: #3a2622;
+        --on-accent: #1a1210;
         --indigo: #8fb0dc;
         --indigo-soft: #232c3a;
         --green: #8cc39a;
@@ -304,7 +307,7 @@
       nav.days a.active {
         background: var(--accent);
         border-color: var(--accent);
-        color: #fff;
+        color: var(--on-accent);
       }
 
       section {
@@ -387,7 +390,7 @@
       .day-num {
         font-size: 15px;
         font-weight: 700;
-        color: #fff;
+        color: var(--on-accent);
         background: var(--accent);
         padding: 4px 14px;
         border-radius: 999px;
@@ -513,6 +516,10 @@
         padding-top: 3px;
         text-align: right;
         line-height: 1.4;
+      }
+      .tl .t span {
+        display: inline-block;
+        white-space: nowrap;
       }
       .tl .what {
         grid-column: 3;
@@ -678,7 +685,7 @@
       .plan-tabs button[aria-pressed="true"] {
         background: var(--accent);
         border-color: var(--accent);
-        color: #fff;
+        color: var(--on-accent);
       }
 
       .check-group {
@@ -787,7 +794,7 @@
       }
       .check .book:hover {
         background: var(--accent);
-        color: #fff;
+        color: var(--on-accent);
       }
       .check .ttl {
         font-weight: 600;
@@ -881,7 +888,7 @@
       .fab-btn[aria-pressed="true"] {
         background: var(--accent);
         border-color: var(--accent);
-        color: #fff;
+        color: var(--on-accent);
       }
       .fab-menu {
         display: flex;
@@ -965,7 +972,7 @@
         font-size: 11px;
         font-weight: 700;
         background: var(--accent);
-        color: #fff;
+        color: var(--on-accent);
         border-radius: 999px;
         min-width: 20px;
         height: 20px;
@@ -1316,7 +1323,7 @@
 
           <section v-for="d in days" :key="d.id" :id="d.id" class="card day" data-spy>
             <div class="day-head">
-              <span class="day-num">{{ d.n }}</span>
+              <span class="day-num">{{ d.n[lang] }}</span>
               <span class="day-title">{{ d.title[lang] }}</span>
               <span class="day-date"><x-icon n="calendar"/>{{ dateLabel(d) }}</span>
               <span v-if="d.badge" class="badge" :class="d.badge.cls">{{ d.badge[lang] }}</span>
@@ -1330,7 +1337,7 @@
                 <p v-if="d.plans && cur(d).intro" class="small" style="margin:0 0 14px" v-html="cur(d).intro[lang]"></p>
                 <ol class="tl">
                   <li v-for="(it,i) in cur(d).timeline" :key="i" :class="{move: it.move}">
-                    <div class="t">{{ it.move ? '' : txt(it.t) }}</div>
+                    <div class="t"><template v-if="!it.move"><span v-for="(p,k) in tParts(it.t)" :key="k">{{ p }}</span></template></div>
                     <div class="what">
                       <b><x-icon v-if="it.move" n="route"/>{{ it.title[lang] }}</b>
                       <span v-if="it.desc">{{ it.desc[lang] }}</span>
@@ -1346,7 +1353,7 @@
               </div>
               <div class="side">
                 <h4><x-icon n="map"/>{{ u.dayMap }}</h4>
-                <iframe class="map-frame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" :src="embed(cur(d).map)" :title="d.n"></iframe>
+                <iframe class="map-frame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" :src="embed(cur(d).map)" :title="d.n[lang]"></iframe>
                 <h4 style="margin-top:22px"><x-icon n="nav"/>{{ fromHere ? u.dayNavHere : u.dayNav }}</h4>
                 <div class="legs">
                   <a v-for="(l,i) in cur(d).legs" :key="i" class="leg" :href="navUrl(l)" target="_blank" rel="noopener">
@@ -1796,7 +1803,7 @@
       const DAYS = [
         {
           id: "d1",
-          n: "Day 1",
+          n: L("第 1 日", "1 日目"),
           md: "6/4",
           wd: 5,
           stay: "potel",
@@ -1910,7 +1917,7 @@
         },
         {
           id: "d2",
-          n: "Day 2",
+          n: L("第 2 日", "2 日目"),
           md: "6/5",
           wd: 6,
           stay: "bellmare",
@@ -2339,7 +2346,7 @@
         },
         {
           id: "d3",
-          n: "Day 3",
+          n: L("第 3 日", "3 日目"),
           md: "6/6",
           wd: 0,
           stay: "potel",
@@ -2595,7 +2602,7 @@
         },
         {
           id: "d4",
-          n: "Day 4",
+          n: L("第 4 日", "4 日目"),
           md: "6/7",
           wd: 1,
           stay: "potel",
@@ -2684,7 +2691,7 @@
         },
         {
           id: "d5",
-          n: "Day 5",
+          n: L("第 5 日", "5 日目"),
           md: "6/8",
           wd: 2,
           stay: "potel",
@@ -2769,7 +2776,7 @@
         },
         {
           id: "d6",
-          n: "Day 6",
+          n: L("第 6 日", "6 日目"),
           md: "6/9",
           wd: 3,
           stay: "potel",
@@ -2962,7 +2969,7 @@
         },
         {
           id: "d7",
-          n: "Day 7",
+          n: L("第 7 日", "7 日目"),
           md: "6/10",
           wd: 4,
           stay: "potel",
@@ -3179,7 +3186,7 @@
         },
         {
           id: "d8",
-          n: "Day 8",
+          n: L("第 8 日", "8 日目"),
           md: "6/11",
           wd: 5,
           stay: "none",
@@ -3976,7 +3983,7 @@
               { id: "stay", label: u.navStay, icon: "bed" },
               ...this.days.map((d) => ({
                 id: d.id,
-                label: `${d.n} · ${d.md}`,
+                label: `${d.n[this.lang]} · ${d.md}`,
               })),
               { id: "shop", label: u.navShop, icon: "bag" },
               { id: "show", label: u.navShow, icon: "qr" },
@@ -4040,6 +4047,9 @@
           },
         },
         methods: {
+          tParts(v) {
+            return String(this.txt(v)).split(/(?<=[～〜~])/);
+          },
           txt(v) {
             return v && typeof v === "object" ? v[this.lang] : v;
           },
