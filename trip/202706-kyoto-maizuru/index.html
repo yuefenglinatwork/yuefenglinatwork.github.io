@@ -440,6 +440,50 @@
       .stay b {
         color: var(--ink);
       }
+      .wx {
+        margin: 12px 36px 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 8px;
+      }
+      .wx-i {
+        min-width: 0;
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      .wx-h {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--muted);
+      }
+      .wx-h .ic {
+        color: var(--indigo);
+      }
+      .wx-d {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0 10px;
+      }
+      .wx-d .lo,
+      .wx-d .p {
+        color: var(--muted);
+      }
+      .wx-d .p {
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+      }
+      .wx-src {
+        grid-column: 1 / -1;
+        margin: 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
       .day-body {
         display: grid;
         grid-template-columns: 1.15fr 1fr;
@@ -1117,6 +1161,10 @@
         .stay {
           margin: 10px 20px 0;
         }
+        .wx {
+          margin: 10px 20px 0;
+          grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        }
         .day-body {
           padding: 20px;
           gap: 28px;
@@ -1329,6 +1377,21 @@
               <span v-if="d.badge" class="badge" :class="d.badge.cls">{{ d.badge[lang] }}</span>
             </div>
             <div class="stay"><x-icon n="bed"/>{{ u.stayLabel }}<b>{{ stayName(d) }}</b></div>
+            <div class="wx">
+              <div v-for="a in d.wx" :key="a" class="wx-i">
+                <div class="wx-h"><x-icon :n="wxIcon(wxNowOf(d, a) || wxOf(d, a))"/>{{ areas[a].name[lang] }}</div>
+                <div v-if="wxNowOf(d, a)" class="wx-d">
+                  <span>{{ u.wxNow }} <b>{{ wxNowOf(d, a).t }}°</b></span><span>{{ wxText(wxNowOf(d, a)) }}</span>
+                </div>
+                <div v-if="wxOf(d, a)" class="wx-d">
+                  <span>{{ wxText(wxOf(d, a)) }}</span>
+                  <span><b>{{ wxOf(d, a).hi }}°</b><span class="lo"> / {{ wxOf(d, a).lo }}°</span></span>
+                  <span class="p"><x-icon n="drop"/>{{ wxOf(d, a).p }}{{ wxOf(d, a).old ? ' mm' : '%' }}</span>
+                </div>
+                <div v-else class="wx-d"><span class="lo">—</span></div>
+              </div>
+              <p v-if="wxSrc(d)" class="wx-src">{{ wxSrc(d) }}</p>
+            </div>
             <div class="day-body">
               <div>
                 <div v-if="d.heads" class="plan-tabs" role="group" style="margin-bottom:10px">
@@ -1551,6 +1614,22 @@
         ticket: '<path d="M160-160q-33 0-56.5-23.5T80-240v-135q0-11 7-19t18-10q24-8 39.5-29t15.5-47q0-26-15.5-47T105-556q-11-2-18-10t-7-19v-135q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v135q0 11-7 19t-18 10q-24 8-39.5 29T800-480q0 26 15.5 47t39.5 29q11 2 18 10t7 19v135q0 33-23.5 56.5T800-160H160Zm0-80h640v-102q-37-22-58.5-58.5T720-480q0-43 21.5-79.5T800-618v-102H160v102q37 22 58.5 58.5T240-480q0 43-21.5 79.5T160-342v102Zm320-40q17 0 28.5-11.5T520-320q0-17-11.5-28.5T480-360q-17 0-28.5 11.5T440-320q0 17 11.5 28.5T480-280Zm0-160q17 0 28.5-11.5T520-480q0-17-11.5-28.5T480-520q-17 0-28.5 11.5T440-480q0 17 11.5 28.5T480-440Zm0-160q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 120Z"/>',
         phone: '<path d="M280-40q-33 0-56.5-23.5T200-120v-720q0-33 23.5-56.5T280-920h400q33 0 56.5 23.5T760-840v124q18 7 29 22t11 34v80q0 19-11 34t-29 22v404q0 33-23.5 56.5T680-40H280Zm0-80h400v-720H280v720Zm0 0v-720 720Zm228.5-611.5Q520-743 520-760t-11.5-28.5Q497-800 480-800t-28.5 11.5Q440-777 440-760t11.5 28.5Q463-720 480-720t28.5-11.5Z"/>',
         qr: '<path d="M520-120v-80h80v80h-80Zm-80-80v-200h80v200h-80Zm320-120v-160h80v160h-80Zm-80-160v-80h80v80h-80Zm-480 80v-80h80v80h-80Zm-80-80v-80h80v80h-80Zm360-280v-80h80v80h-80ZM180-660h120v-120H180v120Zm-60 20v-160q0-17 11.5-28.5T160-840h160q17 0 28.5 11.5T360-800v160q0 17-11.5 28.5T320-600H160q-17 0-28.5-11.5T120-640Zm60 460h120v-120H180v120Zm-60 20v-160q0-17 11.5-28.5T160-360h160q17 0 28.5 11.5T360-320v160q0 17-11.5 28.5T320-120H160q-17 0-28.5-11.5T120-160Zm540-500h120v-120H660v120Zm-60 20v-160q0-17 11.5-28.5T640-840h160q17 0 28.5 11.5T840-800v160q0 17-11.5 28.5T800-600H640q-17 0-28.5-11.5T600-640Zm80 520v-120h-80v-80h160v120h80v80H680ZM520-400v-80h160v80H520Zm-160 0v-80h-80v-80h240v80h-80v80h-80Zm40-200v-160h80v80h80v80H400Zm-190-90v-60h60v60h-60Zm0 480v-60h60v60h-60Zm480-480v-60h60v60h-60Z"/>',
+        wsun:
+          '<path d="M451.5-771.5Q440-783 440-800v-80q0-17 11.5-28.5T480-920q17 0 28.5 11.5T520-880v80q0 17-11.5 28.5T480-760q-17 0-28.5-11.5ZM678-678q-11-11-11-27.5t11-28.5l56-57q12-12 28.5-12t28.5 12q11 11 11 28t-11 28l-57 57q-11 11-28 11t-28-11Zm122 238q-17 0-28.5-11.5T760-480q0-17 11.5-28.5T800-520h80q17 0 28.5 11.5T920-480q0 17-11.5 28.5T880-440h-80ZM451.5-51.5Q440-63 440-80v-80q0-17 11.5-28.5T480-200q17 0 28.5 11.5T520-160v80q0 17-11.5 28.5T480-40q-17 0-28.5-11.5ZM226-678l-57-56q-12-12-12-29t12-28q11-11 28-11t28 11l57 57q11 11 11 28t-11 28q-12 11-28 11t-28-11Zm508 509-56-57q-11-12-11-28.5t11-27.5q11-11 27.5-11t28.5 11l57 56q12 11 11.5 28T791-169q-12 12-29 12t-28-12ZM80-440q-17 0-28.5-11.5T40-480q0-17 11.5-28.5T80-520h80q17 0 28.5 11.5T200-480q0 17-11.5 28.5T160-440H80Zm89 271q-11-11-11-28t11-28l57-57q11-11 27.5-11t28.5 11q12 12 12 28.5T282-225l-56 56q-12 12-29 12t-28-12Zm141-141q-70-70-70-170t70-170q70-70 170-70t170 70q70 70 70 170t-70 170q-70 70-170 70t-170-70Zm283-57q47-47 47-113t-47-113q-47-47-113-47t-113 47q-47 47-47 113t47 113q47 47 113 47t113-47ZM480-480Z"/>',
+        wpart:
+          '<path d="M451.5-771.5Q440-783 440-800v-80q0-17 11.5-28.5T480-920q17 0 28.5 11.5T520-880v80q0 17-11.5 28.5T480-760q-17 0-28.5-11.5ZM678-678q-11-11-11-28t11-28l56-57q12-12 28.5-12t28.5 12q11 11 11 28t-11 28l-57 57q-11 11-28 11t-28-11Zm122 238q-17 0-28.5-11.5T760-480q0-17 11.5-28.5T800-520h80q17 0 28.5 11.5T920-480q0 17-11.5 28.5T880-440h-80Zm-66 271-56-57q-11-11-11-28t11-28q11-11 28-11t28 11l57 56q12 12 12 28.5T791-169q-12 12-28.5 12T734-169ZM226-678l-57-57q-11-11-11-28t11-28q12-12 28.5-12t28.5 12l56 57q11 11 11 28t-11 28q-11 11-28 11t-28-11Zm14 478h180q25 0 42.5-17.5T480-260q0-25-17-42.5T421-320h-51l-20-48q-14-33-44-52.5T240-440q-50 0-85 35t-35 85q0 50 35 85t85 35Zm0 80q-83 0-141.5-58.5T40-320q0-83 58.5-141.5T240-520q60 0 109.5 32.5T423-400q58 0 97.5 43T560-254q-2 57-42.5 95.5T420-120H240Zm320-134q-5-20-10-39t-10-39q45-19 72.5-59t27.5-89q0-66-47-113t-113-47q-60 0-105 39t-53 99q-20-5-41-9t-41-9q14-88 82.5-144T480-720q100 0 170 70t70 170q0 77-44 138.5T560-254Zm-79-226Z"/>',
+        wcloud:
+          '<path d="M260-160q-91 0-155.5-63T40-377q0-78 47-139t123-78q25-92 100-149t170-57q117 0 198.5 81.5T760-520q69 8 114.5 59.5T920-340q0 75-52.5 127.5T740-160H260Zm0-80h480q42 0 71-29t29-71q0-42-29-71t-71-29h-60v-80q0-83-58.5-141.5T480-720q-83 0-141.5 58.5T280-520h-20q-58 0-99 41t-41 99q0 58 41 99t99 41Zm220-240Z"/>',
+        wfog:
+          '<path d="M720-200q-17 0-28.5-11.5T680-240q0-17 11.5-28.5T720-280q17 0 28.5 11.5T760-240q0 17-11.5 28.5T720-200ZM280-80q-17 0-28.5-11.5T240-120q0-17 11.5-28.5T280-160q17 0 28.5 11.5T320-120q0 17-11.5 28.5T280-80Zm-40-120q-17 0-28.5-11.5T200-240q0-17 11.5-28.5T240-280h360q17 0 28.5 11.5T640-240q0 17-11.5 28.5T600-200H240ZM400-80q-17 0-28.5-11.5T360-120q0-17 11.5-28.5T400-160h280q17 0 28.5 11.5T720-120q0 17-11.5 28.5T680-80H400ZM300-320q-91 0-155.5-64.5T80-540q0-83 55-145t136-73q32-57 87.5-89.5T480-880q90 0 156.5 57.5T717-679q69 6 116 57t47 122q0 75-52.5 127.5T700-320H300Zm0-80h400q42 0 71-29t29-71q0-42-29-71t-71-29h-60v-40q0-66-47-113t-113-47q-48 0-87.5 26T333-704l-10 24h-25q-57 2-97.5 42.5T160-540q0 58 41 99t99 41Zm180-200Z"/>',
+        wrain:
+          '<path d="M558-84q-15 8-30.5 2.5T504-102l-60-120q-8-15-2.5-30.5T462-276q15-8 30.5-2.5T516-258l60 120q8 15 2.5 30.5T558-84Zm240 0q-15 8-30.5 2.5T744-102l-60-120q-8-15-2.5-30.5T702-276q15-8 30.5-2.5T756-258l60 120q8 15 2.5 30.5T798-84Zm-480 0q-15 8-30.5 2.5T264-102l-60-120q-8-15-2.5-30.5T222-276q15-8 30.5-2.5T276-258l60 120q8 15 2.5 30.5T318-84Zm-18-236q-91 0-155.5-64.5T80-540q0-83 55-145t136-73q32-57 87.5-89.5T480-880q90 0 156.5 57.5T717-679q69 6 116 57t47 122q0 75-52.5 127.5T700-320H300Zm0-80h400q42 0 71-29t29-71q0-42-29-71t-71-29h-60v-40q0-66-47-113t-113-47q-48 0-87.5 26T333-704l-10 24h-25q-57 2-97.5 42.5T160-540q0 58 41 99t99 41Zm180-200Z"/>',
+        wsnow:
+          '<path d="M224.5-214.5Q210-229 210-250t14.5-35.5Q239-300 260-300t35.5 14.5Q310-271 310-250t-14.5 35.5Q281-200 260-200t-35.5-14.5Zm120 120Q330-109 330-130t14.5-35.5Q359-180 380-180t35.5 14.5Q430-151 430-130t-14.5 35.5Q401-80 380-80t-35.5-14.5Zm120-120Q450-229 450-250t14.5-35.5Q479-300 500-300t35.5 14.5Q550-271 550-250t-14.5 35.5Q521-200 500-200t-35.5-14.5Zm240 0Q690-229 690-250t14.5-35.5Q719-300 740-300t35.5 14.5Q790-271 790-250t-14.5 35.5Q761-200 740-200t-35.5-14.5Zm-120 120Q570-109 570-130t14.5-35.5Q599-180 620-180t35.5 14.5Q670-151 670-130t-14.5 35.5Q641-80 620-80t-35.5-14.5ZM300-360q-91 0-155.5-64.5T80-580q0-83 55-145t136-73q32-57 87.5-89.5T480-920q90 0 156.5 57.5T717-719q69 6 116 57t47 122q0 75-52.5 127.5T700-360H300Zm0-80h400q42 0 71-29t29-71q0-42-29-71t-71-29h-60v-40q0-66-47-113t-113-47q-48 0-87.5 26T333-744l-10 24h-25q-57 2-97.5 42.5T160-580q0 58 41 99t99 41Zm180-100Z"/>',
+        wstorm:
+          '<path d="M327-40q-10 0-15.5-8T309-65l27-75h-62q-5 0-8-4t-1-9l38-107q3-9 10.5-14.5T331-280h49q11 0 17 9t1 19l-31 72h62q6 0 9 5.5t-1 10.5L346-47q-3 4-7 5.5T327-40Zm270-40q-10 0-15.5-8t-2.5-17l19-55h-64q-5 0-8-4t-1-9l31-87q3-9 10.5-14.5T584-280h48q11 0 17.5 9t1.5 19l-23 52h61q6 0 8.5 5.5T696-184l-80 97q-1 1-19 7ZM300-320q-91 0-155.5-64.5T80-540q0-83 55-145t136-73q32-57 87.5-89.5T480-880q90 0 156.5 57.5T717-679q69 6 116 57t47 122q0 75-52.5 127.5T700-320H300Zm0-80h400q42 0 71-29t29-71q0-42-29-71t-71-29h-60v-40q0-66-47-113t-113-47q-48 0-87.5 26T333-704l-10 24h-25q-57 2-97.5 42.5T160-540q0 58 41 99t99 41Zm180-200Z"/>',
+        drop:
+          '<path d="M251.5-174Q160-268 160-408q0-62 28-124t70-119q42-57 91-107t91-87q8-8 18.5-11.5T480-860q11 0 21.5 3.5T520-845q42 37 91 87t91 107q42 57 70 119t28 124q0 140-91.5 234T480-80q-137 0-228.5-94ZM652-230.5Q720-301 720-408q0-73-60.5-165T480-774Q361-665 300.5-573T240-408q0 107 68 177.5T480-160q104 0 172-70.5ZM480-480Zm11 280q12-1 20.5-9.5T520-230q0-14-9-22.5t-23-7.5q-41 3-87-22.5T343-375q-2-11-10.5-18t-19.5-7q-14 0-23 10.5t-6 24.5q17 91 80 130t127 35Z"/>',
       };
 
       const UI = {
@@ -1603,6 +1682,9 @@
           shopNote:
             "不在原本行程裡，臨時想逛時用。點卡片會從目前位置用大眾運輸導航過去。營業時間是 2026/10 查到的，出發前再確認。",
           wd: ["日", "一", "二", "三", "四", "五", "六"],
+          wxNow: "現在",
+          wxOld: "預報行程前 16 天才有；目前是去年同日（2026/",
+          wxOldEnd: "）實際天氣，僅供參考",
         },
         ja: {
           docTitle: "京都・舞鶴 7泊8日｜2027/06/04 ~ 06/11",
@@ -1653,6 +1735,9 @@
           shopNote:
             "予定外に買い物したくなったとき用。カードを押すと現在地から公共交通機関でナビします。営業時間は 2026 年 10 月時点の情報なので、出発前に再確認を。",
           wd: ["日", "月", "火", "水", "木", "金", "土"],
+          wxNow: "現在",
+          wxOld: "予報は 16 日前から。いまは昨年同日（2026/",
+          wxOldEnd: "）の実際の天気（参考）",
         },
       };
 
@@ -1707,6 +1792,29 @@
           ),
         },
       ];
+
+      const WX_STORE = "kyoto2027-wx";
+      const WX_AREAS = {
+        kix: { name: L("關西機場", "関西空港"), lat: 34.4347, lon: 135.244 },
+        kyoto: { name: L("京都市區", "京都市内"), lat: 34.9858, lon: 135.7588 },
+        amano: { name: L("天橋立", "天橋立"), lat: 35.5571, lon: 135.1826 },
+        maizuru: { name: L("舞鶴", "舞鶴"), lat: 35.4675, lon: 135.3858 },
+        fushimi: { name: L("伏見", "伏見"), lat: 34.9325, lon: 135.7612 },
+        uji: { name: L("宇治", "宇治"), lat: 34.9013, lon: 135.8188 },
+      };
+      const WX_CODES = [
+        [[0, 1], "wsun", L("晴", "晴れ")],
+        [[2], "wpart", L("晴時多雲", "晴れ時々曇り")],
+        [[3], "wcloud", L("陰", "曇り")],
+        [[45, 48], "wfog", L("霧", "霧")],
+        [[51, 53, 55, 56, 57], "wrain", L("毛毛雨", "霧雨")],
+        [[61, 63, 65, 66, 67, 80, 81, 82], "wrain", L("雨", "雨")],
+        [[71, 73, 75, 77, 85, 86], "wsnow", L("雪", "雪")],
+        [[95, 96, 99], "wstorm", L("雷雨", "雷雨")],
+      ];
+
+      const WX_DAY = (n) =>
+        new Date(Date.now() + 9 * 36e5 + n * 864e5).toISOString().slice(0, 10);
 
       const STAY_NAMES = {
         potel: L(HOTEL, HOTEL),
@@ -1868,6 +1976,7 @@
           n: L("第 1 日", "1 日目"),
           md: "6/4",
           wd: 5,
+          wx: ["kix", "kyoto"],
           stay: "potel",
           title: L("抵達京都", "京都到着"),
           short: L("抵達、入住、京都站周邊", "到着・チェックイン・京都駅周辺"),
@@ -1982,6 +2091,7 @@
           n: L("第 2 日", "2 日目"),
           md: "6/5",
           wd: 6,
+          wx: ["amano", "maizuru"],
           stay: "bellmare",
           title: L(
             "京都 → 天橋立 → 丹後黑松號 → 舞鶴",
@@ -2483,6 +2593,7 @@
           n: L("第 3 日", "3 日目"),
           md: "6/6",
           wd: 0,
+          wx: ["maizuru", "kyoto"],
           stay: "potel",
           title: L("舞鶴紅磚公園 → 回京都", "舞鶴赤れんがパーク → 京都へ"),
           short: L(
@@ -2739,6 +2850,7 @@
           n: L("第 4 日", "4 日目"),
           md: "6/7",
           wd: 1,
+          wx: ["kyoto"],
           stay: "potel",
           title: L("武田病院 → 京都府立植物園", "武田病院 → 京都府立植物園"),
           short: L("領證明、看紫陽花", "証明書受取・アジサイ"),
@@ -2828,6 +2940,7 @@
           n: L("第 5 日", "5 日目"),
           md: "6/8",
           wd: 2,
+          wx: ["kyoto"],
           stay: "potel",
           title: L("京都鐵道博物館＋水族館", "京都鉄道博物館＋水族館"),
           short: L("鐵道博物館、水族館", "鉄道博物館・水族館"),
@@ -2913,6 +3026,7 @@
           n: L("第 6 日", "6 日目"),
           md: "6/9",
           wd: 3,
+          wx: ["fushimi", "uji"],
           stay: "potel",
           title: L(
             "サワダマキ淀店 → 三室戶寺 → 伏見",
@@ -3106,6 +3220,7 @@
           n: L("第 7 日", "7 日目"),
           md: "6/10",
           wd: 4,
+          wx: ["kyoto"],
           stay: "potel",
           title: L("四條百貨公司＋新風館購物日", "四条デパート巡り＋新風館"),
           short: L(
@@ -3323,6 +3438,7 @@
           n: L("第 8 日", "8 日目"),
           md: "6/11",
           wd: 5,
+          wx: ["kyoto", "kix"],
           stay: "none",
           title: L("退房返程", "チェックアウト・帰国"),
           short: L("退房、伊勢丹補買、前往機場", "チェックアウト・伊勢丹で買い足し・空港へ"),
@@ -4076,6 +4192,14 @@
         return s;
       }
 
+      function loadWx() {
+        try {
+          const w = JSON.parse(localStorage.getItem(WX_STORE) || "{}");
+          if (w.data) return w;
+        } catch (e) {}
+        return { data: {} };
+      }
+
       const app = Vue.createApp({
         template: "#tpl",
         data() {
@@ -4099,6 +4223,8 @@
             tags: TAGS,
             tips: TIPS,
             shops: SHOPS,
+            areas: WX_AREAS,
+            wx: loadWx(),
             overviewStops: [
               "京都駅",
               "天橋立駅",
@@ -4247,6 +4373,102 @@
               ? `${this.u.here} → ${s.split("→").pop().trim()}`
               : s;
           },
+          iso(d) {
+            const [m, dd] = d.md.split("/");
+            return `2027-${m.padStart(2, "0")}-${dd.padStart(2, "0")}`;
+          },
+          wxOf(d, a) {
+            return (this.wx.data[a] || {})[this.iso(d)] || null;
+          },
+          wxNowOf(d, a) {
+            const c = (this.wx.cur || {})[a];
+            return c && this.iso(d) === WX_DAY(0) && c.time.startsWith(WX_DAY(0))
+              ? c
+              : null;
+          },
+          wxCode(w) {
+            return w ? WX_CODES.find((c) => c[0].includes(w.c)) : null;
+          },
+          wxIcon(w) {
+            const c = this.wxCode(w);
+            return c ? c[1] : "wcloud";
+          },
+          wxText(w) {
+            const c = this.wxCode(w);
+            return c ? c[2][this.lang] : "";
+          },
+          wxSrc(d) {
+            const w = d.wx.map((a) => this.wxOf(d, a)).find(Boolean);
+            return w && w.old ? this.u.wxOld + d.md + this.u.wxOldEnd : "";
+          },
+          async fetchWx() {
+            const ids = Object.keys(WX_AREAS);
+            const dates = this.days.map((d) => this.iso(d)).sort();
+            const lo = WX_DAY(-90);
+            const hi = WX_DAY(15);
+            const now = dates.filter((x) => x >= lo && x <= hi);
+            const old = dates.filter((x) => !now.includes(x));
+            const ask = async (host, from, to, rain, extra) => {
+              const q = new URLSearchParams({
+                latitude: ids.map((k) => WX_AREAS[k].lat).join(","),
+                longitude: ids.map((k) => WX_AREAS[k].lon).join(","),
+                start_date: from,
+                end_date: to,
+                daily: `weather_code,temperature_2m_max,temperature_2m_min,${rain}`,
+                timezone: "Asia/Tokyo",
+                ...extra,
+              });
+              const r = await fetch(`https://${host}?${q}`);
+              if (!r.ok) throw new Error(r.status);
+              const j = await r.json();
+              return Array.isArray(j) ? j : [j];
+            };
+            const data = {};
+            const cur = {};
+            const put = (res, rain, old) =>
+              res.forEach((loc, i) => {
+                const o = (data[ids[i]] = data[ids[i]] || {});
+                loc.daily.time.forEach((t, k) => {
+                  if (loc.daily.weather_code[k] == null) return;
+                  o[old ? "2027" + t.slice(4) : t] = {
+                    c: loc.daily.weather_code[k],
+                    hi: Math.round(loc.daily.temperature_2m_max[k]),
+                    lo: Math.round(loc.daily.temperature_2m_min[k]),
+                    p: Math.round(loc.daily[rain][k] || 0),
+                    old,
+                  };
+                });
+                if (loc.current)
+                  cur[ids[i]] = {
+                    time: loc.current.time,
+                    c: loc.current.weather_code,
+                    t: Math.round(loc.current.temperature_2m),
+                  };
+              });
+            try {
+              if (old.length) {
+                const res = await ask(
+                  "archive-api.open-meteo.com/v1/archive",
+                  "2026" + old[0].slice(4),
+                  "2026" + old[old.length - 1].slice(4),
+                  "precipitation_sum",
+                );
+                put(res, "precipitation_sum", true);
+              }
+              if (now.length) {
+                const res = await ask(
+                  "api.open-meteo.com/v1/forecast",
+                  now[0],
+                  now[now.length - 1],
+                  "precipitation_probability_max",
+                  { current: "temperature_2m,weather_code" },
+                );
+                put(res, "precipitation_probability_max", false);
+              }
+              this.wx = { data, cur };
+              localStorage.setItem(WX_STORE, JSON.stringify(this.wx));
+            } catch (e) {}
+          },
           shopUrl(s) {
             return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(s.q)}&travelmode=transit`;
           },
@@ -4355,6 +4577,7 @@
             );
           });
           window.addEventListener("scroll", this.onScroll, { passive: true });
+          this.fetchWx();
           window.addEventListener("pagehide", this.save);
         },
       });
