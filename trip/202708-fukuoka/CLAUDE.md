@@ -77,6 +77,10 @@
 | B 糸島海岸（當地一日團） | B 公寓附近休息 |
 | C 海之中道海濱公園（JR 自己去） | C 再購物（運河城／天神／博多） |
 
+### 天氣
+
+照京都版移植（2026/10/25，使用者要求）。每天的 `wx: ["fuk", …]` 指到 `WX_AREAS`（`fuk` 福岡市區、`aso` 阿蘇、`kumamoto` 熊本、`noko` 能古島、`itoshima` 糸島、`uminaka` 海之中道、`momochi` 百道濱；名稱＋經緯度），住宿列下方顯示。有方案的天 `wx` 放在各方案裡，範本和 `wxSrc` 用 `cur(d).wx`，切換方案天氣跟著換（使用者要求）：每個方案第一格都放 `fuk`（出發地，使用者要求）：第 3 日 A `fuk`＋`aso`＋`kumamoto`、B `fuk`＋`itoshima`、C `fuk`＋`uminaka`；第 6 日 A `fuk`＋`momochi`、B／C `fuk`。第 5 日 `fuk`／`noko`，其他天 `fuk`。資料來自 Open-Meteo（免費、不用 key；畫面上不放 Open-Meteo 連結）：行程日在今天 −90 ~ +15 天內用預報（降雨機率 %），其餘用去年同日的歷史資料（降雨量 mm，標明僅供參考）；今天是行程日時加「現在 N° 天氣」。結果存在 `localStorage`（key `fukuoka2027-wx`，不要用京都的 `kyoto2027-wx`），抓不到時用上次的資料。CSS／圖示（`wsun`、`wpart`、`wcloud`、`wfog`、`wrain`、`wsnow`、`wstorm`、`drop`）／程式（`iso`、`wxOf`、`wxNowOf`、`wxCode`、`wxIcon`、`wxText`、`wxSrc`、`fetchWx`）與京都相同。
+
 ## 驗證
 
 改完一定要做：
@@ -163,7 +167,8 @@
 - 渡船時刻與票價、島上巴士、海島公園營業時間與入園費。
 - 機場 ↔ 博多西鐵巴士乘車處、票價、班次。
 - 博多阪急、運河城、各點心店營業時間；大丸肌膚之鑰／SHIRO、福岡三越 KINDCARE、伊東屋樓層。
-- NIKUICHI 訂位。
+- NIKUICHI 訂位；日本 SIM／eSIM 在出發前 1 個月左右（7/28 前後）買。
+- 天氣：8/13 之後打開網頁，確認每天卡片已換成預報（降雨顯示 %）、「僅供參考」說明消失；Open-Meteo 是否仍免費、不用 key。
 - 退稅新制在福岡機場的流程、JESTA 是否實施。
 
 ## 注意
