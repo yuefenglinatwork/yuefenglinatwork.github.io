@@ -31,7 +31,7 @@
 | 函式 | 用途 |
 |---|---|
 | `L(zh, ja)` | 中日對照文字 |
-| `P(t, [zh標題, zh說明], [ja標題, ja說明], links?)` | 時間軸「地點」項目；`t` 可以是時間字串或 `L("早上","朝")` |
+| `P(t, [zh標題, zh說明], [ja標題, ja說明], links?, q?)` | 時間軸「地點」項目；`t` 可以是時間字串或 `L("早上","朝")`；`q` 是 Google Maps 查詢字串（沒有連結時 `links` 寫 `null`） |
 | `M([zh…], [ja…], links?)` | 時間軸「移動」項目（無時間） |
 | `G(from, to, mode, zh, ja)` | 分段導航；`mode` 只能是 `"transit"` 或 `"walking"` |
 | `K(zh, ja, url)` | 外部連結按鈕（開新分頁） |
@@ -65,11 +65,22 @@
 | MOTHERHOUSE 大丸福岡天神店 本館 B1 | `gJBR8DP7BGficVSJ8` |
 | KINDCARE（使用者存的是 Solaria Terminal 大樓 = 福岡三越） | `XYUHCg5PPAxF3cLp8` |
 
+### 地圖切換與分段導航
+
+照京都版移植（2026/10/26，使用者要求）。程式（`pins`、`pinOf`、`pinPair`、`pin`、`pinLabel`、`pinLegs`、`legList`、`dayMap`、`legLabel`）、範本、CSS（`.tl-pin`、`.map-pin`、`.leg.on`）與京都相同。
+
+- 時間軸上有 `q` 的地點名稱可以點（虛線底線＋地圖圖示），當天地圖改成「上一個有 `q` 的地點 → 這個地點」，地圖上方顯示路段名稱和「回到全天路線」（`mapAll`）；再點一次也會回到全天路線。切換方案時清掉選取。
+- 同時對應的導航段亮起並排到最前：照時間軸順序比對 `G` 的 `to` 等於地點的 `q`，往前接上相連的段落直到上一個地點。所以 `q` 要和 `legs` 起訖字串一致，中途停留的地點要有一段 `G` 到那裡。航班起降、入境、退房這類和前一站同地點的項目不給 `q`。
+- 每天開頭是「公寓出發」地點項目（`q` = `HOTEL`），結尾是「回到公寓」；`legs` 最後一段回公寓、`map` 頭尾是公寓（第 1 日從機場開始、第 7 日到機場結束）。例外：第 3 日 A／B 是跟團，只有「公寓 → 博多站」一段，不亮；第 5 日 `map` 停在アイランドパーク（不畫回程海路）。
+- 段名寫「起點 → 終點」，括號只寫交通工具或線路（例：`（西鐵巴士）`、`（地下鐵七隈線）`、`（JR 鹿兒島本線・香椎線）`、`（渡船・西鐵巴士）`）；步行段不加括號。
+- 從目前位置出發（`fromHere`）：網址不帶 `origin`，圖示統一 `nav`，段名只顯示終點、拿掉括號，終點相同的段落只留第一個。
+- 餐廳二選一時 `q` 給第一個（第 2 日晚餐 ShinShin），另一家的段落不會亮。
+
 ### 方案（Day 3、Day 6）
 
 - 有方案時，`timeline`／`legs`／`map` 放在 `plans.{A,B,C}` 裡。顯示順序 = key 順序，第一個是預設。key 字母要和 `label` 開頭一致。
 - `next`／`fits` 目前沒用到（兩天的方案互不影響）。
-- 共用段落用展開：`D6_TAIL`（晚餐博多站周邊／運河城＋整理行李）、`D6_TAIL_LEGS`。NIKUICHI 在 Day 4 晚上（使用者 2026/10/24 從 Day 6 移過去）。
+- 共用段落用展開：`D6_TAIL`（島本明太子 → 晚餐博多站周邊／運河城 → 回公寓整理行李）、`D6_TAIL_LEGS`（公寓 → 島本 → 一蘭 運河城店 → 公寓）。NIKUICHI 在 Day 4 晚上（使用者 2026/10/24 從 Day 6 移過去）。
 
 | Day 3（8/30，週一） | Day 6（9/2，週四） |
 |---|---|
@@ -79,7 +90,7 @@
 
 ### 天氣
 
-照京都版移植（2026/10/25，使用者要求）。每天的 `wx: ["fuk", …]` 指到 `WX_AREAS`（`fuk` 福岡市區、`aso` 阿蘇、`kumamoto` 熊本、`noko` 能古島、`itoshima` 糸島、`uminaka` 海之中道、`momochi` 百道濱；名稱＋經緯度），住宿列下方顯示。有方案的天 `wx` 放在各方案裡，範本和 `wxSrc` 用 `cur(d).wx`，切換方案天氣跟著換（使用者要求）：每個方案第一格都放 `fuk`（出發地，使用者要求）：第 3 日 A `fuk`＋`aso`＋`kumamoto`、B `fuk`＋`itoshima`、C `fuk`＋`uminaka`；第 6 日 A `fuk`＋`momochi`、B／C `fuk`。第 5 日 `fuk`／`noko`，其他天 `fuk`。資料來自 Open-Meteo（免費、不用 key；畫面上不放 Open-Meteo 連結）：行程日在今天 −90 ~ +15 天內用預報（降雨機率 %），其餘用去年同日的歷史資料（降雨量 mm，標明僅供參考）；今天是行程日時加「現在 N° 天氣」。結果存在 `localStorage`（key `fukuoka2027-wx`，不要用京都的 `kyoto2027-wx`），抓不到時用上次的資料。CSS／圖示（`wsun`、`wpart`、`wcloud`、`wfog`、`wrain`、`wsnow`、`wstorm`、`drop`）／程式（`iso`、`wxOf`、`wxNowOf`、`wxCode`、`wxIcon`、`wxText`、`wxSrc`、`fetchWx`）與京都相同。
+照京都版移植（2026/10/25，使用者要求）。每天的 `wx: ["fuk", …]` 指到 `WX_AREAS`（`fuk` 福岡市區、`aso` 阿蘇、`kumamoto` 熊本、`noko` 能古島、`itoshima` 糸島、`uminaka` 海之中道、`momochi` 百道濱；名稱＋經緯度），住宿列下方顯示。有方案的天 `wx` 放在各方案裡，範本和 `wxSrc` 用 `wxAreas(d)`（方案的 `wx`，沒有就用當天的），切換方案天氣跟著換（使用者要求）：每個方案第一格都放 `fuk`（出發地，使用者要求）：第 3 日 A `fuk`＋`aso`＋`kumamoto`、B `fuk`＋`itoshima`、C `fuk`＋`uminaka`；第 6 日 A `fuk`＋`momochi`、B／C `fuk`。第 5 日 `fuk`／`noko`，其他天 `fuk`。資料來自 Open-Meteo（免費、不用 key；畫面上不放 Open-Meteo 連結）：行程日在今天 −90 ~ +15 天內用預報（降雨機率 %），其餘用去年同日的歷史資料（降雨量 mm，標明僅供參考）；今天是行程日時加「現在 N° 天氣」。結果存在 `localStorage`（key `fukuoka2027-wx`，不要用京都的 `kyoto2027-wx`），抓不到時用上次的資料。CSS／圖示（`wsun`、`wpart`、`wcloud`、`wfog`、`wrain`、`wsnow`、`wstorm`、`drop`）／程式（`iso`、`wxOf`、`wxNowOf`、`wxCode`、`wxIcon`、`wxText`、`wxSrc`、`fetchWx`）與京都相同。
 
 ## 驗證
 
@@ -88,7 +99,7 @@
 1. 語法：把第二個 `<script>`（以 `const STORE` 開頭）抽出成 .js，執行 `node --check`。
 2. 資料：用 node `vm` 執行資料區（到 `const app = Vue.createApp` 之前），檢查：每個 `L` 的 zh／ja 都非空、`UI.zh` 與 `UI.ja` key 相同、`CHECKS` id 不重複、`G` 的 mode 合法、`next`／`fits` 指到存在的方案、`SH` 的 id 存在於 `SHOWS`、`K` 都有 http(s) 網址、範本用到的 `u.xxx` 都在 `UI`、圖示都在 `ICONS`、程式沒有註解。
 3. 網址：逐一實際請求。`klook.com` 會擋自動請求（403），不算壞掉。
-4. Vue 範本在 node 無法編譯（瀏覽器版需要 DOM），範本改動要請使用者在瀏覽器確認。可用 headless Chrome `--dump-dom`／`--screenshot` 先看。
+4. Vue 範本在 node 無法編譯（瀏覽器版需要 DOM），範本改動要請使用者在瀏覽器確認。可以用本機 Chrome（`C:/Program Files/Google/Chrome/Application/chrome.exe`）＋ `puppeteer-core`（裝在 scratchpad，不裝進專案）無頭開 `index.html` 測：點每天每個地點（地圖、亮起的導航）、切方案、從目前位置出發、手機寬 375px 沒有橫向捲動。無頭測試不等於使用者手機實測，回報時要說明。
 5. 用「旅行者走一遍」：從 8/28 到 9/3 逐段算移動時間＋停留時間，對班次、開門／截止時間、星期與公休日。
 
 不要回報沒做過的驗證；沒在瀏覽器實際打開就明說。
@@ -159,6 +170,7 @@
 - 無印良品 天神ショッパーズ福岡 2F：9:00–21:00（天神 4-4-11）。
 - ミーナ天神：1–6F 10:00–20:00（2025/10 資料）。
 - AMU PLAZA 博多：10:00–20:00（無印良品官網寫準用商場時間）；博多阪急營業時間未查到。
+- 2026/10/26 旅行者走一遍後查證：ShinShin 博多デイトス店在 DEITOS 2F「博多めん街道」（食べログ）；NIKUICHI 最近的站是藥院、藥院大通（都步行約 3 分鐘），觀光網站 crossroadfukuoka 寫 17:00–翌 1:00，和官網 16:00–24:00 不一致；福岡塔是西鐵巴士 306 番，從博多 BT 1F 發車（乘車處未查官方）；JR 博多 → 香椎 11 分＋香椎線 20 分＋步行 5 分，時間軸寫約 40–50 分鐘（含轉車等候）。第 5 日維持 08:45 出門（會在渡船場等 10:15 的船約 40 分鐘，使用者決定當緩衝）。
 - 福岡機場國際線 ↔ 博多站西鐵巴士：約 15–25 分鐘，票價各站寫 310／400 日圓不一，未確認。連絡巴士到國內線約 15 分鐘；地下鐵空港線 福岡空港 ↔ 博多 2 站約 5 分鐘、260 日圓。
 
 ## 出發前要再更新（2027 年 7–8 月）

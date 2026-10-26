@@ -581,6 +581,51 @@
         color: var(--muted);
         margin-top: 2px;
       }
+      .tl-pin {
+        font: inherit;
+        color: inherit;
+        background: none;
+        border: 0;
+        padding: 0;
+        text-align: left;
+        cursor: pointer;
+        text-decoration: underline dotted var(--line);
+        text-underline-offset: 4px;
+      }
+      .tl-pin .ic {
+        margin-left: 6px;
+        color: var(--muted);
+        vertical-align: -0.1em;
+      }
+      .tl-pin[aria-pressed="true"] {
+        color: var(--accent);
+        text-decoration: underline solid var(--accent);
+      }
+      .tl-pin[aria-pressed="true"] .ic {
+        color: var(--accent);
+      }
+      .map-pin {
+        margin: -4px 0 10px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 12px;
+        font-size: 15px;
+      }
+      .map-pin span {
+        font-weight: 600;
+        color: var(--accent);
+      }
+      .map-pin button {
+        font: inherit;
+        font-size: 14px;
+        padding: 4px 12px;
+        border-radius: 4px;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--ink);
+        cursor: pointer;
+      }
       .tl li.move .what b {
         color: var(--indigo);
         font-weight: 500;
@@ -647,6 +692,10 @@
         color: var(--ink);
         background: var(--bg);
         transition: 0.15s;
+      }
+      .leg.on {
+        border-color: var(--accent);
+        background: var(--accent-soft);
       }
       .leg:hover {
         border-color: var(--indigo);
@@ -1378,7 +1427,7 @@
             </div>
             <div class="stay"><x-icon n="bed"/>{{ u.stayLabel }}<b>{{ stayName(d) }}</b></div>
             <div class="wx">
-              <div v-for="a in cur(d).wx" :key="a" class="wx-i">
+              <div v-for="a in wxAreas(d)" :key="a" class="wx-i">
                 <div class="wx-h"><x-icon :n="wxIcon(wxNowOf(d, a) || wxOf(d, a))"/>{{ areas[a].name[lang] }}</div>
                 <div v-if="wxNowOf(d, a)" class="wx-d">
                   <span>{{ u.wxNow }} <b>{{ wxNowOf(d, a).t }}°</b></span><span>{{ wxText(wxNowOf(d, a)) }}</span>
@@ -1402,7 +1451,8 @@
                   <li v-for="(it,i) in cur(d).timeline" :key="i" :class="{move: it.move}">
                     <div class="t"><template v-if="!it.move"><span v-for="(p,k) in tParts(it.t)" :key="k">{{ p }}</span></template></div>
                     <div class="what">
-                      <b><x-icon v-if="it.move" n="route"/>{{ it.title[lang] }}</b>
+                      <b v-if="it.q"><button type="button" class="tl-pin" :aria-pressed="pinOf(d) === i" @click="pin(d, i)">{{ it.title[lang] }}<x-icon n="map"/></button></b>
+                      <b v-else><x-icon v-if="it.move" n="route"/>{{ it.title[lang] }}</b>
                       <span v-if="it.desc">{{ it.desc[lang] }}</span>
                       <div v-if="it.links" class="tl-links">
                         <template v-for="(k,i) in it.links" :key="i">
@@ -1416,14 +1466,15 @@
               </div>
               <div class="side">
                 <h4><x-icon n="map"/>{{ u.dayMap }}</h4>
-                <iframe class="map-frame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" :src="embed(cur(d).map)" :title="d.n[lang]"></iframe>
+                <p v-if="pinOf(d) !== null" class="map-pin"><span>{{ pinLabel(d) }}</span><button type="button" @click="pin(d, pinOf(d))">{{ u.mapAll }}</button></p>
+                <iframe :id="'map-' + d.id" class="map-frame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" :src="dayMap(d)" :title="d.n[lang]"></iframe>
                 <h4 style="margin-top:22px"><x-icon n="nav"/>{{ fromHere ? u.dayNavHere : u.dayNav }}</h4>
                 <div class="legs">
-                  <a v-for="(l,i) in cur(d).legs" :key="i" class="leg" :href="navUrl(l)" target="_blank" rel="noopener">
-                    <span class="m" :class="{walk: l.mode === 'walking'}" :title="u[l.mode] || u.transit">
-                      <x-icon :n="l.mode === 'walking' ? 'walk' : 'train'"/>
+                  <a v-for="x in legList(d)" :key="x.i" class="leg" :class="{on: x.on}" :href="navUrl(x.l)" target="_blank" rel="noopener">
+                    <span class="m" :class="{walk: !fromHere && x.l.mode === 'walking'}" :title="fromHere ? u.here : u[x.l.mode] || u.transit">
+                      <x-icon :n="fromHere ? 'nav' : x.l.mode === 'walking' ? 'walk' : 'train'"/>
                     </span>
-                    <span class="lbl">{{ legLabel(l) }}</span>
+                    <span class="lbl">{{ legLabel(x.l) }}</span>
                     <span class="go">{{ u.go }}<x-icon n="ext"/></span>
                   </a>
                 </div>
@@ -1525,11 +1576,12 @@
       const HOTEL = "博多駅前1丁目 福岡市博多区";
       const FUK_INTL = "福岡空港 国際線ターミナル";
       const L = (zh, ja) => ({ zh, ja });
-      const P = (t, zh, ja, links) => ({
+      const P = (t, zh, ja, links, q) => ({
         t,
         title: L(zh[0], ja[0]),
         desc: zh[1] ? L(zh[1], ja[1]) : null,
         links,
+        q,
       });
       const M = (zh, ja, links) => ({
         move: true,
@@ -1646,6 +1698,7 @@
           hereBtn: "分段導航改成從目前位置出發",
           here: "目前位置",
           dayNavHere: "分段導航（從目前位置出發）",
+          mapAll: "回到全天路線",
           navShop: "購物",
           shopTitle: "臨時想去買東西",
           goHere: "從目前位置導航",
@@ -1699,6 +1752,7 @@
           hereBtn: "区間ナビを現在地から出発に切り替え",
           here: "現在地",
           dayNavHere: "区間ナビ（現在地から出発）",
+          mapAll: "一日のルートに戻る",
           navShop: "買い物",
           shopTitle: "思い立ったら買い物",
           goHere: "現在地からナビ",
@@ -1782,6 +1836,8 @@
             "明太子のお土産（要冷蔵）",
             "島本 博多駅前店（御供所町、アパートから徒歩圏、9:00〜19:00）でチューブの明太子。やまやの明太子商品は博多駅かキャナルシティで。アパートで冷蔵し、翌日は預け荷物に",
           ],
+          null,
+          "島本 博多駅前店 福岡市博多区御供所町2-63",
         ),
         P(
           "17:30",
@@ -1793,6 +1849,8 @@
             "夕食：博多駅周辺かキャナルシティ",
             "まだ行けていない店へ。候補：一蘭 キャナルシティ博多店",
           ],
+          null,
+          "一蘭 キャナルシティ博多店",
         ),
         P(
           "19:00",
@@ -1804,6 +1862,8 @@
             "アパートに戻って荷造り",
             "翌日 09:30 にチェックアウトなので、今夜のうちに荷物をまとめる",
           ],
+          null,
+          HOTEL,
         ),
       ];
       const D6_TAIL_LEGS = [
@@ -1815,11 +1875,18 @@
           "アパート → 島本 博多駅前店",
         ),
         G(
-          HOTEL,
+          "島本 博多駅前店 福岡市博多区御供所町2-63",
           "一蘭 キャナルシティ博多店",
           "walking",
-          "公寓 → 一蘭 運河城店",
-          "アパート → 一蘭 キャナルシティ博多店",
+          "島本 → 一蘭 運河城店",
+          "島本 → 一蘭 キャナルシティ博多店",
+        ),
+        G(
+          "一蘭 キャナルシティ博多店",
+          HOTEL,
+          "walking",
+          "一蘭 運河城店 → 公寓",
+          "一蘭 キャナルシティ博多店 → アパート",
         ),
       ];
 
@@ -1849,6 +1916,8 @@
                 "福岡空港 国際線ターミナル 到着",
                 "日本時間（台湾より 1 時間早い）。着陸後に日本用 SIM／eSIM に切り替えてデータローミングをオン、通信できるか確認してから入国審査へ",
               ],
+              null,
+              FUK_INTL,
             ),
             P(
               "13:15",
@@ -1882,11 +1951,15 @@
                 "博多駅 → アパートにチェックイン",
                 "博多駅前 1 丁目まで徒歩約 5〜10 分。チェックイン時間・鍵の受け取りはホストの案内に従う",
               ],
+              null,
+              HOTEL,
             ),
             P(
               "16:00",
               ["博多站周邊散步", "熟悉車站周邊，找超市、藥妝、便利商店"],
               ["博多駅周辺を散歩", "駅周辺のスーパー・ドラッグストア・コンビニをチェック"],
+              null,
+              "博多駅",
             ),
             P(
               "17:30",
@@ -1898,25 +1971,37 @@
                 "夕食：串焼き とりかわ大臣 KITTE 博多店",
                 "KITTE 博多 B1F、博多駅博多口すぐ",
               ],
+              null,
+              "とりかわ大臣 KITTE博多",
             ),
             P(
               "19:00",
               ["超市、便利商店採買，回公寓休息", "早餐和飲料可以先買好"],
               ["スーパー・コンビニで買い出し、アパートで休む", "朝食や飲み物を買っておく"],
+              null,
+              HOTEL,
             ),
           ],
           legs: [
-            G(FUK_INTL, "博多駅", "transit", "機場 → 博多站", "空港 → 博多駅"),
+            G(FUK_INTL, "博多駅", "transit", "機場 → 博多站（西鐵巴士）", "空港 → 博多駅（西鉄バス）"),
             G("博多駅", HOTEL, "walking", "博多站 → 公寓", "博多駅 → アパート"),
+            G(HOTEL, "博多駅", "walking", "公寓 → 博多站", "アパート → 博多駅"),
             G(
-              HOTEL,
+              "博多駅",
               "とりかわ大臣 KITTE博多",
               "walking",
-              "公寓 → とりかわ大臣（KITTE 博多）",
-              "アパート → とりかわ大臣（KITTE 博多）",
+              "博多站 → とりかわ大臣",
+              "博多駅 → とりかわ大臣",
+            ),
+            G(
+              "とりかわ大臣 KITTE博多",
+              HOTEL,
+              "walking",
+              "とりかわ大臣 → 公寓",
+              "とりかわ大臣 → アパート",
             ),
           ],
-          map: [FUK_INTL, "博多駅", HOTEL, "KITTE博多"],
+          map: [FUK_INTL, "博多駅", HOTEL, "KITTE博多", HOTEL],
           notes: [
             L(
               "<b>筑紫麻糬（筑紫もち）</b>：想抵達就買來當零食。國際線入境後的商店不一定有，沒看到就在博多站的伴手禮店買；回程 9/3 在機場再補。",
@@ -1945,15 +2030,18 @@
             "KINDCARE（福岡三越）→ 大丸 → ワンビル → 無印良品 → ミーナ天神",
           ),
           timeline: [
-            M(
+            P(
+              "09:30",
               [
-                "09:30 公寓 → 天神南",
+                "公寓出發 → 天神南",
                 "步行到博多站，地下鐵七隈線到天神南，約 5 分鐘；走天神地下街到福岡三越約 5 分鐘",
               ],
               [
-                "09:30 アパート → 天神南",
+                "アパート出発 → 天神南",
                 "博多駅まで歩き、地下鉄七隈線で天神南へ約 5 分。天神地下街を通って福岡三越まで約 5 分",
               ],
+              null,
+              HOTEL,
             ),
             P(
               "10:00",
@@ -1965,6 +2053,8 @@
                 "KINDCARE 売場（福岡三越 5F）",
                 "ソラリアターミナルビル（西鉄福岡（天神）駅）の福岡三越、10:00 開店（20:00 まで）。ステッキ・カート・シルバーカー・機能性ウェア・シューズ・雑貨。SWANY などのショッピングカートも探す。三越は改装中なので売場は出発前に確認",
               ],
+              null,
+              "福岡三越",
             ),
             P(
               "10:45",
@@ -1976,6 +2066,8 @@
                 "大丸福岡天神店",
                 "三越から徒歩約 3 分。本館 B2〜1F・東館 B2〜2F は 20:00 まで、その他は 19:00 まで。クレ・ド・ポー ボーテは東館エルガーラ 1F。マザーハウスは本館 B1F（ワンビル 3F にもあり）。SHIRO は大丸にないので下の備考を参照",
               ],
+              null,
+              "大丸福岡天神店",
             ),
             P(
               "12:00",
@@ -1987,6 +2079,8 @@
                 "昼食：博多天ぷら たかお（福岡パルコ本館 B1F）",
                 "大丸から徒歩約 5 分。11:00 開店、日曜の昼は並ぶので早めに",
               ],
+              null,
+              "博多天ぷら たかお 福岡パルコ",
             ),
             P(
               "13:00",
@@ -1998,6 +2092,8 @@
                 "ONE FUKUOKA BLDG.（ワンビル）",
                 "日曜のショップは 10:00〜20:00。MoMA Design Store 2F・中川政七商店 3F・マザーハウス 3F・伊東屋 4F",
               ],
+              null,
+              "ONE FUKUOKA BLDG.",
             ),
             P(
               "15:00",
@@ -2009,6 +2105,8 @@
                 "無印良品 天神ショッパーズ福岡（2F）",
                 "9:00〜21:00。ミーナ天神のすぐ隣",
               ],
+              null,
+              "無印良品 天神ショッパーズ福岡",
             ),
             P(
               "16:00",
@@ -2020,6 +2118,8 @@
                 "ミーナ天神",
                 "ユニクロ 1F（ウィメンズ）・2F（メンズ・キッズ）、GU 3F、ロフト 4F、セリア 6F。1〜6F は 10:00〜20:00",
               ],
+              null,
+              "ミーナ天神",
             ),
             P(
               "18:30",
@@ -2031,14 +2131,25 @@
                 "夕食：ShinShin 天神本店 か 一蘭 天神店",
                 "混み具合を見てどちらか",
               ],
+              null,
+              "博多拉麵 ShinShin 天神本店",
             ),
-            M(
-              ["天神 → 博多 → 公寓", "地下鐵約 5–10 分鐘"],
-              ["天神 → 博多 → アパート", "地下鉄で約 5〜10 分"],
+            P(
+              L("晚餐後", "夕食後"),
+              ["天神 → 博多 → 回到公寓", "地下鐵約 5–10 分鐘"],
+              ["天神 → 博多 → アパートに戻る", "地下鉄で約 5〜10 分"],
+              null,
+              HOTEL,
             ),
           ],
           legs: [
-            G(HOTEL, "福岡三越", "transit", "公寓 → 福岡三越", "アパート → 福岡三越"),
+            G(
+              HOTEL,
+              "福岡三越",
+              "transit",
+              "公寓 → 福岡三越（地下鐵七隈線）",
+              "アパート → 福岡三越（地下鉄七隈線）",
+            ),
             G("福岡三越", "大丸福岡天神店", "walking", "福岡三越 → 大丸", "福岡三越 → 大丸"),
             G(
               "大丸福岡天神店",
@@ -2082,14 +2193,22 @@
               "Mina 天神 → 一蘭 天神店",
               "ミーナ天神 → 一蘭 天神店",
             ),
-            G("天神駅", HOTEL, "transit", "天神 → 公寓", "天神 → アパート"),
+            G(
+              "天神駅",
+              HOTEL,
+              "transit",
+              "天神 → 公寓（地下鐵空港線）",
+              "天神 → アパート（地下鉄空港線）",
+            ),
           ],
           map: [
+            HOTEL,
             "福岡三越",
             "大丸福岡天神店",
             "ONE FUKUOKA BLDG.",
             "無印良品 天神ショッパーズ福岡",
             "ミーナ天神",
+            HOTEL,
           ],
           notes: [
             L(
@@ -2137,6 +2256,7 @@
                     "集合時間・場所は Klook の案内に従う。Klook のバウチャーを用意",
                   ],
                   [SH("klook")],
+                  HOTEL,
                 ),
                 P(
                   L("上午", "午前"),
@@ -2147,6 +2267,8 @@
                   L("上午～下午", "午前〜午後"),
                   ["南阿蘇鐵道", "搭乘區段依團體安排"],
                   ["南阿蘇鉄道", "乗車区間はツアーの案内に従う"],
+                  null,
+                  "南阿蘇鉄道 高森駅",
                 ),
                 P(
                   L("中午～下午", "昼〜午後"),
@@ -2158,22 +2280,28 @@
                     "阿蘇山・草千里ヶ浜",
                     "火口に近づけるかは当日の規制次第。草千里の草原は火口規制の影響を受けない",
                   ],
+                  null,
+                  "草千里ヶ浜",
                 ),
                 P(
                   L("下午", "午後"),
                   ["熊本城、城彩苑", "停留時間依團體安排"],
                   ["熊本城・城彩苑", "滞在時間はツアーの案内に従う"],
+                  null,
+                  "熊本城",
                 ),
                 P(
                   L("晚上", "夜"),
-                  ["回福岡，簡單晚餐", "不排其他行程"],
-                  ["福岡に戻り、軽く夕食", "ほかの予定は入れない"],
+                  ["回福岡，簡單晚餐，回到公寓", "不排其他行程"],
+                  ["福岡に戻り、軽く夕食してアパートへ", "ほかの予定は入れない"],
+                  null,
+                  HOTEL,
                 ),
               ],
               legs: [
                 G(HOTEL, "博多駅", "walking", "公寓 → 博多站", "アパート → 博多駅"),
               ],
-              map: ["博多駅", "草千里ヶ浜", "南阿蘇鉄道 高森駅", "熊本城", "博多駅"],
+              map: [HOTEL, "南阿蘇鉄道 高森駅", "草千里ヶ浜", "熊本城", HOTEL],
             },
             B: {
               label: L("B 糸島海岸", "B 糸島"),
@@ -2187,22 +2315,28 @@
                   L("早上", "朝"),
                   ["公寓出發，到一日團集合地點", "集合時間、地點依團體通知"],
                   ["アパート出発、ツアーの集合場所へ", "集合時間・場所はツアーの案内に従う"],
+                  null,
+                  HOTEL,
                 ),
                 P(
                   L("白天", "日中"),
                   ["糸島海岸、海景咖啡廳、特色小店", "不排寺廟"],
                   ["糸島の海岸・海辺のカフェ・雑貨店", "寺社は入れない"],
+                  null,
+                  "糸島市",
                 ),
                 P(
                   L("傍晚", "夕方"),
-                  ["回博多，晚餐", "博多站周邊"],
-                  ["博多に戻り夕食", "博多駅周辺で"],
+                  ["回博多，晚餐，回到公寓", "博多站周邊"],
+                  ["博多に戻り夕食、アパートへ", "博多駅周辺で"],
+                  null,
+                  HOTEL,
                 ),
               ],
               legs: [
                 G(HOTEL, "博多駅", "walking", "公寓 → 博多站", "アパート → 博多駅"),
               ],
-              map: ["博多駅", "糸島市", "博多駅"],
+              map: [HOTEL, "糸島市", HOTEL],
             },
             C: {
               label: L("C 海之中道", "C 海の中道"),
@@ -2212,29 +2346,40 @@
                 "<b>C 海の中道海浜公園</b>：花・芝生・海。JR で自力で行く。園内が広く夏は日差しが強いので、1〜2 エリアに絞って回る。開園時間・入園料は出発前に確認。",
               ),
               timeline: [
+                P(
+                  "09:20",
+                  ["公寓出發 → 博多站", "步行約 5–10 分鐘"],
+                  ["アパート出発 → 博多駅", "徒歩約 5〜10 分"],
+                  null,
+                  HOTEL,
+                ),
                 M(
                   [
                     "09:30 博多 → 海ノ中道",
-                    "JR 鹿兒島本線到香椎，轉香椎線到海ノ中道站，約 50 分鐘",
+                    "JR 鹿兒島本線到香椎，轉香椎線到海ノ中道站，約 40–50 分鐘（含香椎轉車等候）",
                   ],
                   [
                     "09:30 博多 → 海ノ中道",
-                    "JR 鹿児島本線で香椎へ、香椎線に乗り換えて海ノ中道駅へ。約 50 分",
+                    "JR 鹿児島本線で香椎へ、香椎線に乗り換えて海ノ中道駅へ。約 40〜50 分（香椎での乗り換え待ちを含む）",
                   ],
                 ),
                 P(
                   "10:30",
                   ["海之中道海濱公園", "選一兩區逛；中午在園內吃"],
                   ["海の中道海浜公園", "1〜2 エリアに絞って。昼食は園内で"],
+                  null,
+                  "海の中道海浜公園",
                 ),
                 M(
-                  ["15:00 海ノ中道 → 博多", "原路回去，約 50 分鐘"],
-                  ["15:00 海ノ中道 → 博多", "同じルートで約 50 分"],
+                  ["15:00 海ノ中道 → 博多", "原路回去，約 40–50 分鐘"],
+                  ["15:00 海ノ中道 → 博多", "同じルートで約 40〜50 分"],
                 ),
                 P(
                   "16:00",
                   ["回公寓休息，晚餐博多站周邊", ""],
                   ["アパートで休憩、夕食は博多駅周辺", ""],
+                  null,
+                  HOTEL,
                 ),
               ],
               legs: [
@@ -2242,18 +2387,18 @@
                   HOTEL,
                   "海の中道海浜公園",
                   "transit",
-                  "公寓 → 海之中道海濱公園",
-                  "アパート → 海の中道海浜公園",
+                  "公寓 → 海之中道海濱公園（JR 鹿兒島本線・香椎線）",
+                  "アパート → 海の中道海浜公園（JR 鹿児島本線・香椎線）",
                 ),
                 G(
                   "海の中道海浜公園",
                   HOTEL,
                   "transit",
-                  "海之中道 → 公寓",
-                  "海の中道 → アパート",
+                  "海之中道 → 公寓（JR 香椎線・鹿兒島本線）",
+                  "海の中道 → アパート（JR 香椎線・鹿児島本線）",
                 ),
               ],
-              map: ["博多駅", "香椎駅", "海の中道海浜公園"],
+              map: [HOTEL, "香椎駅", "海の中道海浜公園", HOTEL],
             },
           },
           notes: [
@@ -2280,9 +2425,12 @@
             "アミュプラザ博多（Nintendo FUKUOKA）・博多阪急・お土産・ガチャ。夜は薬院で焼肉",
           ),
           timeline: [
-            M(
-              ["09:40 公寓 → 博多站", "步行約 5–10 分鐘"],
-              ["09:40 アパート → 博多駅", "徒歩約 5〜10 分"],
+            P(
+              "09:40",
+              ["公寓出發 → 博多站", "步行約 5–10 分鐘"],
+              ["アパート出発 → 博多駅", "徒歩約 5〜10 分"],
+              null,
+              HOTEL,
             ),
             P(
               "10:00",
@@ -2294,17 +2442,21 @@
                 "アミュプラザ博多",
                 "10:00 開店。ファッション・生活雑貨。8F に任天堂直営店 Nintendo FUKUOKA（10:00〜20:00、混雑日は整理券。出発前に公式サイトで確認）とガチャ専門店 C-pla",
               ],
+              null,
+              "アミュプラザ博多",
             ),
             P(
               "12:00",
               [
                 "午餐：ShinShin 博多 DEITOS 店",
-                "博多站內；排太久就改吃別家。同在 DEITOS 1F 的福太郎可以買明太子仙貝（めんべい）",
+                "博多站內；排太久就改吃別家。ShinShin 在 DEITOS 2F「博多めん街道」；DEITOS 1F 的福太郎可以買明太子仙貝（めんべい）",
               ],
               [
                 "昼食：ShinShin 博多デイトス店",
-                "博多駅構内。混んでいたら別の店に。同じデイトス 1F の福太郎でめんべいを",
+                "博多駅構内。混んでいたら別の店に。ShinShin はデイトス 2F「博多めん街道」。デイトス 1F の福太郎でめんべいを",
               ],
+              null,
+              "博多拉麵 ShinShin 博多デイトス店",
             ),
             P(
               "13:30",
@@ -2316,6 +2468,8 @@
                 "博多阪急",
                 "10:00〜20:00。1F に SHIRO（2 日目に岩田屋で買っていなければここで）。デパ地下・お土産",
               ],
+              null,
+              "博多阪急",
             ),
             P(
               "15:30",
@@ -2327,20 +2481,23 @@
                 "博多駅で常温のお土産・自由に",
                 "花福堂の直営店「博多まっかな苺」（デイトス）のあまおう苺サンド菓子、福太郎のめんべい。マイング（9:00〜21:00）にもお土産店が多い。ついでに鳴門鯛焼本舗（博多駅 B1）、C-pla 地下鉄博多駅博多口店",
               ],
+              null,
+              "鳴門鯛焼本舗 博多駅",
             ),
             P(
               "16:30",
               ["回公寓休息", "放下購物的東西"],
               ["アパートで休憩", "買ったものを置く"],
+              null,
+              HOTEL,
             ),
-            P(
-              "17:30",
+            M(
               [
-                "公寓 → 藥院",
+                "17:30 公寓 → 藥院",
                 "地下鐵七隈線 博多 → 藥院，約 10 分鐘，再步行",
               ],
               [
-                "アパート → 薬院",
+                "17:30 アパート → 薬院",
                 "地下鉄七隈線で博多 → 薬院、約 10 分、そこから徒歩",
               ],
             ),
@@ -2348,12 +2505,21 @@
               "18:00",
               [
                 "晚餐：藥院燒肉 NIKUICHI（和牛燒肉，要先預約）",
-                "藥院 3 丁目，ヤマトビル 1F；16:00–24:00。吃到 19:30 左右再回公寓",
+                "藥院 3 丁目，ヤマトビル 1F；16:00–24:00（官網；觀光網站寫 17:00–翌 1:00，出發前確認）。吃到 19:30 左右再回公寓",
               ],
               [
                 "夕食：薬院焼肉 NIKUICHI（和牛焼肉、要予約）",
-                "薬院 3 丁目、ヤマトビル 1F。16:00〜24:00。19:30 頃までにしてアパートへ",
+                "薬院 3 丁目、ヤマトビル 1F。16:00〜24:00（公式サイト。観光サイトは 17:00〜翌 1:00、出発前に確認）。19:30 頃までにしてアパートへ",
               ],
+              null,
+              "薬院焼肉NIKUICHI 福岡市中央区薬院3-16-34",
+            ),
+            P(
+              "20:00",
+              ["回到公寓", "步行到藥院站，地下鐵七隈線到博多約 10 分鐘，再步行"],
+              ["アパートに戻る", "薬院駅まで歩き、地下鉄七隈線で博多まで約 10 分、そこから徒歩"],
+              null,
+              HOTEL,
             ),
           ],
           legs: [
@@ -2380,21 +2546,36 @@
               "博多阪急 → 鳴門鯛焼本舗",
             ),
             G(
+              "鳴門鯛焼本舗 博多駅",
+              HOTEL,
+              "walking",
+              "鳴門鯛焼本舗 → 公寓",
+              "鳴門鯛焼本舗 → アパート",
+            ),
+            G(
               HOTEL,
               "薬院焼肉NIKUICHI 福岡市中央区薬院3-16-34",
               "transit",
-              "公寓 → 藥院燒肉 NIKUICHI",
-              "アパート → 薬院焼肉 NIKUICHI",
+              "公寓 → 藥院燒肉 NIKUICHI（地下鐵七隈線）",
+              "アパート → 薬院焼肉 NIKUICHI（地下鉄七隈線）",
             ),
             G(
               "薬院焼肉NIKUICHI 福岡市中央区薬院3-16-34",
               HOTEL,
               "transit",
-              "NIKUICHI → 公寓",
-              "NIKUICHI → アパート",
+              "NIKUICHI → 公寓（地下鐵七隈線）",
+              "NIKUICHI → アパート（地下鉄七隈線）",
             ),
           ],
-          map: ["アミュプラザ博多", "博多阪急", "博多駅", HOTEL, "薬院駅"],
+          map: [
+            HOTEL,
+            "アミュプラザ博多",
+            "博多阪急",
+            "博多駅",
+            HOTEL,
+            "薬院焼肉NIKUICHI 福岡市中央区薬院3-16-34",
+            HOTEL,
+          ],
           notes: [
             L(
               "<b>藥院燒肉 NIKUICHI 要先預約</b>；訂不到改肉屋肉一 博多店（博多站筑紫口附近）。",
@@ -2427,6 +2608,8 @@
               "08:45",
               ["公寓出發 → 博多站前 A 巴士站", "步行約 5–10 分鐘"],
               ["アパート出発 → 博多駅前 A のりば", "徒歩約 5〜10 分"],
+              null,
+              HOTEL,
             ),
             M(
               [
@@ -2442,13 +2625,14 @@
               "10:15",
               [
                 "市營渡船 姪浜 → 能古",
-                "約 10 分鐘，大人 230 日圓；白天每小時 :15 從姪浜開（2019/10/1 版時刻，出發前確認）。開船前 5 分鐘到登船口",
+                "約 10 分鐘，大人 230 日圓；白天每小時 :15 從姪浜開（2019/10/1 版時刻，出發前確認）。開船前 5 分鐘到登船口；早到就在渡船場休息等船",
               ],
               [
                 "市営渡船 姪浜 → 能古",
-                "約 10 分、大人 230 円。日中は毎時 15 分に姪浜発（2019/10/1 版の時刻、出発前に確認）。出航 5 分前までに乗り場へ",
+                "約 10 分、大人 230 円。日中は毎時 15 分に姪浜発（2019/10/1 版の時刻、出発前に確認）。出航 5 分前までに乗り場へ。早く着いたら渡船場で休んで待つ",
               ],
               [NOKO_FERRY],
+              "能古渡船場",
             ),
             M(
               [
@@ -2470,6 +2654,8 @@
                 "のこのしまアイランドパーク",
                 "9:00〜17:30。花・海・写真・散歩。坂が多く 8 月末は暑いので、主な景観エリアだけで十分。入園料は出発前に確認",
               ],
+              null,
+              "のこのしまアイランドパーク",
             ),
             P(
               "13:00",
@@ -2478,11 +2664,11 @@
             ),
             M(
               [
-                "海島公園 → 能古渡船場 → 姪浜",
+                "海島公園 → 能古島渡船場 → 姪浜（能古渡船場）",
                 "巴士回渡船場，搭 14:00 或 15:00 的船（能古發每小時 :00），再搭西鐵巴士回博多約 40 分鐘；14:00 的船約 15:00 到博多，15:00 的船約 16:00 以後到",
               ],
               [
-                "アイランドパーク → 能古渡船場 → 姪浜",
+                "アイランドパーク → 能古島渡船場 → 姪浜（能古渡船場）",
                 "バスで渡船場へ戻り、14:00 か 15:00 の船（能古発は毎時 0 分）。西鉄バスで博多まで約 40 分。14:00 の船なら約 15:00、15:00 の船なら約 16:00 以降に博多着",
               ],
               [NOKO_FERRY],
@@ -2491,37 +2677,51 @@
               L("16:00～16:30", "16:00〜16:30"),
               ["回公寓休息", ""],
               ["アパートで休憩", ""],
+              null,
+              HOTEL,
             ),
             P(
               "17:30",
               ["博多晚餐", "可以補吃前幾天沒吃到的店"],
               ["博多で夕食", "前日までに行けなかった店に"],
+              null,
+              "博多駅",
+            ),
+            P(
+              L("晚餐後", "夕食後"),
+              ["回到公寓", ""],
+              ["アパートに戻る", ""],
+              null,
+              HOTEL,
             ),
           ],
           legs: [
+            G(HOTEL, "博多駅前A", "walking", "公寓 → 博多站前 A", "アパート → 博多駅前 A"),
             G(
               "博多駅前A",
               "能古渡船場",
               "transit",
-              "博多站前 → 能古渡船場",
-              "博多駅前 → 能古渡船場",
+              "博多站前 A → 能古渡船場（西鐵巴士）",
+              "博多駅前 A → 能古渡船場（西鉄バス）",
             ),
             G(
               "能古渡船場",
               "のこのしまアイランドパーク",
               "transit",
-              "渡船 → 能古島 → 海島公園",
-              "渡船 → 能古島 → アイランドパーク",
+              "能古渡船場 → 海島公園（渡船・西鐵巴士）",
+              "能古渡船場 → アイランドパーク（渡船・西鉄バス）",
             ),
             G(
               "のこのしまアイランドパーク",
               HOTEL,
               "transit",
-              "海島公園 → 公寓",
-              "アイランドパーク → アパート",
+              "海島公園 → 公寓（西鐵巴士・渡船）",
+              "アイランドパーク → アパート（西鉄バス・渡船）",
             ),
+            G(HOTEL, "博多駅", "walking", "公寓 → 博多站", "アパート → 博多駅"),
+            G("博多駅", HOTEL, "walking", "博多站 → 公寓", "博多駅 → アパート"),
           ],
-          map: ["博多駅", "能古渡船場", "能古島渡船場", "のこのしまアイランドパーク"],
+          map: [HOTEL, "能古渡船場", "能古島渡船場", "のこのしまアイランドパーク"],
           notes: [
             L(
               "渡船可能因天候停航或改時刻；出發前一天看福岡市營渡船的運航消息。帽子、防曬、水一定要帶。",
@@ -2549,14 +2749,25 @@
                 "<b>A 百道浜で半日</b>：海辺の散歩・昼食・福岡タワー周辺で自由に過ごし、夕方前に博多へ戻る。",
               ),
               timeline: [
-                M(
-                  ["10:00 博多 → 福岡塔", "西鐵巴士約 25–30 分鐘，路線用分段導航查"],
-                  ["10:00 博多 → 福岡タワー", "西鉄バスで約 25〜30 分。路線は区間ナビで確認"],
+                P(
+                  "09:50",
+                  [
+                    "公寓出發 → 福岡塔",
+                    "步行約 5–10 分鐘到博多巴士總站，1F 搭西鐵巴士 306 番（往福岡塔，乘車處出發前確認），約 25–30 分鐘",
+                  ],
+                  [
+                    "アパート出発 → 福岡タワー",
+                    "博多バスターミナルまで徒歩約 5〜10 分、1F から西鉄バス 306 番（福岡タワー行き、乗り場は出発前に確認）で約 25〜30 分",
+                  ],
+                  null,
+                  HOTEL,
                 ),
                 P(
                   "10:30",
                   ["百道海濱、福岡塔周邊", "海邊散步、拍照、午餐"],
                   ["シーサイドももち・福岡タワー周辺", "海辺の散歩・写真・昼食"],
+                  null,
+                  "福岡タワー",
                 ),
                 M(
                   ["15:00 福岡塔 → 博多", "巴士約 25–30 分鐘，回公寓休息"],
@@ -2565,11 +2776,11 @@
                 ...D6_TAIL,
               ],
               legs: [
-                G(HOTEL, "福岡タワー", "transit", "公寓 → 福岡塔", "アパート → 福岡タワー"),
-                G("福岡タワー", HOTEL, "transit", "福岡塔 → 公寓", "福岡タワー → アパート"),
+                G(HOTEL, "福岡タワー", "transit", "公寓 → 福岡塔（西鐵巴士）", "アパート → 福岡タワー（西鉄バス）"),
+                G("福岡タワー", HOTEL, "transit", "福岡塔 → 公寓（西鐵巴士）", "福岡タワー → アパート（西鉄バス）"),
                 ...D6_TAIL_LEGS,
               ],
-              map: [HOTEL, "福岡タワー", "シーサイドももち海浜公園"],
+              map: [HOTEL, "福岡タワー", "シーサイドももち海浜公園", HOTEL, "キャナルシティ博多", HOTEL],
             },
             B: {
               label: L("B 公寓附近休息", "B 近所でのんびり"),
@@ -2583,11 +2794,13 @@
                   L("白天", "日中"),
                   ["公寓附近自由活動", "早午餐、超市採買、咖啡廳、最後補買伴手禮"],
                   ["アパート周辺で自由に", "ブランチ・スーパー・カフェ・お土産の買い足し"],
+                  null,
+                  HOTEL,
                 ),
                 ...D6_TAIL,
               ],
               legs: [...D6_TAIL_LEGS],
-              map: [HOTEL, "博多駅", "キャナルシティ博多"],
+              map: [HOTEL, "博多駅", "キャナルシティ博多", HOTEL],
             },
             C: {
               label: L("C 再購物", "C もう一度買い物"),
@@ -2599,13 +2812,24 @@
               timeline: [
                 P(
                   "10:00",
+                  ["公寓出發", "運河城步行約 10–15 分鐘；天神、博多站搭地下鐵或步行"],
+                  ["アパート出発", "キャナルシティは徒歩約 10〜15 分。天神・博多駅へは地下鉄か徒歩"],
+                  null,
+                  HOTEL,
+                ),
+                P(
+                  L("上午～下午", "午前〜午後"),
                   ["運河城博多／天神／博多站", "補逛前幾天沒逛到的店"],
                   ["キャナルシティ博多／天神／博多駅", "まだ行けていない店へ"],
+                  null,
+                  "キャナルシティ博多",
                 ),
                 P(
                   "16:00",
                   ["回公寓放東西、休息", ""],
                   ["アパートに荷物を置いて休憩", ""],
+                  null,
+                  HOTEL,
                 ),
                 ...D6_TAIL,
               ],
@@ -2617,9 +2841,16 @@
                   "公寓 → 運河城博多",
                   "アパート → キャナルシティ博多",
                 ),
+                G(
+                  "キャナルシティ博多",
+                  HOTEL,
+                  "walking",
+                  "運河城博多 → 公寓",
+                  "キャナルシティ博多 → アパート",
+                ),
                 ...D6_TAIL_LEGS,
               ],
-              map: [HOTEL, "キャナルシティ博多", "天神駅"],
+              map: [HOTEL, "キャナルシティ博多", "天神駅", HOTEL],
             },
           },
           notes: [
@@ -2651,6 +2882,8 @@
               "08:00",
               ["公寓早餐、最後整理行李", ""],
               ["アパートで朝食、最終の荷造り", ""],
+              null,
+              HOTEL,
             ),
             P(
               "09:30",
@@ -2678,6 +2911,7 @@
                 "荷物を預ける前に端末か Visit Japan Web で免税の税関確認、その後スターラックスのカウンターへ。カウンターは通常出発約 3 時間前（11:15 頃）に開くので、それまでに免税確認や買い物を。開始時刻は出発前に確認",
               ],
               [SH("vjw")],
+              FUK_INTL,
             ),
             P(
               "12:00",
@@ -2703,7 +2937,13 @@
           ],
           legs: [
             G(HOTEL, "博多駅", "walking", "公寓 → 博多站", "アパート → 博多駅"),
-            G("博多駅", FUK_INTL, "transit", "博多站 → 國際線航廈", "博多駅 → 国際線ターミナル"),
+            G(
+              "博多駅",
+              FUK_INTL,
+              "transit",
+              "博多站 → 國際線航廈（西鐵巴士）",
+              "博多駅 → 国際線ターミナル（西鉄バス）",
+            ),
           ],
           map: [HOTEL, "博多駅", FUK_INTL],
           notes: [
@@ -3123,6 +3363,7 @@
             theme: s.theme || null,
             plan: Object.assign({}, s.plan),
             fromHere: !!s.fromHere,
+            pins: {},
             fabOpen: false,
             navOpen: false,
             flash: null,
@@ -3246,6 +3487,7 @@
           },
           pickPlan(d, k) {
             this.plan[d.id] = k;
+            this.pins[d.id] = null;
             Object.assign(this.plan, d.plans[k].next);
             for (const [id, ok] of Object.entries(d.plans[k].fits || {})) {
               const o = this.days.find((x) => x.id === id);
@@ -3265,7 +3507,95 @@
             const e = encodeURIComponent;
             const [first, ...rest] = stops;
             const hl = this.lang === "ja" ? "ja" : "zh-TW";
+            if (!rest.length)
+              return `https://maps.google.com/maps?q=${e(first)}&hl=${hl}&output=embed`;
             return `https://maps.google.com/maps?saddr=${e(first)}&daddr=${rest.map(e).join("+to:")}&hl=${hl}&output=embed`;
+          },
+          pinOf(d) {
+            const i = this.pins[d.id];
+            const it = i == null ? null : this.cur(d).timeline[i];
+            return it && it.q ? i : null;
+          },
+          pinPair(d) {
+            const tl = this.cur(d).timeline;
+            const i = this.pinOf(d);
+            let k = i - 1;
+            while (k >= 0 && !tl[k].q) k--;
+            const prev = k >= 0 && tl[k].q !== tl[i].q ? tl[k] : null;
+            return [prev, tl[i]];
+          },
+          pin(d, i) {
+            const off = this.pinOf(d) === i;
+            this.pins[d.id] = off ? null : i;
+            if (off) return;
+            this.$nextTick(() => {
+              const el = document.getElementById("map-" + d.id);
+              if (!el) return;
+              const r = el.getBoundingClientRect();
+              if (r.top < 0 || r.bottom > innerHeight)
+                el.scrollIntoView({ behavior: "smooth", block: "center" });
+            });
+          },
+          pinLabel(d) {
+            const [a, b] = this.pinPair(d);
+            return a
+              ? `${a.title[this.lang]} → ${b.title[this.lang]}`
+              : b.title[this.lang];
+          },
+          pinLegs(d) {
+            const i = this.pinOf(d);
+            if (i === null) return [];
+            const tl = this.cur(d).timeline;
+            const legs = this.cur(d).legs;
+            let from = 0;
+            let prev = null;
+            for (let k = 0; k <= i; k++) {
+              const it = tl[k];
+              if (!it.q) continue;
+              let hit = [];
+              const j = legs.findIndex((l, n) => n >= from && l.to === it.q);
+              if (j >= 0 && prev && prev.q !== it.q) {
+                hit = [j];
+                while (
+                  hit[0] > from &&
+                  legs[hit[0]].from !== prev.q &&
+                  legs[hit[0] - 1].to === legs[hit[0]].from
+                )
+                  hit.unshift(hit[0] - 1);
+                const next = tl.slice(k + 1).find((x) => x.q);
+                const skip = hit
+                  .slice(0, -1)
+                  .some(
+                    (h) =>
+                      next &&
+                      legs[h].to === next.q &&
+                      !legs.some((l, n) => n > j && l.to === next.q),
+                  );
+                if (skip) hit = [];
+                else from = j + 1;
+              }
+              if (k === i) return hit;
+              prev = it;
+            }
+            return [];
+          },
+          legList(d) {
+            const legs = this.cur(d).legs;
+            const on = this.pinLegs(d);
+            const list = [
+              ...on.map((i) => ({ i, l: legs[i], on: true })),
+              ...legs
+                .map((l, i) => ({ i, l, on: false }))
+                .filter((x) => !on.includes(x.i)),
+            ];
+            if (!this.fromHere) return list;
+            const seen = new Set();
+            return list.filter((x) => !seen.has(x.l.to) && seen.add(x.l.to));
+          },
+          dayMap(d) {
+            if (this.pinOf(d) === null) return this.embed(this.cur(d).map);
+            const [a, b] = this.pinPair(d);
+            return this.embed(a ? [a.q, b.q] : [b.q]);
           },
           navUrl(l) {
             const e = encodeURIComponent;
@@ -3275,12 +3605,15 @@
           legLabel(l) {
             const s = l.label[this.lang];
             return this.fromHere
-              ? `${this.u.here} → ${s.split("→").pop().trim()}`
+              ? s.split("→").pop().replace(/（[^）]*）$/, "").trim()
               : s;
           },
           iso(d) {
             const [m, dd] = d.md.split("/");
             return `2027-${m.padStart(2, "0")}-${dd.padStart(2, "0")}`;
+          },
+          wxAreas(d) {
+            return this.cur(d).wx || d.wx;
           },
           wxOf(d, a) {
             return (this.wx.data[a] || {})[this.iso(d)] || null;
@@ -3303,7 +3636,9 @@
             return c ? c[2][this.lang] : "";
           },
           wxSrc(d) {
-            const w = this.cur(d).wx.map((a) => this.wxOf(d, a)).find(Boolean);
+            const w = this.wxAreas(d)
+              .map((a) => this.wxOf(d, a))
+              .find(Boolean);
             return w && w.old ? this.u.wxOld + d.md + this.u.wxOldEnd : "";
           },
           async fetchWx() {
