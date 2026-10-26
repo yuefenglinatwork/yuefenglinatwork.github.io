@@ -6,7 +6,7 @@
 
 - `index.html`：單一檔案，含 CSS、Vue 範本（`<script type="text/x-template" id="tpl">`）、資料與程式（第二個 `<script>`）。
 - `js/vue.global.prod.js`：Vue 3 本機檔，必須和 `index.html` 一起部署，路徑不能變。
-- `img/`：`favicon.svg`（紅底白色青海波；只用這一個 SVG，不做 ICO，不做 PWA／加到主畫面，使用者旅途中都有網路）、`og.jpg`（1200×630，標題＋日期＋青海波；日期用標題色、標題與日期之間不放分隔線）。`<head>` 的 `og:url`／`og:image` 用絕對網址 `https://yuefenglinatwork.github.io/trip/202706-kyoto-maizuru/`，路徑改了要一起改。重做 `og.jpg` 時把 `og:image` 的 `?v=` 改成當天日期（例：`?v=20261023`），LINE／Facebook 才會抓新圖。
+- `img/`：`favicon.svg`（紅底白色青海波；分頁圖示，不做 ICO）、`favicon-32.png`（由 `favicon.svg` 輸出的 32px PNG，給不支援 SVG 圖示的瀏覽器，例如 Safari、App 內建瀏覽器）、`apple-touch-icon.png`（180px，加到手機主畫面時的圖示；由 `favicon.svg` 去掉圓角輸出成滿版不透明正方形，圓角交給手機裁，透明角在 iPhone 會變黑；只是書籤捷徑，不做 PWA／manifest／離線，使用者旅途中都有網路）、`og.jpg`（1200×630，標題＋日期＋青海波；日期用標題色、標題與日期之間不放分隔線）。`<head>` 的 `og:url`／`og:image` 用絕對網址 `https://yuefenglinatwork.github.io/trip/202706-kyoto-maizuru/`，路徑改了要一起改。重做 `og.jpg` 時把 `og:image` 的 `?v=` 改成當天日期（例：`?v=20261023`），LINE／Facebook 才會抓新圖。
 - 沒有建置流程、沒有伺服器。直接用瀏覽器開 `index.html`。
 - 使用者手動推到 GitHub Pages（公開 repo）。`index.html`、`js/`、`CLAUDE.md` 都會公開，任何人都看得到。
 - `localStorage`：`kyoto2027-state` 存語言、深淺色、方案選擇、從目前位置出發、清單勾選、捲動位置；`kyoto2027-wx` 存天氣資料。
