@@ -428,6 +428,28 @@
         background: var(--indigo-soft);
         color: var(--indigo);
       }
+      .nw {
+        white-space: nowrap;
+      }
+      .stay-c {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 6px;
+        color: var(--muted);
+      }
+      .stay-c a {
+        color: inherit;
+      }
+      .stay-nav {
+        margin-top: 10px;
+        font-size: 15px;
+        padding: 9px 12px;
+      }
+      .stay-nav .m {
+        width: 28px;
+        height: 28px;
+      }
       .stay {
         margin: 12px 36px 0;
         font-size: 16px;
@@ -666,6 +688,10 @@
       }
       .tl-links a.to-show:hover {
         border-color: var(--accent);
+      }
+      .tl li.flash {
+        background: var(--accent-soft);
+        border-radius: 4px;
       }
       .shop.flash {
         border-color: var(--accent);
@@ -1328,6 +1354,12 @@
         height: 7px;
         margin-top: 10px;
       }
+      .tl li.must::before {
+        width: 11px;
+        height: 11px;
+        margin-top: 9px;
+        background: var(--accent);
+      }
       .tl li.move::after {
         background: repeating-linear-gradient(
           to bottom,
@@ -1407,10 +1439,10 @@
             <div class="card pad">
               <div class="tbl-scroll">
                 <table class="stack">
-                  <thead><tr><th v-for="h in u.stayTh" :key="h">{{ h }}</th></tr></thead>
+                  <thead><tr><th v-for="(h,i) in u.stayTh" :key="h" :class="{nw: i < 2}">{{ h }}</th></tr></thead>
                   <tbody>
                     <tr v-for="(s,i) in stays" :key="i">
-                      <td>{{ s.nights[lang] }}</td><td>{{ s.date }}</td><td><b>{{ s.name[lang] }}</b></td><td>{{ s.note[lang] }}</td>
+                      <td class="nw">{{ s.nights[lang] }}</td><td class="nw">{{ s.date }}</td><td><b>{{ s.name[lang] }}</b></td><td>{{ s.note[lang] }}<span v-if="s.addr" class="stay-c"><x-icon n="map"/>{{ s.addr }}</span><span v-if="s.tel" class="stay-c"><x-icon n="phone"/><a :href="'tel:+81' + s.tel.slice(1).replace(/-/g, '')">{{ s.tel }}</a></span><a class="leg stay-nav" :href="navUrl({to: s.q, mode: 'transit'}, true)" target="_blank" rel="noopener"><span class="m"><x-icon n="nav"/></span><span class="lbl">{{ s.nav[lang] }}</span><span class="go">{{ u.go }}<x-icon n="ext"/></span></a></td>
                     </tr>
                   </tbody>
                 </table>
@@ -1448,7 +1480,7 @@
                 </div>
                 <p v-if="d.plans && cur(d).intro" class="small" style="margin:0 0 14px" v-html="cur(d).intro[lang]"></p>
                 <ol class="tl">
-                  <li v-for="(it,i) in cur(d).timeline" :key="i" :class="{move: it.move}">
+                  <li v-for="(it,i) in cur(d).timeline" :key="i" :id="d.id + '-t' + i" :class="{move: it.move, must: it.must, flash: flash === d.id + '-t' + i}">
                     <div class="t"><template v-if="!it.move"><span v-for="(p,k) in tParts(it.t)" :key="k">{{ p }}</span></template></div>
                     <div class="what">
                       <b v-if="it.q"><button type="button" class="tl-pin" :aria-pressed="pinOf(d) === i" @click="pin(d, i)">{{ it.title[lang] }}<x-icon n="map"/></button></b>
@@ -1564,6 +1596,9 @@
           <button type="button" class="fab-btn" @click="fabOpen = !fabOpen" :aria-expanded="fabOpen" aria-controls="fab-menu" :title="u.menuBtn" :aria-label="u.menuBtn">
             <x-icon :n="fabOpen ? 'close' : 'gear'"/><span v-if="fromHere && !fabOpen" class="fab-dot"></span>
           </button>
+          <button v-if="nowDay" type="button" class="fab-btn" @click="toNow" :title="u.nowBtn" :aria-label="u.nowBtn">
+            <x-icon n="clock"/>
+          </button>
           <button type="button" class="fab-btn" @click="toTop" :title="u.topBtn" :aria-label="u.topBtn">
             <x-icon n="up"/>
           </button>
@@ -1591,6 +1626,7 @@
       });
       const K = (zh, ja, url) => ({ label: L(zh, ja), url });
       const SH = (show) => ({ show });
+      const X = (it) => ({ ...it, must: true });
       const NOKO_FERRY = K(
         "能古航路時刻表・運賃（福岡市營渡船 PDF）",
         "能古航路の時刻表・運賃（福岡市営渡船 PDF）",
@@ -1694,6 +1730,7 @@
           langBtn: "切換成日文",
           themeBtn: "切換深淺色",
           topBtn: "回到頂端",
+          nowBtn: "捲動到目前行程",
           menuBtn: "設定",
           hereBtn: "分段導航改成從目前位置出發",
           here: "目前位置",
@@ -1748,6 +1785,7 @@
           langBtn: "中国語（繁体字）に切り替え",
           themeBtn: "ライト／ダーク切り替え",
           topBtn: "トップへ戻る",
+          nowBtn: "現在の予定へ",
           menuBtn: "設定",
           hereBtn: "区間ナビを現在地から出発に切り替え",
           here: "現在地",
@@ -1788,7 +1826,10 @@
         {
           nights: L("6 晚", "6 泊"),
           date: "8/28 ~ 9/2",
-          name: L("Ekimae apartment（博多駅前 1 丁目）", "Ekimae apartment（博多駅前 1 丁目）"),
+          name: L("Ekimae apartment", "Ekimae apartment"),
+          addr: "福岡市博多区博多駅前 1 丁目",
+          q: HOTEL,
+          nav: L("Ekimae apartment", "Ekimae apartment"),
           note: L(
             "博多站博多口附近，6 晚都住同一間，不用換宿。入住時間、鑰匙怎麼拿、能不能先寄放行李，依房東通知。",
             "博多駅博多口の近く。6 泊とも同じ部屋で移動なし。チェックイン時間・鍵の受け取り方・荷物の預かりはホストの案内に従う。",
@@ -2004,12 +2045,12 @@
           map: [FUK_INTL, "博多駅", HOTEL, "KITTE博多", HOTEL],
           notes: [
             L(
-              "<b>筑紫麻糬（筑紫もち）</b>：想抵達就買來當零食。國際線入境後的商店不一定有，沒看到就在博多站的伴手禮店買；回程 9/3 在機場再補。",
-              "<b>筑紫もち</b>：着いたらすぐおやつに買いたい。国際線の到着エリアにあるとは限らないので、なければ博多駅のお土産売り場で。9/3 の帰りに空港でも買い足せる。",
+              "<b>筑紫麻糬（筑紫もち）</b>：國際線入境後的商店不一定有，沒看到就在博多站的伴手禮店買；回程 9/3 在機場再補。",
+              "<b>筑紫もち</b>：国際線の到着エリアにあるとは限らないので、なければ博多駅のお土産売り場で。9/3 の帰りに空港でも買い足せる。",
             ),
             L(
-              "<b>福太郎 明太子仙貝（めんべい）</b>：當點心也當伴手禮。博多站的伴手禮店就買得到，博多 DEITOS 1F 有福太郎直營店；伴手禮份量第 4 日一起買。",
-              "<b>福太郎 めんべい</b>：おやつにもお土産にも。博多駅のお土産売り場で買え、博多デイトス 1F に福太郎の直営店あり。お土産分は 4 日目にまとめて。",
+              "<b>福太郎 明太子仙貝（めんべい）</b>：博多站的伴手禮店就買得到，博多 DEITOS 1F 有福太郎直營店；伴手禮份量第 4 日一起買。",
+              "<b>福太郎 めんべい</b>：博多駅のお土産売り場で買え、博多デイトス 1F に福太郎の直営店あり。お土産分は 4 日目にまとめて。",
             ),
             L(
               "<b>手機要有網路、有電</b>：下飛機前先截圖 Visit Japan Web 的 QR Code，機場收訊不好也能用。",
@@ -2245,7 +2286,7 @@
                 "<b>A Klook 阿蘇・熊本日帰りツアー（A プラン）</b>：南阿蘇鉄道・阿蘇山・草千里・熊本城。下の時間帯はおおよそで、<b>Klook 確定の行程順ではない</b>。商品ページと集合案内に従う。",
               ),
               timeline: [
-                P(
+                X(P(
                   L("早上", "朝"),
                   [
                     "公寓出發，到 Klook 集合地點",
@@ -2257,7 +2298,7 @@
                   ],
                   [SH("klook")],
                   HOTEL,
-                ),
+                )),
                 P(
                   L("上午", "午前"),
                   ["遊覽車往熊本、阿蘇", "整天跟團，不用自己轉乘"],
@@ -2342,8 +2383,8 @@
               label: L("C 海之中道", "C 海の中道"),
               wx: ["fuk", "uminaka"],
               intro: L(
-                "<b>C 海之中道海濱公園</b>：花卉、草地、海邊，自己搭 JR 去。園區很大，夏天曬、走路多，挑一兩區逛就好。開園時間、門票出發前確認。",
-                "<b>C 海の中道海浜公園</b>：花・芝生・海。JR で自力で行く。園内が広く夏は日差しが強いので、1〜2 エリアに絞って回る。開園時間・入園料は出発前に確認。",
+                "<b>C 海之中道海濱公園</b>：花卉、草地、海邊，自己搭 JR 去。園區很大，夏天曬、走路多，挑一兩區逛就好。9:30–17:30，15 歲以上 450 日圓（2026 資料，出發前確認）。",
+                "<b>C 海の中道海浜公園</b>：花・芝生・海。JR で自力で行く。園内が広く夏は日差しが強いので、1〜2 エリアに絞って回る。9:30〜17:30、15 歳以上 450 円（2026 年の情報、出発前に確認）。",
               ),
               timeline: [
                 P(
@@ -2501,7 +2542,7 @@
                 "地下鉄七隈線で博多 → 薬院、約 10 分、そこから徒歩",
               ],
             ),
-            P(
+            X(P(
               "18:00",
               [
                 "晚餐：藥院燒肉 NIKUICHI（和牛燒肉，要先預約）",
@@ -2513,7 +2554,7 @@
               ],
               null,
               "薬院焼肉NIKUICHI 福岡市中央区薬院3-16-34",
-            ),
+            )),
             P(
               "20:00",
               ["回到公寓", "步行到藥院站，地下鐵七隈線到博多約 10 分鐘，再步行"],
@@ -2621,7 +2662,7 @@
                 "300・301・302・304 番で約 40 分、交通系 IC カード可。代替：地下鉄空港線で姪浜、北口から 1・98 番バスで能古渡船場へ",
               ],
             ),
-            P(
+            X(P(
               "10:15",
               [
                 "市營渡船 姪浜 → 能古",
@@ -2633,7 +2674,7 @@
               ],
               [NOKO_FERRY],
               "能古渡船場",
-            ),
+            )),
             M(
               [
                 "能古島渡船場 → 海島公園（西鐵巴士）",
@@ -2662,7 +2703,7 @@
               ["島上午餐、休息", "園內用餐"],
               ["島で昼食・休憩", "園内で"],
             ),
-            M(
+            X(M(
               [
                 "海島公園 → 能古島渡船場 → 姪浜（能古渡船場）",
                 "巴士回渡船場，搭 14:00 或 15:00 的船（能古發每小時 :00），再搭西鐵巴士回博多約 40 分鐘；14:00 的船約 15:00 到博多，15:00 的船約 16:00 以後到",
@@ -2672,7 +2713,7 @@
                 "バスで渡船場へ戻り、14:00 か 15:00 の船（能古発は毎時 0 分）。西鉄バスで博多まで約 40 分。14:00 の船なら約 15:00、15:00 の船なら約 16:00 以降に博多着",
               ],
               [NOKO_FERRY],
-            ),
+            )),
             P(
               L("16:00～16:30", "16:00〜16:30"),
               ["回公寓休息", ""],
@@ -2924,11 +2965,11 @@
                 "筑紫もち・福太郎めんべいを優先（国際線でめんべいを扱うかは出発前に確認）。手続きの混み具合を見て",
               ],
             ),
-            P(
+            X(P(
               "14:15",
               ["星宇 JX841 福岡起飛", "依登機證時間到登機門"],
               ["スターラックス JX841 福岡出発", "搭乗券の時刻までに搭乗口へ"],
-            ),
+            )),
             P(
               "15:45",
               ["抵達桃園機場", "台灣時間"],
@@ -3167,8 +3208,8 @@
         {
           icon: "card",
           ...L(
-            "<b>交通 IC 卡</b>：福岡地下鐵、西鐵巴士、JR 九州都能刷全國交通系 IC 卡（Suica、ICOCA、nimoca、SUGOCA、はやかけん等），一到就儲值。能古島的市營渡船準備現金。<br><b>不用買套票</b>：這趟每天的車資都比套票低（地下鐵 1 日券 640 日圓、西鐵巴士市內 1 日券 1,200 日圓、FUKUOKA TOURIST CITY PASS 2,500 日圓）。地下鐵也能刷信用卡感應，同一張卡 1 天最多扣 640 日圓；西鐵巴士、JR 不能刷感應。第 5 日能古島搭巴士最多，出發前可算算看西鐵巴士 1 日券划不划算。",
-            "<b>交通系 IC カード</b>：福岡市地下鉄・西鉄バス・JR 九州で全国の交通系 IC カード（Suica・ICOCA・nimoca・SUGOCA・はやかけん等）が使えます。着いたらすぐチャージ。能古島の市営渡船は現金を用意。<br><b>フリーパスは不要</b>：どの日も運賃がパスより安い（地下鉄 1 日乗車券 640 円、西鉄バス福岡市内 1 日フリー乗車券 1,200 円、FUKUOKA TOURIST CITY PASS 2,500 円）。地下鉄はクレジットカードのタッチ決済も使え、同じカードなら 1 日 640 円が上限。西鉄バス・JR はタッチ決済不可。5 日目の能古島はバスが多いので、西鉄バスの 1 日券が得か出発前に計算を。",
+            "<b>交通 IC 卡</b>：福岡地下鐵、西鐵巴士、JR 九州都能刷全國交通系 IC 卡（Suica、ICOCA、nimoca、SUGOCA、はやかけん等），一到就儲值。能古島的市營渡船售票機、窗口也能刷交通系 IC 卡買船票（2018 資料，出發前確認），另外帶一點現金。<br><b>不用買套票</b>：這趟每天的車資都比套票低（地下鐵 1 日券 640 日圓、西鐵巴士市內 1 日券 1,200 日圓、FUKUOKA TOURIST CITY PASS 2,500 日圓）。地下鐵也能刷信用卡感應，同一張卡 1 天最多扣 640 日圓；西鐵巴士、JR 不能刷感應。第 5 日能古島搭巴士最多，出發前可算算看西鐵巴士 1 日券划不划算。",
+            "<b>交通系 IC カード</b>：福岡市地下鉄・西鉄バス・JR 九州で全国の交通系 IC カード（Suica・ICOCA・nimoca・SUGOCA・はやかけん等）が使えます。着いたらすぐチャージ。能古島の市営渡船も券売機・窓口で交通系 IC カードで乗船券を買える（2018 年の情報、出発前に確認）。少し現金も用意。<br><b>フリーパスは不要</b>：どの日も運賃がパスより安い（地下鉄 1 日乗車券 640 円、西鉄バス福岡市内 1 日フリー乗車券 1,200 円、FUKUOKA TOURIST CITY PASS 2,500 円）。地下鉄はクレジットカードのタッチ決済も使え、同じカードなら 1 日 640 円が上限。西鉄バス・JR はタッチ決済不可。5 日目の能古島はバスが多いので、西鉄バスの 1 日券が得か出発前に計算を。",
           ),
         },
         {
@@ -3367,6 +3408,7 @@
             fabOpen: false,
             navOpen: false,
             flash: null,
+            clock: Date.now(),
             done: s.done || {},
             scrollY: s.scrollY || 0,
             active: "overview",
@@ -3393,6 +3435,15 @@
         computed: {
           u() {
             return UI[this.lang];
+          },
+          jst() {
+            const q = new URLSearchParams(location.search).get("now");
+            const t = q ? Date.parse(q + ":00+09:00") : this.clock;
+            const s = new Date((isNaN(t) ? this.clock : t) + 9 * 36e5).toISOString();
+            return { day: s.slice(0, 10), hm: s.slice(11, 16) };
+          },
+          nowDay() {
+            return this.days.find((d) => this.iso(d) === this.jst.day) || null;
           },
           isDark() {
             return this.theme ? this.theme === "dark" : this.systemDark;
@@ -3597,9 +3648,9 @@
             const [a, b] = this.pinPair(d);
             return this.embed(a ? [a.q, b.q] : [b.q]);
           },
-          navUrl(l) {
+          navUrl(l, here) {
             const e = encodeURIComponent;
-            const origin = this.fromHere ? "" : `&origin=${e(l.from)}`;
+            const origin = here || this.fromHere ? "" : `&origin=${e(l.from)}`;
             return `https://www.google.com/maps/dir/?api=1${origin}&destination=${e(l.to)}&travelmode=${l.mode}`;
           },
           legLabel(l) {
@@ -3730,6 +3781,28 @@
             const s = this.showList.find((x) => x.key === key);
             return s ? s.name : key;
           },
+          toNow() {
+            const d = this.nowDay;
+            if (!d) return;
+            const hm = (it) => {
+              const s = typeof it.t === "string" ? it.t : it.move ? it.title.zh : "";
+              const m = /^(\d\d:\d\d)/.exec(s || "");
+              return m ? m[1] : null;
+            };
+            let i = 0;
+            this.cur(d).timeline.forEach((it, k) => {
+              const t = hm(it);
+              if (t && t <= this.jst.hm) i = k;
+            });
+            const id = d.id + "-t" + i;
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+            this.flash = id;
+            clearTimeout(this._flashTimer);
+            this._flashTimer = setTimeout(() => {
+              this.flash = null;
+            }, 2000);
+          },
           toTop() {
             window.scrollTo({ top: 0, behavior: "smooth" });
           },
@@ -3779,6 +3852,9 @@
         },
         mounted() {
           this.applyTheme();
+          setInterval(() => {
+            this.clock = Date.now();
+          }, 60000);
           matchMedia("(prefers-color-scheme: dark)").addEventListener(
             "change",
             (e) => {
