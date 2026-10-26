@@ -8,8 +8,6 @@
     <meta name="theme-color" content="#faf8f4" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#16151a" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href="img/favicon.svg" type="image/svg+xml" />
-    <link rel="icon" href="img/favicon-32.png" type="image/png" sizes="32x32" />
-    <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="KYOTO · MAIZURU 2027" />
     <meta property="og:title" content="京都・舞鶴 8 天 7 夜" />
@@ -428,6 +426,28 @@
         background: var(--indigo-soft);
         color: var(--indigo);
       }
+      .nw {
+        white-space: nowrap;
+      }
+      .stay-c {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 6px;
+        color: var(--muted);
+      }
+      .stay-c a {
+        color: inherit;
+      }
+      .stay-nav {
+        margin-top: 10px;
+        font-size: 15px;
+        padding: 9px 12px;
+      }
+      .stay-nav .m {
+        width: 28px;
+        height: 28px;
+      }
       .stay {
         margin: 12px 36px 0;
         font-size: 16px;
@@ -666,6 +686,10 @@
       }
       .tl-links a.to-show:hover {
         border-color: var(--accent);
+      }
+      .tl li.flash {
+        background: var(--accent-soft);
+        border-radius: 4px;
       }
       .shop.flash {
         border-color: var(--accent);
@@ -1328,6 +1352,12 @@
         height: 7px;
         margin-top: 10px;
       }
+      .tl li.must::before {
+        width: 11px;
+        height: 11px;
+        margin-top: 9px;
+        background: var(--accent);
+      }
       .tl li.move::after {
         background: repeating-linear-gradient(
           to bottom,
@@ -1407,10 +1437,10 @@
             <div class="card pad">
               <div class="tbl-scroll">
                 <table class="stack">
-                  <thead><tr><th v-for="h in u.stayTh" :key="h">{{ h }}</th></tr></thead>
+                  <thead><tr><th v-for="(h,i) in u.stayTh" :key="h" :class="{nw: i < 2}">{{ h }}</th></tr></thead>
                   <tbody>
                     <tr v-for="(s,i) in stays" :key="i">
-                      <td>{{ s.nights[lang] }}</td><td>{{ s.date }}</td><td><b>{{ s.name[lang] }}</b></td><td>{{ s.note[lang] }}</td>
+                      <td class="nw">{{ s.nights[lang] }}</td><td class="nw">{{ s.date }}</td><td><b>{{ s.name[lang] }}</b></td><td>{{ s.note[lang] }}<span class="stay-c"><x-icon n="map"/>{{ s.addr }}</span><span class="stay-c"><x-icon n="phone"/><a :href="'tel:+81' + s.tel.slice(1).replace(/-/g, '')">{{ s.tel }}</a></span><a class="leg stay-nav" :href="navUrl({to: s.q, mode: 'transit'}, true)" target="_blank" rel="noopener"><span class="m"><x-icon n="nav"/></span><span class="lbl">{{ s.nav[lang] }}</span><span class="go">{{ u.go }}<x-icon n="ext"/></span></a></td>
                     </tr>
                   </tbody>
                 </table>
@@ -1451,7 +1481,7 @@
                 </div>
                 <p v-if="d.plans && cur(d).intro" class="small" style="margin:0 0 14px" v-html="cur(d).intro[lang]"></p>
                 <ol class="tl">
-                  <li v-for="(it,i) in cur(d).timeline" :key="i" :class="{move: it.move}">
+                  <li v-for="(it,i) in cur(d).timeline" :key="i" :id="d.id + '-t' + i" :class="{move: it.move, must: it.must, flash: flash === d.id + '-t' + i}">
                     <div class="t"><template v-if="!it.move"><span v-for="(p,k) in tParts(it.t)" :key="k">{{ p }}</span></template></div>
                     <div class="what">
                       <b v-if="it.q"><button type="button" class="tl-pin" :aria-pressed="pinOf(d) === i" @click="pin(d, i)">{{ it.title[lang] }}<x-icon n="map"/></button></b>
@@ -1567,6 +1597,9 @@
           <button type="button" class="fab-btn" @click="fabOpen = !fabOpen" :aria-expanded="fabOpen" aria-controls="fab-menu" :title="u.menuBtn" :aria-label="u.menuBtn">
             <x-icon :n="fabOpen ? 'close' : 'gear'"/><span v-if="fromHere && !fabOpen" class="fab-dot"></span>
           </button>
+          <button v-if="nowDay" type="button" class="fab-btn" @click="toNow" :title="u.nowBtn" :aria-label="u.nowBtn">
+            <x-icon n="clock"/>
+          </button>
           <button type="button" class="fab-btn" @click="toTop" :title="u.topBtn" :aria-label="u.topBtn">
             <x-icon n="up"/>
           </button>
@@ -1596,6 +1629,7 @@
       });
       const K = (zh, ja, url) => ({ label: L(zh, ja), url });
       const SH = (show) => ({ show });
+      const X = (it) => ({ ...it, must: true });
       const BUS_NISHI = K(
         "大江線時刻表（京都交通 PDF）",
         "大江線の時刻表（京都交通 PDF）",
@@ -1719,6 +1753,7 @@
           langBtn: "切換成日文",
           themeBtn: "切換深淺色",
           topBtn: "回到頂端",
+          nowBtn: "捲動到目前行程",
           menuBtn: "設定",
           hereBtn: "分段導航改成從目前位置出發",
           here: "目前位置",
@@ -1773,6 +1808,7 @@
           langBtn: "中国語（繁体字）に切り替え",
           themeBtn: "ライト／ダーク切り替え",
           topBtn: "トップへ戻る",
+          nowBtn: "現在の予定へ",
           menuBtn: "設定",
           hereBtn: "区間ナビを現在地から出発に切り替え",
           here: "現在地",
@@ -1814,30 +1850,39 @@
           nights: L("1 晚", "1 泊"),
           date: "6/4",
           name: L("Umekoji Potel KYOTO", "Umekoji Potel KYOTO"),
+          addr: "〒600-8835 京都府京都市下京区観喜寺町15",
+          tel: "075-284-1100",
+          q: HOTEL,
+          nav: L(HOTEL, HOTEL),
           note: L(
-            "抵達日入住。訂房時詢問 6/5 ~ 6/6 能否寄放大行李。",
-            "到着日にチェックイン。予約時に 6/5〜6/6 の荷物預かりができるか確認。",
+            "抵達日入住，不含早餐。訂房時詢問 6/5 ~ 6/6 能否寄放大行李。",
+            "到着日にチェックイン、朝食なし。予約時に 6/5〜6/6 の荷物預かりができるか確認。",
           ),
         },
         {
           nights: L("1 晚", "1 泊"),
           date: "6/5",
-          name: L(
-            "Hotel BELLMARE（東舞鶴站步行約 18 分鐘）",
-            "ホテルベルマーレ（東舞鶴駅から徒歩約 18 分）",
-          ),
+          name: L("Hotel BELLMARE", "ホテルベルマーレ"),
+          addr: "〒625-0036 京都府舞鶴市浜2002-3",
+          tel: "0773-66-2000",
+          q: BELLMARE,
+          nav: L("Hotel BELLMARE", "ホテルベルマーレ"),
           note: L(
-            "在東舞鶴，走路約 22–27 分鐘到紅磚公園。黑松號到西舞鶴後搭 JR 普通車過來，搭巴士去紅磚公園，走去燒肉 八島丹山吃晚餐，約 19:15 入住。只帶一晚的輕便行李。訂房時確認有沒有附早餐、幾點可以入住。",
-            "東舞鶴にあり、赤れんがパークまで徒歩約 22〜27 分。くろまつ号で西舞鶴に着いたら JR の普通で移動し、バスで赤れんがパークへ。歩いて焼肉 八島丹山で夕食をとり、19:15 頃チェックイン。1 泊分の軽い荷物だけで。予約時に朝食の有無とチェックイン開始時刻を確認。",
+            "在東舞鶴，從東舞鶴站步行約 18 分鐘，到紅磚公園步行約 22–27 分鐘。黑松號到西舞鶴後搭 JR 普通車過來，搭巴士去紅磚公園，走去燒肉 八島丹山吃晚餐，約 19:15 入住。只帶一晚的輕便行李。含早餐。",
+            "東舞鶴にあり、東舞鶴駅から徒歩約 18 分、赤れんがパークまで徒歩約 22〜27 分。くろまつ号で西舞鶴に着いたら JR の普通で移動し、バスで赤れんがパークへ。歩いて焼肉 八島丹山で夕食をとり、19:15 頃チェックイン。1 泊分の軽い荷物だけで。朝食付き。",
           ),
         },
         {
           nights: L("5 晚", "5 泊"),
           date: "6/6 ~ 6/10",
           name: L("Umekoji Potel KYOTO", "Umekoji Potel KYOTO"),
+          addr: "〒600-8835 京都府京都市下京区観喜寺町15",
+          tel: "075-284-1100",
+          q: HOTEL,
+          nav: L(HOTEL, HOTEL),
           note: L(
-            "鐵道博物館、水族館都在步行範圍；搭 JR 嵯峨野線 1 站（約 2 分鐘）就到京都站。",
-            "鉄道博物館・水族館は徒歩圏内。JR 嵯峨野線で 1 駅（約 2 分）で京都駅。",
+            "含早餐。鐵道博物館、水族館都在步行範圍；搭 JR 嵯峨野線 1 站（約 2 分鐘）就到京都站。",
+            "朝食付き。鉄道博物館・水族館は徒歩圏内。JR 嵯峨野線で 1 駅（約 2 分）で京都駅。",
           ),
         },
       ];
@@ -1876,18 +1921,18 @@
           t,
           [
             "Potel 出發（大行李寄放飯店）",
-            "只帶一晚的輕便行李；JR 嵯峨野線 1 站到京都站",
+            "只帶一晚的輕便行李；飯店不含早餐。JR 嵯峨野線 1 站到京都站，在站內買早餐帶上はしだて",
           ],
           [
             "Potel 出発（大きい荷物はホテルに預ける）",
-            "1 泊分の軽い荷物だけ。JR 嵯峨野線で京都駅へ",
+            "1 泊分の軽い荷物だけ。ホテルは朝食なし。JR 嵯峨野線で京都駅へ、駅で朝食を買ってはしだてに乗る",
           ],
           [JR_UMEKOJI],
           HOTEL,
         );
       const D2_H1 = [
         D2_POTEL("08:05"),
-        M(
+        X(M(
           [
             "08:38 京都 → 10:39 天橋立",
             "JR 特急「はしだて 1 號」直達，全車指定席，先用周遊券劃位。京都–綾部和往東舞鶴的まいづる 1 號連在一起，綾部分開，要坐はしだて的車廂",
@@ -1896,7 +1941,7 @@
             "08:38 京都 → 10:39 天橋立",
             "JR 特急「はしだて 1 号」直通、全車指定席なのでパスで事前に座席指定。京都〜綾部は東舞鶴行きのまいづる 1 号と連結し、綾部で切り離し。はしだての車両に乗る",
           ],
-        ),
+        )),
         P(
           "10:39",
           ["抵達天橋立站", "離黑松號開車還有約 2 小時，出站散步"],
@@ -1920,10 +1965,10 @@
       ];
       const D2_H3 = [
         D2_POTEL("08:50"),
-        M(
+        X(M(
           ["09:25 京都 → 11:31 天橋立", "JR 特急「はしだて 3 號」直達，全車指定席，先用周遊券劃位"],
           ["09:25 京都 → 11:31 天橋立", "JR 特急「はしだて 3 号」直通、全車指定席なのでパスで事前に座席指定"],
-        ),
+        )),
         P(
           "11:31",
           ["抵達天橋立站", "離黑松號開車還有約 1.5 小時，出站散步"],
@@ -1946,7 +1991,7 @@
         ),
       ];
       const D2_HEAD = [
-        P(
+        X(P(
           "12:45",
           [
             "最晚：通過天橋立站剪票口",
@@ -1958,8 +2003,8 @@
           ],
           [SH("kuromatsu")],
           "天橋立駅",
-        ),
-        P(
+        )),
+        X(P(
           "13:05",
           [
             "丹後黑松號 午餐方案 天橋立 → 西舞鶴",
@@ -1969,7 +2014,7 @@
             "丹後くろまつ号 ランチコース 天橋立 → 西舞鶴",
             "木造の車内、海沿いの景色、車内でランチ。13:05 → 14:50",
           ],
-        ),
+        )),
         P(
           "14:50",
           ["抵達西舞鶴站", "接著搭 15:04 普通車到東舞鶴"],
@@ -2022,11 +2067,11 @@
           ["Hotel BELLMARE → 東舞鶴站", "步行約 18 分鐘"],
           ["ホテルベルマーレ → 東舞鶴駅", "徒歩約 18 分"],
         ),
-        M(
+        X(M(
           ["09:45 東舞鶴 → 09:52 西舞鶴", "JR 舞鶴線 普通，不用劃位"],
           ["09:45 東舞鶴 → 09:52 西舞鶴", "JR 舞鶴線の普通、座席指定不要"],
           [JR_HIGASHI],
-        ),
+        )),
         P(
           "10:00",
           ["西舞鶴站周邊休息", "車站附近喝杯咖啡，11:00 前到站前巴士站"],
@@ -2034,7 +2079,7 @@
           null,
           "西舞鶴駅",
         ),
-        M(
+        X(M(
           [
             "11:05 西舞鶴站前 → 11:20 舞鶴港とれとれセンター前",
             "京都交通大江線，大人 250 日圓，付現金，不能刷 IC 卡",
@@ -2044,7 +2089,7 @@
             "京都交通大江線、大人 250 円、現金払い、IC カード不可",
           ],
           [BUS_NISHI],
-        ),
+        )),
         P(
           "11:20",
           [
@@ -2073,7 +2118,7 @@
         P(t, ["WORKMAN Plus 舞鶴店", zh], ["ワークマンプラス舞鶴店", ja], null, WORKMAN),
       ];
       const D3_HOME = [
-        M(
+        X(M(
           [
             "16:36 西舞鶴 → 18:07 京都",
             "JR 特急「まいづる 12 號」，全車指定席，先用周遊券劃位（上車站是西舞鶴）",
@@ -2082,7 +2127,7 @@
             "16:36 西舞鶴 → 18:07 京都",
             "JR 特急「まいづる 12 号」、全車指定席なのでパスで事前に座席指定。乗車駅は西舞鶴に",
           ],
-        ),
+        )),
         P(
           "18:15",
           ["京都站周邊晚餐", "下車直接在京都站吃：JR 京都伊勢丹 11 樓餐廳街或 Porta 地下街，吃完再回飯店"],
@@ -2129,10 +2174,17 @@
         ),
         G(
           WORKMAN,
+          TORETORE,
+          "walking",
+          "WORKMAN → とれとれセンター",
+          "ワークマン → とれとれセンター",
+        ),
+        G(
+          TORETORE,
           "西舞鶴駅",
           "transit",
-          "WORKMAN → 西舞鶴站（巴士）",
-          "ワークマン → 西舞鶴駅（バス）",
+          "とれとれセンター → 西舞鶴站（巴士）",
+          "とれとれセンター → 西舞鶴駅（バス）",
         ),
       ];
       const D3_LEGS_HOME = [
@@ -2202,7 +2254,7 @@
               [SH("jr")],
               "関西国際空港",
             ),
-            M(
+            X(M(
               [
                 "14:14 關西機場 → 15:34 京都",
                 "JR 特急「はるか 30 號」，坐買周遊券時劃好的指定席。到站後大行李先放進站內的投幣式置物櫃，空手去逛街吃飯；大型櫃數量不多，滿了就換一區找，拍照記下位置和號碼",
@@ -2211,7 +2263,7 @@
                 "14:14 関西空港 → 15:34 京都",
                 "JR 特急「はるか 30 号」、パス購入時に予約した指定席で。着いたら大きな荷物は駅のコインロッカーへ預けて身軽に。大型ロッカーは数が少ないので、埋まっていれば別の場所を探す。場所と番号を写真に",
               ],
-            ),
+            )),
             M(
               ["京都站 → AEON MALL KYOTO", "從八條口出站，步行約 5–10 分鐘"],
               ["京都駅 → イオンモール KYOTO", "八条口から徒歩約 5〜10 分"],
@@ -2311,7 +2363,7 @@
           },
           timeline: [
             ...D2_HEAD,
-            M(
+            X(M(
               [
                 "15:04 西舞鶴 → 15:11 東舞鶴",
                 "JR 舞鶴線 普通，不用劃位；趕不上就搭 15:29 普通（15:36 到）",
@@ -2321,7 +2373,7 @@
                 "JR 舞鶴線の普通、座席指定不要。間に合わなければ 15:29 の普通（15:36 着）",
               ],
               [JR_NISHI],
-            ),
+            )),
             P(
               "15:15",
               ["東舞鶴站周邊休息", "站前喝杯咖啡，15:35 前到站前巴士站"],
@@ -2329,7 +2381,7 @@
               null,
               "東舞鶴駅",
             ),
-            M(
+            X(M(
               [
                 "15:40 東舞鶴站前 → 15:48 赤れんがパーク・市役所前",
                 "京都交通東西循環線（左回り），大人 200 日圓，付現金，不能刷 IC 卡；沒搭上就搭 16:10",
@@ -2339,7 +2391,7 @@
                 "京都交通 東西循環線（左回り）、大人 200 円、現金払い、IC カード不可。乗り遅れたら 16:10 の便",
               ],
               [BUS_HIDARI],
-            ),
+            )),
             P(
               "15:55",
               [
@@ -2363,7 +2415,7 @@
                 "17:35 に出て東舞鶴の市街地を東へ、焼肉 八島丹山 本店まで徒歩約 21 分",
               ],
             ),
-            P(
+            X(P(
               "18:00",
               [
                 "晚餐：燒肉 八島丹山 本店",
@@ -2375,7 +2427,7 @@
               ],
               null,
               "焼肉 八島丹山 本店 舞鶴市浜467-2",
-            ),
+            )),
             M(
               ["燒肉 八島丹山 → Hotel BELLMARE", "吃完步行約 4 分鐘"],
               ["焼肉 八島丹山 → ホテルベルマーレ", "食後は徒歩約 4 分"],
@@ -2466,7 +2518,7 @@
                   "機能服飾、雨具、鞋子；營業 7:00–20:00，約 20 分鐘，12:35 走回とれとれセンター前巴士站",
                   "機能ウェア・レインウェア・シューズ。営業 7:00〜20:00、約 20 分、12:35 にとれとれセンター前のバス停へ",
                 ),
-                M(
+                X(M(
                   [
                     "12:43 舞鶴港とれとれセンター前 → 12:52 西舞鶴站前",
                     "京都交通大江線，大人 250 日圓，付現金；沒搭上就改搭 15:43",
@@ -2476,13 +2528,13 @@
                     "京都交通大江線、大人 250 円、現金払い。乗り遅れたら 15:43 の便に",
                   ],
                   [BUS_NISHI],
-                ),
+                )),
                 M(
                   ["西舞鶴站 → 田邊城跡（舞鶴公園）", "步行約 10 分鐘"],
                   ["西舞鶴駅 → 田辺城跡（舞鶴公園）", "徒歩約 10 分"],
                 ),
                 P(
-                  "13:00",
+                  "13:05",
                   [
                     "田邊城跡（舞鶴公園）",
                     "細川家的城跡，有復原的城門和小資料館，慢慢逛約 1.5 小時，14:30 離開",
@@ -2558,7 +2610,7 @@
                   null,
                   TORETORE,
                 ),
-                M(
+                X(M(
                   [
                     "15:43 舞鶴港とれとれセンター前 → 15:52 西舞鶴站前",
                     "京都交通大江線，最後一班回西舞鶴，大人 250 日圓，付現金；沒搭上就馬上步行約 35–40 分鐘回西舞鶴站",
@@ -2568,7 +2620,7 @@
                     "京都交通大江線、西舞鶴行きの最終便、大人 250 円、現金払い。乗り遅れたらすぐ西舞鶴駅まで徒歩約 35〜40 分",
                   ],
                   [BUS_NISHI],
-                ),
+                )),
                 P(
                   "15:52",
                   ["西舞鶴站", "車站附近休息，16:25 前進站"],
@@ -2701,10 +2753,17 @@
             ),
             G(
               "京都府立植物園",
+              "北山駅",
+              "walking",
+              "植物園 → 北山站",
+              "植物園 → 北山駅",
+            ),
+            G(
+              "北山駅",
               "京都駅",
               "transit",
-              "植物園 → 京都站（地鐵烏丸線）",
-              "植物園 → 京都駅（地下鉄烏丸線）",
+              "北山站 → 京都站（地鐵烏丸線）",
+              "北山駅 → 京都駅（地下鉄烏丸線）",
             ),
             G("京都駅", HOTEL, "transit", "京都站 → Potel（JR 嵯峨野線）", "京都駅 → Potel（JR 嵯峨野線）"),
           ],
@@ -2759,18 +2818,18 @@
             ),
             P(
               "14:00",
-              ["京都水族館", "從博物館穿過梅小路公園步行約 10 分鐘"],
+              ["京都水族館", "午餐後穿過梅小路公園步行約 10 分鐘"],
               [
                 "京都水族館",
-                "博物館から梅小路公園を抜けて徒歩約 10 分",
+                "昼食後、梅小路公園を抜けて徒歩約 10 分",
               ],
               null,
               "京都水族館",
             ),
             P(
-              "16:30",
-              ["回到 Potel 休息", "從水族館步行約 10 分鐘"],
-              ["Potel に戻って休憩", "水族館から徒歩約 10 分"],
+              "16:40",
+              ["回到 Potel 休息", "16:30 離開水族館，步行約 10 分鐘"],
+              ["Potel に戻って休憩", "16:30 に水族館を出て徒歩約 10 分"],
               null,
               HOTEL,
             ),
@@ -2793,10 +2852,17 @@
             ),
             G(
               "京都鉄道博物館",
+              "梅小路公園",
+              "walking",
+              "鐵道博物館 → 梅小路公園",
+              "鉄道博物館 → 梅小路公園",
+            ),
+            G(
+              "梅小路公園",
               "京都水族館",
               "walking",
-              "鐵道博物館 → 水族館",
-              "鉄道博物館 → 水族館",
+              "梅小路公園 → 水族館",
+              "梅小路公園 → 水族館",
             ),
             G(
               "京都水族館",
@@ -2820,7 +2886,7 @@
               "梅小路京都西駅 → Potel",
             ),
           ],
-          map: [HOTEL, "京都鉄道博物館", "京都水族館", HOTEL],
+          map: [HOTEL, "京都鉄道博物館", "梅小路公園", "京都水族館", HOTEL],
           notes: [
             L(
               "<b>鐵道博物館</b>通常週三休館，6/8 是週二，正常開館，但出發前還是看一下官方公告。",
@@ -3301,7 +3367,7 @@
               ],
               [JR_UMEKOJI],
             ),
-            M(
+            X(M(
               [
                 "10:30 JR HARUKA 19 號 → 關西機場",
                 "11:50 抵達；周遊券已過期，用 WEST QR 或另外買的車票進站。HARUKA 京都發車是每小時 :00、:30，趕不上就搭 11:00 的 21 號（12:20 到）",
@@ -3311,7 +3377,7 @@
                 "11:50 頃着。パスは期限切れなので WEST QR か別途購入したきっぷで入場。はるかの京都発は毎時 :00・:30。間に合わなければ 11:00 の 21 号（12:20 着）",
               ],
               [SH("westqr")],
-            ),
+            )),
             P(
               "11:50",
               [
@@ -3336,11 +3402,11 @@
                 "税関確認が終わってから預ける。その後、保安検査・出国審査・免税店",
               ],
             ),
-            P(
+            X(P(
               "15:10",
               ["星宇 JX823 關西起飛", "17:05 抵達桃園（台灣時間）"],
               ["スターラックス JX823 関西 出発", "17:05 桃園着（台湾時間）"],
-            ),
+            )),
           ],
           legs: [
             G(HOTEL, "京都駅", "transit", "Potel → 京都站（JR 嵯峨野線）", "Potel → 京都駅（JR 嵯峨野線）"),
@@ -3427,8 +3493,8 @@
           L("6/5", "6/5"),
           L("1 晚", "1 泊"),
           L(
-            "6/5 一晚。核對日期、人數、取消規定，確認有沒有附早餐、入住時間。",
-            "6/5 の 1 泊。日付・人数・キャンセル規定、朝食の有無とチェックイン時間を確認。",
+            "6/5 一晚。核對日期、人數、取消規定，確認早餐供餐時間（6/6 09:20 退房前要吃完）、入住時間。",
+            "6/5 の 1 泊。日付・人数・キャンセル規定、朝食の時間（6/6 09:20 のチェックアウト前に済ませる）とチェックイン時間を確認。",
           ),
         ),
         C(
@@ -4021,6 +4087,7 @@
             pins: {},
             navOpen: false,
             flash: null,
+            clock: Date.now(),
             done: s.done || {},
             scrollY: s.scrollY || 0,
             active: "overview",
@@ -4046,6 +4113,15 @@
         computed: {
           u() {
             return UI[this.lang];
+          },
+          jst() {
+            const q = new URLSearchParams(location.search).get("now");
+            const t = q ? Date.parse(q + ":00+09:00") : this.clock;
+            const s = new Date((isNaN(t) ? this.clock : t) + 9 * 36e5).toISOString();
+            return { day: s.slice(0, 10), hm: s.slice(11, 16) };
+          },
+          nowDay() {
+            return this.days.find((d) => this.iso(d) === this.jst.day) || null;
           },
           isDark() {
             return this.theme ? this.theme === "dark" : this.systemDark;
@@ -4260,9 +4336,9 @@
             const [a, b] = this.pinPair(d);
             return this.embed(a ? [a.q, b.q] : [b.q]);
           },
-          navUrl(l) {
+          navUrl(l, here) {
             const e = encodeURIComponent;
-            const origin = this.fromHere ? "" : `&origin=${e(l.from)}`;
+            const origin = here || this.fromHere ? "" : `&origin=${e(l.from)}`;
             return `https://www.google.com/maps/dir/?api=1${origin}&destination=${e(l.to)}&travelmode=${l.mode}`;
           },
           legLabel(l) {
@@ -4393,6 +4469,28 @@
             const s = this.showList.find((x) => x.key === key);
             return s ? s.name : key;
           },
+          toNow() {
+            const d = this.nowDay;
+            if (!d) return;
+            const hm = (it) => {
+              const s = typeof it.t === "string" ? it.t : it.move ? it.title.zh : "";
+              const m = /^(\d\d:\d\d)/.exec(s || "");
+              return m ? m[1] : null;
+            };
+            let i = 0;
+            this.cur(d).timeline.forEach((it, k) => {
+              const t = hm(it);
+              if (t && t <= this.jst.hm) i = k;
+            });
+            const id = d.id + "-t" + i;
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+            this.flash = id;
+            clearTimeout(this._flashTimer);
+            this._flashTimer = setTimeout(() => {
+              this.flash = null;
+            }, 2000);
+          },
           toTop() {
             window.scrollTo({ top: 0, behavior: "smooth" });
           },
@@ -4442,6 +4540,9 @@
         },
         mounted() {
           this.applyTheme();
+          setInterval(() => {
+            this.clock = Date.now();
+          }, 60000);
           matchMedia("(prefers-color-scheme: dark)").addEventListener(
             "change",
             (e) => {
