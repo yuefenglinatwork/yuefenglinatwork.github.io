@@ -1419,7 +1419,7 @@
                     <tbody>
                       <tr v-for="d in days" :key="d.id">
                         <td style="white-space:nowrap"><a :href="'#'+d.id" @click.prevent="go(d.id)">{{ dateLabel(d) }}</a></td>
-                        <td>{{ d.short[lang] }}</td>
+                        <td>{{ (cur(d).short || d.short)[lang] }}</td>
                         <td>{{ d.stay === 'potel' ? 'Potel' : stayName(d) }}</td>
                       </tr>
                     </tbody>
@@ -1427,8 +1427,8 @@
                 </div>
               </div>
               <div class="card pad">
-                <div class="side"><h4><x-icon n="map"/>{{ u.ovMapTitle }}</h4></div>
-                <iframe class="map-frame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" :src="embed(overviewStops)" :title="u.ovMapTitle"></iframe>
+                <div class="side"><h4><x-icon n="map"/>{{ ovTitle }}</h4></div>
+                <iframe class="map-frame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" :src="embed(overviewStops)" :title="ovTitle"></iframe>
                 <p class="small" style="margin:12px 0 0">{{ u.ovMapNote }}</p>
               </div>
             </div>
@@ -1453,7 +1453,7 @@
           <section v-for="d in days" :key="d.id" :id="d.id" class="card day" data-spy>
             <div class="day-head">
               <span class="day-num">{{ d.n[lang] }}</span>
-              <span class="day-title">{{ d.title[lang] }}</span>
+              <span class="day-title">{{ (cur(d).title || d.title)[lang] }}</span>
               <span class="day-date"><x-icon n="calendar"/>{{ dateLabel(d) }}</span>
               <span v-if="d.badge" class="badge" :class="d.badge.cls">{{ d.badge[lang] }}</span>
             </div>
@@ -1738,7 +1738,7 @@
             "入境、搭車時要出示的 QR Code，以及領票、上車的說明，從這裡直接打開。",
           open: "打開",
           ovTh: ["日期", "行程", "住宿"],
-          ovMapTitle: "全程路線：京都 → 天橋立 → 舞鶴 → 京都",
+          ovMapTitle: "全程路線：",
           ovMapNote:
             "地圖上的線只是大略走向；實際怎麼搭車，請點各天的導航按鈕（Google Maps 大眾運輸模式）。",
           stayTh: ["晚數", "日期", "住宿", "說明"],
@@ -1793,7 +1793,7 @@
             "入国や乗車で見せる QR コードと、きっぷの受け取り・乗車の案内を、ここからすぐ開けます。",
           open: "開く",
           ovTh: ["日付", "行程", "宿泊"],
-          ovMapTitle: "全行程：京都 → 天橋立 → 舞鶴 → 京都",
+          ovMapTitle: "全行程：",
           ovMapNote:
             "地図の線はおおまかなルートです。実際の乗り方は各日のナビボタン（Google マップの公共交通機関モード）で確認してください。",
           stayTh: ["泊数", "日付", "宿泊先", "メモ"],
@@ -2202,6 +2202,8 @@
       const DAYS = [
         {
           id: "d1",
+          ov: ["京都駅"],
+          ovn: L("京都", "京都"),
           n: L("第 1 日", "1 日目"),
           md: "6/4",
           wd: 5,
@@ -2340,6 +2342,8 @@
         },
         {
           id: "d2",
+          ov: ["天橋立駅", "西舞鶴駅", "東舞鶴駅"],
+          ovn: L("天橋立 → 舞鶴", "天橋立 → 舞鶴"),
           n: L("第 2 日", "2 日目"),
           md: "6/5",
           wd: 6,
@@ -2509,6 +2513,12 @@
           plans: {
             A: {
               label: L("A 12:43 巴士回，逛田邊城跡", "A 12:43 のバスで戻り田辺城跡"),
+              short: L(
+                "A 11:05 巴士去海鮮市場＋WORKMAN，12:43 巴士回、逛田邊城跡；16:36 西舞鶴回京都",
+                "A 11:05 のバスで海鮮市場＋ワークマンへ、12:43 のバスで戻って田辺城跡。16:36 西舞鶴発で京都へ",
+              ),
+              ov: [TORETORE, "舞鶴公園 田辺城跡", "京都駅"],
+              ovn: L("田邊城跡 → 京都", "田辺城跡 → 京都"),
               intro: L(
                 "<b>A 12:43 巴士回，逛田邊城跡：</b>市場和 WORKMAN 逛到 12:35，搭 12:43 巴士回西舞鶴，下午慢慢逛田邊城跡，再在車站附近休息等 16:36 的特急。想早點回京都，可以改劃 14:36 的まいづる 10 號（16:06 到）。逛過頭沒搭上 12:43，就改成 B 方案搭 15:43。",
                 "<b>A 12:43 のバスで戻り田辺城跡：</b>市場とワークマンを 12:35 まで回り、12:43 のバスで西舞鶴へ。午後は田辺城跡をゆっくり、駅の近くで休んで 16:36 の特急へ。早めに京都へ戻りたければ 14:36 のまいづる 10 号（16:06 着）に変更も可。12:43 に乗り遅れたら B プランの 15:43 に。",
@@ -2588,6 +2598,12 @@
             },
             B: {
               label: L("B 15:43 巴士回，市場逛久一點", "B 15:43 のバスで、市場をゆっくり"),
+              short: L(
+                "B 11:05 巴士去海鮮市場＋WORKMAN，市場逛久一點，15:43 巴士回；16:36 西舞鶴回京都",
+                "B 11:05 のバスで海鮮市場＋ワークマンへ、市場でゆっくりして 15:43 のバスで戻る。16:36 西舞鶴発で京都へ",
+              ),
+              ov: [TORETORE, "京都駅"],
+              ovn: L("京都", "京都"),
               intro: L(
                 "<b>B 15:43 巴士回，市場逛久一點：</b>不去田邊城跡，市場和 WORKMAN 慢慢逛到 15:35，搭最後一班 15:43 巴士回西舞鶴，接 16:36 的特急。15:43 沒搭上的話，馬上從市場步行約 35–40 分鐘回西舞鶴站，16:25 左右到，還趕得上。",
                 "<b>B 15:43 のバスで、市場をゆっくり：</b>田辺城跡は行かず、市場とワークマンを 15:35 までゆっくり。最終の 15:43 のバスで西舞鶴に戻り 16:36 の特急へ。乗り遅れたらすぐ市場から西舞鶴駅まで徒歩約 35〜40 分、16:25 頃着で間に合う。",
@@ -3371,12 +3387,12 @@
             ),
             X(M(
               [
-                "10:30 JR HARUKA 19 號 → 關西機場",
-                "11:50 抵達；周遊券已過期，用 WEST QR 或另外買的車票進站。HARUKA 京都發車是每小時 :00、:30，趕不上就搭 11:00 的 21 號（12:20 到）",
+                "10:30 京都 → 11:50 關西機場",
+                "JR 特急「はるか 19 號」；周遊券已過期，用 WEST QR 或另外買的車票進站。HARUKA 京都發車是每小時 :00、:30，趕不上就搭 11:00 的 21 號（12:20 到）",
               ],
               [
-                "10:30 JR はるか 19 号 → 関西空港",
-                "11:50 頃着。パスは期限切れなので WEST QR か別途購入したきっぷで入場。はるかの京都発は毎時 :00・:30。間に合わなければ 11:00 の 21 号（12:20 着）",
+                "10:30 京都 → 11:50 関西空港",
+                "JR 特急「はるか 19 号」。パスは期限切れなので WEST QR か別途購入したきっぷで入場。はるかの京都発は毎時 :00・:30。間に合わなければ 11:00 の 21 号（12:20 着）",
               ],
               [SH("westqr")],
             )),
@@ -4103,13 +4119,6 @@
             shops: SHOPS,
             areas: WX_AREAS,
             wx: loadWx(),
-            overviewStops: [
-              "京都駅",
-              "天橋立駅",
-              "西舞鶴駅",
-              "東舞鶴駅",
-              "京都駅",
-            ],
           };
         },
         computed: {
@@ -4124,6 +4133,18 @@
           },
           nowDay() {
             return this.days.find((d) => this.iso(d) === this.jst.day) || null;
+          },
+          overviewStops() {
+            return this.days
+              .flatMap((d) => this.cur(d).ov || d.ov || [])
+              .filter((s, i, a) => s !== a[i - 1]);
+          },
+          ovTitle() {
+            const n = this.days
+              .map((d) => this.cur(d).ovn || d.ovn)
+              .filter(Boolean)
+              .map((x) => x[this.lang]);
+            return this.u.ovMapTitle + n.join(" → ");
           },
           isDark() {
             return this.theme ? this.theme === "dark" : this.systemDark;

@@ -930,7 +930,8 @@
         margin-top: 8px;
         line-height: 1.8;
       }
-      .check li.done {
+      .check li.done,
+      .check li.skip {
         opacity: 0.5;
       }
       .check li.done .ttl {
@@ -1419,7 +1420,7 @@
                     <tbody>
                       <tr v-for="d in days" :key="d.id">
                         <td style="white-space:nowrap"><a :href="'#'+d.id" @click.prevent="go(d.id)">{{ dateLabel(d) }}</a></td>
-                        <td>{{ d.short[lang] }}</td>
+                        <td>{{ (cur(d).short || d.short)[lang] }}</td>
                         <td>{{ stayName(d) }}</td>
                       </tr>
                     </tbody>
@@ -1427,8 +1428,8 @@
                 </div>
               </div>
               <div class="card pad">
-                <div class="side"><h4><x-icon n="map"/>{{ u.ovMapTitle }}</h4></div>
-                <iframe class="map-frame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" :src="embed(overviewStops)" :title="u.ovMapTitle"></iframe>
+                <div class="side"><h4><x-icon n="map"/>{{ ovTitle }}</h4></div>
+                <iframe class="map-frame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" :src="embed(overviewStops)" :title="ovTitle"></iframe>
                 <p class="small" style="margin:12px 0 0">{{ u.ovMapNote }}</p>
               </div>
             </div>
@@ -1453,7 +1454,7 @@
           <section v-for="d in days" :key="d.id" :id="d.id" class="card day" data-spy>
             <div class="day-head">
               <span class="day-num">{{ d.n[lang] }}</span>
-              <span class="day-title">{{ d.title[lang] }}</span>
+              <span class="day-title">{{ (cur(d).title || d.title)[lang] }}</span>
               <span class="day-date"><x-icon n="calendar"/>{{ dateLabel(d) }}</span>
               <span v-if="d.badge" class="badge" :class="d.badge.cls">{{ d.badge[lang] }}</span>
             </div>
@@ -1557,17 +1558,17 @@
           </section>
 
           <section id="checklist" data-spy>
-            <h2><x-icon n="check"/>{{ u.checkTitle }}<span class="prog">{{ doneCount }} / {{ checks.length }} {{ u.done }}</span></h2>
+            <h2><x-icon n="check"/>{{ u.checkTitle }}<span class="prog">{{ doneCount }} / {{ liveChecks.length }} {{ u.done }}</span></h2>
             <p class="small" style="margin:-8px 0 8px">{{ u.checkNote }}</p>
             <template v-for="g in checkGroups" :key="g.key">
               <h3 class="check-group">{{ g.label }}</h3>
               <ul class="check">
-                <li v-for="c in g.items" :key="c.id" :class="{done: done[c.id]}">
+                <li v-for="c in g.items" :key="c.id" :class="{done: done[c.id], skip: skipCheck(c)}">
                   <input type="checkbox" :id="'c-' + c.id" v-model="done[c.id]">
                   <label :for="'c-' + c.id" class="date-blk"><span class="d">{{ c.date[lang] }}</span><span class="s">{{ c.sub[lang] }}</span></label>
                   <div class="body">
                     <label :for="'c-' + c.id">
-                      <svg v-if="done[c.id]" class="mark" viewBox="0 -960 960 960" aria-hidden="true"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg><span class="ttl">{{ c.title[lang] }}</span><span class="badge" :class="tags[c.tag].cls">{{ tags[c.tag][lang] }}</span>
+                      <svg v-if="done[c.id]" class="mark" viewBox="0 -960 960 960" aria-hidden="true"><path d="m382-354 339-339q12-12 28-12t28 12q12 12 12 28.5T777-636L410-268q-12 12-28 12t-28-12L182-440q-12-12-11.5-28.5T183-497q12-12 28.5-12t28.5 12l142 143Z"/></svg><span class="ttl">{{ c.title[lang] }}</span><span class="badge" :class="tags[c.tag].cls">{{ tags[c.tag][lang] }}</span><span v-if="skipCheck(c)" class="badge b-opt">{{ u.notPicked }}</span>
                       <span class="ds">{{ c.ds[lang] }}</span>
                     </label>
                     <div v-if="c.links" class="book-row">
@@ -1713,7 +1714,7 @@
             "入境要出示的 QR Code、Klook 憑證、旅行文件，從這裡直接打開。",
           open: "打開",
           ovTh: ["日期", "行程", "住宿"],
-          ovMapTitle: "全程地點：福岡機場 → 博多 → 天神 → 阿蘇・熊本 → 能古島",
+          ovMapTitle: "全程地點：",
           ovMapNote:
             "地圖上的線只是大略走向；實際怎麼搭車，請點各天的導航按鈕（Google Maps 大眾運輸模式）。",
           stayTh: ["晚數", "日期", "住宿", "說明"],
@@ -1731,6 +1732,7 @@
           themeBtn: "切換深淺色",
           topBtn: "回到頂端",
           nowBtn: "捲動到目前行程",
+          notPicked: "這次沒選",
           menuBtn: "設定",
           hereBtn: "分段導航改成從目前位置出發",
           here: "目前位置",
@@ -1768,7 +1770,7 @@
             "入国で見せる QR コード、Klook のバウチャー、旅行書類をここからすぐ開けます。",
           open: "開く",
           ovTh: ["日付", "行程", "宿泊"],
-          ovMapTitle: "全行程：福岡空港 → 博多 → 天神 → 阿蘇・熊本 → 能古島",
+          ovMapTitle: "全行程：",
           ovMapNote:
             "地図の線はおおまかなルートです。実際の乗り方は各日のナビボタン（Google マップの公共交通機関モード）で確認してください。",
           stayTh: ["泊数", "日付", "宿泊先", "メモ"],
@@ -1786,6 +1788,7 @@
           themeBtn: "ライト／ダーク切り替え",
           topBtn: "トップへ戻る",
           nowBtn: "現在の予定へ",
+          notPicked: "今回は選択なし",
           menuBtn: "設定",
           hereBtn: "区間ナビを現在地から出発に切り替え",
           here: "現在地",
@@ -1934,6 +1937,8 @@
       const DAYS = [
         {
           id: "d1",
+          ov: [FUK_INTL, "博多駅"],
+          ovn: L("福岡機場 → 博多", "福岡空港 → 博多"),
           n: L("第 1 日", "1 日目"),
           md: "8/28",
           wd: 6,
@@ -2060,6 +2065,8 @@
         },
         {
           id: "d2",
+          ov: ["天神駅"],
+          ovn: L("天神", "天神"),
           n: L("第 2 日", "2 日目"),
           md: "8/29",
           wd: 0,
@@ -2280,6 +2287,13 @@
           plans: {
             A: {
               label: L("A Klook 阿蘇・熊本", "A Klook 阿蘇・熊本"),
+              title: L("阿蘇・熊本一日遊", "阿蘇・熊本日帰り"),
+              short: L(
+                "A Klook 阿蘇・熊本一日遊：南阿蘇鐵道、阿蘇山・草千里、熊本城",
+                "A Klook 阿蘇・熊本日帰り：南阿蘇鉄道・阿蘇山・草千里・熊本城",
+              ),
+              ov: ["草千里ヶ浜", "熊本城"],
+              ovn: L("阿蘇・熊本", "阿蘇・熊本"),
               wx: ["fuk", "aso", "kumamoto"],
               intro: L(
                 "<b>A Klook 阿蘇・熊本一日遊（A 方案）</b>：南阿蘇鐵道、阿蘇山・草千里、熊本城。下面的時段只是大概，<b>不是 Klook 確認的行程順序</b>，以商品頁和集合通知為準。",
@@ -2346,6 +2360,13 @@
             },
             B: {
               label: L("B 糸島海岸", "B 糸島"),
+              title: L("糸島海岸一日遊", "糸島日帰り"),
+              short: L(
+                "B 糸島：海岸、海景咖啡廳、特色小店（當地一日團）",
+                "B 糸島：海岸・海辺のカフェ・雑貨店（現地日帰りツアー）",
+              ),
+              ov: ["糸島市"],
+              ovn: L("糸島", "糸島"),
               wx: ["fuk", "itoshima"],
               intro: L(
                 "<b>B 糸島海岸＋海景咖啡廳</b>：不參加阿蘇時的整天替代行程。看海、拍照、海邊咖啡廳和特色小店。糸島的巴士班次少，建議參加當地一日團；集合時間、行程依團體。",
@@ -2381,6 +2402,13 @@
             },
             C: {
               label: L("C 海之中道", "C 海の中道"),
+              title: L("海之中道海濱公園", "海の中道海浜公園"),
+              short: L(
+                "C 海之中道海濱公園（JR 自己去）",
+                "C 海の中道海浜公園（JR で自力）",
+              ),
+              ov: ["海の中道海浜公園"],
+              ovn: L("海之中道", "海の中道"),
               wx: ["fuk", "uminaka"],
               intro: L(
                 "<b>C 海之中道海濱公園</b>：花卉、草地、海邊，自己搭 JR 去。園區很大，夏天曬、走路多，挑一兩區逛就好。9:30–17:30，15 歲以上 450 日圓（2026 資料，出發前確認）。",
@@ -2634,6 +2662,8 @@
         },
         {
           id: "d5",
+          ov: ["能古島"],
+          ovn: L("能古島", "能古島"),
           n: L("第 5 日", "5 日目"),
           md: "9/1",
           wd: 3,
@@ -2784,6 +2814,12 @@
           plans: {
             A: {
               label: L("A 百道海濱", "A 百道浜"),
+              short: L(
+                "A 百道海濱、福岡塔；晚上買明太子、整理行李",
+                "A 百道浜・福岡タワー。夜は明太子を買って荷造り",
+              ),
+              ov: ["福岡タワー"],
+              ovn: L("福岡塔", "福岡タワー"),
               wx: ["fuk", "momochi"],
               intro: L(
                 "<b>A 百道海濱半日遊</b>：海邊散步、午餐、福岡塔周邊自由活動，傍晚前回博多。",
@@ -2825,6 +2861,10 @@
             },
             B: {
               label: L("B 公寓附近休息", "B 近所でのんびり"),
+              short: L(
+                "B 公寓附近休息；晚上買明太子、整理行李",
+                "B アパート周辺でのんびり。夜は明太子を買って荷造り",
+              ),
               wx: ["fuk"],
               intro: L(
                 "<b>B 公寓附近悠閒休息</b>：睡到自然醒、附近吃飯、超市採買、咖啡廳。前一天能古島玩累了就選這個。",
@@ -2845,6 +2885,12 @@
             },
             C: {
               label: L("C 再購物", "C もう一度買い物"),
+              short: L(
+                "C 運河城／天神／博多再購物；晚上買明太子、整理行李",
+                "C キャナルシティ／天神／博多で買い物。夜は明太子を買って荷造り",
+              ),
+              ov: ["キャナルシティ博多"],
+              ovn: L("運河城", "キャナルシティ"),
               wx: ["fuk"],
               intro: L(
                 "<b>C 再次購物</b>：回天神或博多補逛，或去運河城博多（Canal City，公寓步行約 10–15 分鐘）。",
@@ -3006,7 +3052,7 @@
         jul: L("2027 年 7 月", "2027 年 7 月"),
         before: L("出發前", "出発前"),
       };
-      const C = (id, g, tag, title, date, sub, ds, links) => ({
+      const C = (id, g, tag, title, date, sub, ds, links, need) => ({
         id,
         g,
         tag,
@@ -3015,6 +3061,7 @@
         sub,
         ds,
         links,
+        need,
       });
       const CHECKS = [
         C(
@@ -3053,6 +3100,7 @@
             "A プランの実際の行程（南阿蘇鉄道の乗車区間・阿蘇山の立ち寄り先・熊本城の滞在時間）、集合時間と場所、火口閉鎖時の代替スポット、キャンセル規定を確認。",
           ),
           [K("Klook", "Klook", "https://www.klook.com/zh-TW/")],
+          { d3: "A" },
         ),
         C(
           "nikuichi",
@@ -3090,6 +3138,7 @@
             "阿蘇火山防災会議の公式サイトで火口規制を確認（2026/8/14 に噴火警戒レベル 3、9/1 に 2 へ引き下げ、中岳第一火口から約 1 km を規制）。閉鎖のままなら 8/30 を B か C にするか家族と決める。",
           ),
           [ASO_VOLCANO],
+          { d3: "A" },
         ),
         C(
           "noko",
@@ -3422,14 +3471,6 @@
             shops: SHOPS,
             areas: WX_AREAS,
             wx: loadWx(),
-            overviewStops: [
-              "福岡空港 国際線ターミナル",
-              "博多駅",
-              "天神駅",
-              "熊本城",
-              "草千里ヶ浜",
-              "能古島",
-            ],
           };
         },
         computed: {
@@ -3473,8 +3514,23 @@
               })),
             ];
           },
+          overviewStops() {
+            return this.days
+              .flatMap((d) => this.cur(d).ov || d.ov || [])
+              .filter((s, i, a) => s !== a[i - 1]);
+          },
+          ovTitle() {
+            const n = this.days
+              .map((d) => this.cur(d).ovn || d.ovn)
+              .filter(Boolean)
+              .map((x) => x[this.lang]);
+            return this.u.ovMapTitle + n.join(" → ");
+          },
+          liveChecks() {
+            return this.checks.filter((c) => !this.skipCheck(c));
+          },
           doneCount() {
-            return this.checks.filter((c) => this.done[c.id]).length;
+            return this.liveChecks.filter((c) => this.done[c.id]).length;
           },
           checkGroups() {
             return Object.keys(GROUPS)
@@ -3530,6 +3586,11 @@
           },
           stayName(d) {
             return STAY_NAMES[d.stay][this.lang];
+          },
+          skipCheck(c) {
+            return Object.entries(c.need || {}).some(
+              ([id, k]) => this.planOf(this.days.find((x) => x.id === id)) !== k,
+            );
           },
           planOf(d) {
             return d.plans[this.plan[d.id]]
