@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+<title>SCQA 小組練習</title>
+<style>
+  :root{
+    --green:#2b4a7a; --green-dark:#2b4a7a; --green-light:#e2e8f2;
+    --brown:#9a6a12; --brown-light:#f6ecd5;
+    --bg:#faf8f4; --card:#ffffff; --ink:#24211d; --ink-soft:#6f685e; --line:#e4ddd1;
+    --on-accent:#fff;
+    --shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --green:#8fb3e6; --green-dark:#8fb3e6; --green-light:#1e293b;
+      --brown:#e0b45a; --brown-light:#332a18;
+      --bg:#16151a; --card:#211f25; --ink:#ece7df; --ink-soft:#a49c90; --line:#35323a;
+      --on-accent:#10192b;
+      --shadow:none;
+    }
+  }
+  :root[data-theme="dark"]{
+    --green:#8fb3e6; --green-dark:#8fb3e6; --green-light:#1e293b;
+    --brown:#e0b45a; --brown-light:#332a18;
+    --bg:#16151a; --card:#211f25; --ink:#ece7df; --ink-soft:#a49c90; --line:#35323a;
+    --on-accent:#10192b;
+    --shadow:none;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif;}
+  .page{max-width:820px;margin:0 auto;padding:40px 16px 60px;}
+  .step{margin-bottom:48px;}
+  .kicker{font-size:13px;font-weight:700;letter-spacing:.12em;color:var(--green);margin-bottom:8px;}
+  h1{font-size:clamp(24px,4vw,34px);font-weight:900;margin:0 0 20px;color:var(--green-dark);}
+
+  .card{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:14px;padding:22px 24px;margin-bottom:20px;}
+  .card h2{margin:0 0 12px;font-size:18px;color:var(--green-dark);}
+  ol.how{margin:0;padding-left:22px;}
+  ol.how li{font-size:15px;line-height:1.8;margin-bottom:6px;}
+  ol.how b{color:var(--brown);}
+
+  .tips{margin:14px 0 0;padding:12px 14px;background:var(--green-light);border-radius:10px;font-size:14px;line-height:1.8;}
+  .tips b{color:var(--green-dark);}
+
+  /* 5 分鐘時間分配 */
+  .timeline{display:flex;gap:4px;margin-top:14px;}
+  .seg{border-radius:8px;padding:8px 6px;text-align:center;font-size:13px;line-height:1.5;background:var(--brown-light);color:var(--brown);}
+  .seg b{display:block;font-size:14px;}
+  .seg.open,.seg.close{flex:30;}
+  .seg.ch{flex:80;background:var(--green-light);color:var(--green-dark);}
+
+  .result{border:2px solid var(--green);}
+  .result-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
+  .result-head h2{margin:0;}
+  .btn{border:1.5px solid var(--green);background:transparent;color:var(--green);font-weight:700;font-size:13px;padding:7px 16px;border-radius:999px;cursor:pointer;font-family:inherit;transition:background .15s,color .15s;}
+  .btn:hover{background:var(--green);color:var(--on-accent);}
+  pre{margin:0;white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:15.5px;line-height:1.9;}
+  .toast{font-size:13px;color:var(--green);font-weight:700;min-height:20px;margin-top:8px;}
+
+  .fab{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:10px;z-index:20;}
+  .fab button{width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);box-shadow:0 2px 10px rgba(0,0,0,.12);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;}
+  .fab button:hover{border-color:var(--green);color:var(--green);}
+  .fab .ic{width:22px;height:22px;}
+
+  .scqa{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .sq{border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
+  .sq-head{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;margin-bottom:6px;}
+  .sq-letter{width:30px;height:30px;border-radius:50%;background:var(--green);color:var(--on-accent);display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;}
+  .sq-key{margin-left:auto;font-size:18px;font-weight:900;color:var(--green-dark);}
+  .sq p{font-size:14px;line-height:1.7;margin:0 0 8px;}
+  .sq-pat{font-size:13px;line-height:1.7;color:var(--brown);background:var(--brown-light);border-radius:8px;padding:8px 10px;}
+
+  @media (max-width:640px){
+    .timeline{flex-direction:column;}
+    .scqa{grid-template-columns:1fr;}
+    .fab{right:12px;bottom:12px;}
+    .fab button{width:44px;height:44px;}
+  }
+
+  .back{display:inline-block;font-size:13px;color:var(--ink-soft);text-decoration:none;margin-bottom:18px;}
+  .back:hover{color:var(--green);}
+  .lead{font-size:15px;color:var(--ink-soft);margin:-8px 0 20px;}
+  .topics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+  .topic{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:12px;text-align:left;font-family:inherit;font-size:14.5px;font-weight:700;cursor:pointer;transition:.15s;}
+  .topic span{color:var(--ink-soft);font-weight:400;margin-right:6px;}
+  .topic:hover{border-color:var(--green);}
+  .topic[aria-pressed="true"]{border-color:var(--green);background:var(--green-light);color:var(--green-dark);}
+
+  .part{border-top:1px solid var(--line);padding:16px 0;}
+  .part:first-child{border-top:0;padding-top:0;}
+  .part:last-child{padding-bottom:0;}
+  .part-label{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--ink-soft);margin-bottom:8px;}
+  .part-head{font-size:16.5px;font-weight:900;line-height:1.6;margin:0 0 6px;}
+  .part p{font-size:15px;line-height:1.85;margin:0 0 6px;}
+  .part ul,.part ol{margin:6px 0 8px;padding-left:24px;font-size:15px;line-height:1.85;}
+  .part ol li{margin-bottom:4px;}
+  .part ol li b{display:block;}
+  .part ol li span{color:var(--ink-soft);}
+  .quote{border:1px solid var(--line);border-left:4px solid var(--green);border-radius:8px;padding:10px 14px;font-weight:900;font-size:15.5px;margin:8px 0 2px;display:inline-block;}
+  .chain{font-weight:900;font-size:15px;line-height:1.8;color:var(--green-dark);}
+  @media (max-width:640px){ .topics{grid-template-columns:1fr 1fr;} }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="kicker">小組討論</div>
+  <h1>SCQA 練習</h1>
+  <p class="lead">從以下主題中挑選一個，練習用 SCQA 說一段開場。</p>
+
+  <div class="topics" id="topics"></div>
+
+  <div class="card result">
+    <div class="result-head">
+      <h2 id="topicTitle"></h2>
+      <button class="btn" id="copyBtn">複製文字</button>
+    </div>
+    <div id="content"></div>
+    <div class="toast" id="toast"></div>
+  </div>
+</div>
+
+<div class="fab">
+  <button id="themeBtn" title="切換深淺色" aria-label="切換深淺色"></button>
+  <button id="topBtn" title="回到頂端" aria-label="回到頂端"><svg class="ic" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-528 324-372q-11 11-28 11t-28-11q-11-11-11-28t11-28l184-184q12-12 28-12t28 12l184 184q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-528Z"/></svg></button>
+</div>
+
+<script>
+(function(){
+  // 深淺色切換，記住使用者選擇
+  const root = document.documentElement;
+  const themeBtn = document.getElementById('themeBtn');
+  const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  // 圖示取自福岡旅遊頁
+  const SUN = '<svg class="ic" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M565-395q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35Zm-226.5 56.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM80-440q-17 0-28.5-11.5T40-480q0-17 11.5-28.5T80-520h80q17 0 28.5 11.5T200-480q0 17-11.5 28.5T160-440H80Zm720 0q-17 0-28.5-11.5T760-480q0-17 11.5-28.5T800-520h80q17 0 28.5 11.5T920-480q0 17-11.5 28.5T880-440h-80ZM451.5-771.5Q440-783 440-800v-80q0-17 11.5-28.5T480-920q17 0 28.5 11.5T520-880v80q0 17-11.5 28.5T480-760q-17 0-28.5-11.5Zm0 720Q440-63 440-80v-80q0-17 11.5-28.5T480-200q17 0 28.5 11.5T520-160v80q0 17-11.5 28.5T480-40q-17 0-28.5-11.5ZM226-678l-43-42q-12-11-11.5-28t11.5-29q12-12 29-12t28 12l42 43q11 12 11 28t-11 28q-11 12-27.5 11.5T226-678Zm494 495-42-43q-11-12-11-28.5t11-27.5q11-12 27.5-11.5T734-282l43 42q12 11 11.5 28T777-183q-12 12-29 12t-28-12Zm-42-495q-12-11-11.5-27.5T678-734l42-43q11-12 28-11.5t29 11.5q12 12 12 29t-12 28l-43 42q-12 11-28 11t-28-11ZM183-183q-12-12-12-29t12-28l43-42q12-11 28.5-11t27.5 11q12 11 11.5 27.5T282-226l-42 43q-11 12-28 11.5T183-183Zm297-297Z"/></svg>';
+  const MOON = '<svg class="ic" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-120q-151 0-255.5-104.5T120-480q0-138 90-239.5T440-838q13-2 23 3.5t16 14.5q6 9 6.5 21t-7.5 23q-17 26-25.5 55t-8.5 61q0 90 63 153t153 63q31 0 61.5-9t54.5-25q11-7 22.5-6.5T819-479q10 5 15.5 15t3.5 24q-14 138-117.5 229T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/></svg>';
+  const syncIcon = () => { themeBtn.innerHTML = isDark() ? SUN : MOON; };
+  try{ const saved = localStorage.getItem('theme'); if(saved) root.dataset.theme = saved; }catch(e){}
+  syncIcon();
+  themeBtn.onclick = () => {
+    root.dataset.theme = isDark() ? 'light' : 'dark';
+    try{ localStorage.setItem('theme', root.dataset.theme); }catch(e){}
+    syncIcon();
+  };
+
+  document.getElementById('topBtn').onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+})();
+</script>
+
+<script>
+(function(){
+  const TOPICS = [
+    {
+      "id": "a",
+      "title": "新制度導入",
+      "s": {
+        "head": "系統每天都在變動，變更已經是日常工作的一部分。",
+        "body": "程式更新、參數調整、系統修補，每週都有大量變更要上線，大家都希望又快又穩。"
+      },
+      "c": {
+        "head": "但很多系統事故，不是來自系統本身，而是變更沒有被好好管理。",
+        "list": [
+          "未經審核就直接上線",
+          "測試不完整，上線後才發現問題",
+          "沒有回復計畫，出事只能臨時應變",
+          "變更紀錄不完整，出事時查不到誰改了什麼",
+          "為了趕時程，跳過既有流程"
+        ],
+        "tail": "新的變更管理制度推出後，如果大家只覺得是多一道手續，制度就只會停在紙上。"
+      },
+      "q": {
+        "head": "如何讓同仁不只是「知道新制度」，而是真正願意照著做？",
+        "body": "因此真正需要解決的問題，不只是「有沒有公告新制度」，而是：",
+        "quote": "如何讓新制度成為每次變更的標準動作？"
+      },
+      "a": {
+        "head": "從「多一道手續」走向「少一次事故」，建立看得懂、做得到、有回饋的制度推動方式。",
+        "items": [
+          [
+            "說清楚為什麼",
+            "用真實事故案例說明制度要解決的問題，讓同仁理解價值。"
+          ],
+          [
+            "讓流程好上手",
+            "提供範本與檢核清單，把申請、審核、回復計畫整合在同一個流程。"
+          ],
+          [
+            "持續追蹤回饋",
+            "定期檢視執行狀況與事故變化，依回饋調整，讓制度越用越順。"
+          ]
+        ]
+      },
+      "close": "好的制度，不是多一道關卡，而是少一次事故。",
+      "chain": "變更天天發生 → 管理缺口造成事故 → 如何讓同仁照著做？ → 讓新制度成為標準動作。"
+    },
+    {
+      "id": "b",
+      "title": "服務意識提升",
+      "s": {
+        "head": "每天都有同仁需要協助，服務品質就藏在每一次回應裡。",
+        "body": "系統問題回報、權限申請、操作諮詢，透過電話、Email、Teams 或工單進來，已經是每天的日常。"
+      },
+      "c": {
+        "head": "但對方感受到的，往往不是我們多努力，而是等了多久、有沒有人回應。",
+        "list": [
+          "只回「已收到」，之後沒有任何進度",
+          "處理時間不明確，對方只能一再追問",
+          "用專業術語回覆，對方看不懂",
+          "結案了，卻沒確認問題是否真正解決",
+          "同仁繞過正規管道，直接私訊找人"
+        ],
+        "tail": "即使技術能力再好，只要溝通出現斷點，對方仍會覺得「沒被照顧」。"
+      },
+      "q": {
+        "head": "如何讓同仁不只是「有處理」，而是「感受到被重視」？",
+        "body": "因此真正需要解決的問題，不只是「問題有沒有修好」，而是：",
+        "quote": "如何讓每一次服務都讓對方安心？"
+      },
+      "a": {
+        "head": "從「處理問題」走向「經營體驗」，建立看得見進度的服務行為。",
+        "items": [
+          [
+            "主動回覆時間",
+            "收件時就告知預計處理時間與負責窗口。"
+          ],
+          [
+            "主動更新進度",
+            "遇到延誤先說明原因，並給出新的完成時間。"
+          ],
+          [
+            "確認真正解決",
+            "結案時用對方聽得懂的話說明結果，並確認問題已解決。"
+          ]
+        ]
+      },
+      "close": "服務意識不在說了多少「好的」，而在讓對方不用再追問。",
+      "chain": "服務需求天天發生 → 沒有回應成為不滿來源 → 如何讓對方安心？ → 讓進度看得見。"
+    },
+    {
+      "id": "c",
+      "title": "問題解決能力訓練",
+      "s": {
+        "head": "維持系統穩定是日常，處理突發問題也是日常。",
+        "body": "系統異常、批次失敗、使用者回報錯誤，發生時大家第一時間投入處理，讓服務盡快恢復。"
+      },
+      "c": {
+        "head": "但問題常常不是一次解決，而是一再發生。",
+        "list": [
+          "只修表面症狀，沒有追到根本原因",
+          "憑經驗判斷，沒有用資料驗證",
+          "處理過程沒有紀錄，下次又從頭查起",
+          "改完就結案，沒確認是否真正改善"
+        ],
+        "tail": "即使每次救火都成功，只要根因還在，同樣的問題遲早會再發生。"
+      },
+      "q": {
+        "head": "如何讓團隊不只是「會救火」，而是能真正解決問題？",
+        "body": "因此真正需要解決的問題，不只是「這次有沒有修好」，而是：",
+        "quote": "如何讓同一個問題不再發生第二次？"
+      },
+      "a": {
+        "head": "從「救火」走向「根治」，建立定義清楚、追到根因、驗證成效的解題方法。",
+        "items": [
+          [
+            "定義問題",
+            "用事實描述現象：何時發生、在哪裡、影響範圍多大，不急著下結論。"
+          ],
+          [
+            "找出根因",
+            "用「5 個為什麼」搭配資料追到根本原因，而不是停在表面。"
+          ],
+          [
+            "驗證成效",
+            "改善後持續追蹤，確認問題不再發生，並把經驗寫成紀錄分享。"
+          ]
+        ]
+      },
+      "close": "真正的效率，不是修得快，而是不用再修。",
+      "chain": "問題天天發生 → 救火成為常態 → 如何根治問題？ → 讓同一問題不再發生。"
+    },
+    {
+      "id": "d",
+      "title": "資訊安全意識",
+      "s": {
+        "head": "數位化讓工作更便利，也讓每位同仁成為資訊安全的第一道防線。",
+        "body": "日常工作大量透過 Email、Teams、雲端文件及各類資訊系統進行，接收連結、下載附件、分享資料、登入系統，已經成為每位同仁每天都會執行的工作。"
+      },
+      "c": {
+        "head": "但資安風險往往不是來自複雜的駭客技術，而是日常工作中的一個疏忽。",
+        "list": [
+          "點擊偽冒郵件或釣魚連結",
+          "密碼重複使用或帳密遭竊",
+          "機敏資料誤寄、誤傳",
+          "未確認身分就提供資訊",
+          "為了工作方便，繞過既有安全程序"
+        ],
+        "tail": "即使公司建置再多資安防護，只要人的判斷出現破口，仍可能形成風險。"
+      },
+      "q": {
+        "head": "如何讓同仁不只是「知道資安規定」，而是在關鍵時刻真正做出正確判斷？",
+        "body": "因此真正需要解決的問題，不只是「有沒有辦資安教育訓練」，而是：",
+        "quote": "如何讓資安意識成為每位同仁的工作習慣？"
+      },
+      "a": {
+        "head": "從「知道」走向「做到」，建立可辨識、會判斷、能通報的資安行為。",
+        "items": [
+          [
+            "看得出風險",
+            "透過釣魚郵件、假冒主管、異常連結等真實工作情境，提高辨識能力。"
+          ],
+          [
+            "知道怎麼做",
+            "將複雜的資安規範轉為簡單、明確、可執行的行為準則，讓同仁遇到事件可以快速判斷。"
+          ],
+          [
+            "形成安全習慣",
+            "透過定期演練、案例提醒與通報機制，讓資安從一次性的教育訓練轉變為日常習慣。"
+          ]
+        ]
+      },
+      "close": "資安最重要的防線，不只在系統，而是在每一次點擊、分享與判斷。",
+      "chain": "工作全面數位化 → 人為疏忽成為破口 → 如何讓同仁做對判斷？ → 讓資安成為工作習慣。"
+    },
+    {
+      "id": "e",
+      "title": "主管機關法規、法遵",
+      "s": {
+        "head": "金融業的每一個系統，都在法規框架下運作。",
+        "body": "資訊安全、委外管理、個資保護、紀錄保存等規範，都會影響系統怎麼設計、怎麼上線、怎麼維運。"
+      },
+      "c": {
+        "head": "但法遵風險往往不是故意違規，而是太晚才檢查。",
+        "list": [
+          "需求階段沒有納入法規要求",
+          "上線前才發現不符規定，只能整段重工",
+          "法規更新後，既有系統沒有同步調整",
+          "檢核過程沒有留存紀錄，稽核時難以舉證"
+        ],
+        "tail": "即使系統功能再完整，只要法遵出現缺口，就可能面臨裁罰與改善要求。"
+      },
+      "q": {
+        "head": "如何讓法遵不只是「上線前的關卡」，而是開發過程的一部分？",
+        "body": "因此真正需要解決的問題，不只是「上線前有沒有檢查」，而是：",
+        "quote": "如何在不拖慢開發的前提下，確保每個系統都符合法規？"
+      },
+      "a": {
+        "head": "從「事後檢查」走向「事前設計」，建立法遵前移的開發流程。",
+        "items": [
+          [
+            "需求階段先檢核",
+            "需求單加入法規檢核項目，在規格確認前就找出相關規範。"
+          ],
+          [
+            "設計時設確認點",
+            "在設計與測試階段設立法遵確認點，有疑義即時確認。"
+          ],
+          [
+            "全程留存紀錄",
+            "檢核結果完整留存，法規更新時也能快速盤點影響範圍。"
+          ]
+        ]
+      },
+      "close": "法遵最省成本的時候，是需求的第一天。",
+      "chain": "系統受法規規範 → 太晚檢查造成重工 → 如何事前符合法規？ → 讓法遵前移。"
+    },
+    {
+      "id": "f",
+      "title": "個人資料保護",
+      "s": {
+        "head": "客戶信任我們，才把個人資料交到我們手上。",
+        "body": "身分證字號、聯絡資料、帳戶與交易紀錄，在開戶、交易、客服與系統維運中，每天都會被查詢與使用。"
+      },
+      "c": {
+        "head": "但個資外洩往往不是來自外部攻擊，而是內部的一個方便。",
+        "list": [
+          "用正式環境的客戶資料做測試",
+          "個資檔案存在個人電腦或隨身碟",
+          "用 Email 或通訊軟體傳送未加密的個資",
+          "查詢超出工作需要的客戶資料",
+          "資料用完沒有刪除"
+        ],
+        "tail": "一旦外洩，公司要面對主管機關裁罰與客戶求償，經手的人也可能負法律責任。"
+      },
+      "q": {
+        "head": "如何讓同仁不只是「知道個資法」，而是每次使用資料時都做對選擇？",
+        "body": "因此真正需要解決的問題，不只是「有沒有簽保密切結」，而是：",
+        "quote": "如何把個資保護變成工作的預設做法？"
+      },
+      "a": {
+        "head": "從「方便使用」走向「最小使用」，建立用得少、管得住、刪得掉的個資習慣。",
+        "items": [
+          [
+            "能不用就不用",
+            "只取工作必要的欄位，依權限與用途查詢。"
+          ],
+          [
+            "要用先去識別",
+            "測試與分析使用遮罩或去識別化資料，傳送時加密。"
+          ],
+          [
+            "用完立即刪除",
+            "依保存期限刪除，不留在個人設備或共用資料夾。"
+          ]
+        ]
+      },
+      "close": "保護個資，就是保護客戶對我們的信任。",
+      "chain": "個資天天被使用 → 一時方便成為破口 → 如何每次都做對？ → 讓最小化成為預設。"
+    }
+  ];
+
+  const topicsEl = document.getElementById('topics');
+  const contentEl = document.getElementById('content');
+  const titleEl = document.getElementById('topicTitle');
+  const toast = document.getElementById('toast');
+  let current = TOPICS.find(t => t.id === location.hash.slice(1)) || TOPICS.find(t => t.id === 'd');
+
+  function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+  const label = (k, en, zh) => `<div class="part-label"><span class="sq-letter">${k}</span>${en} ${zh}</div>`;
+
+  function render(){
+    const t = current;
+    topicsEl.innerHTML = TOPICS.map(x =>
+      `<button class="topic" data-id="${x.id}" aria-pressed="${x === t}"><span>${x.id})</span>${esc(x.title)}</button>`
+    ).join('');
+    titleEl.textContent = t.title + '｜完整 SCQA';
+    contentEl.innerHTML = `
+      <div class="part">${label('S', 'Situation', '情境')}
+        <p class="part-head">${esc(t.s.head)}</p><p>${esc(t.s.body)}</p></div>
+      <div class="part">${label('C', 'Complication', '衝突')}
+        <p class="part-head">${esc(t.c.head)}</p><p>例如：</p>
+        <ul>${t.c.list.map(i => `<li>${esc(i)}</li>`).join('')}</ul><p>${esc(t.c.tail)}</p></div>
+      <div class="part">${label('Q', 'Question', '問題')}
+        <p class="part-head">${esc(t.q.head)}</p><p>${esc(t.q.body)}</p>
+        <div class="quote">${esc(t.q.quote)}</div></div>
+      <div class="part">${label('A', 'Answer', '答案')}
+        <p class="part-head">${esc(t.a.head)}</p><p>建議聚焦三件事：</p>
+        <ol>${t.a.items.map(([h, d]) => `<li><b>${esc(h)}</b><span>${esc(d)}</span></li>`).join('')}</ol></div>
+      <div class="part"><div class="part-label">一句話收斂</div>
+        <div class="quote">${esc(t.close)}</div></div>
+      <div class="part"><div class="part-label">四頁簡報標題</div>
+        <div class="chain">${esc(t.chain)}</div></div>`;
+  }
+
+  function plainText(){
+    const t = current;
+    return [
+      '第一組', '練習主題：' + t.title, '',
+      'S｜Situation 情境', t.s.head, t.s.body, '',
+      'C｜Complication 衝突', t.c.head, '例如：', ...t.c.list.map(i => '・' + i), t.c.tail, '',
+      'Q｜Question 問題', t.q.head, t.q.body, '「' + t.q.quote + '」', '',
+      'A｜Answer 答案', t.a.head, '建議聚焦三件事：', ...t.a.items.map(([h, d], i) => `${i + 1}. ${h}\n   ${d}`), '',
+      '一句話收斂', t.close, '',
+      '四頁簡報標題', t.chain,
+    ].join('\n');
+  }
+
+  topicsEl.addEventListener('click', e => {
+    const btn = e.target.closest('.topic');
+    if(!btn) return;
+    current = TOPICS.find(t => t.id === btn.dataset.id);
+    history.replaceState(null, '', '#' + current.id);
+    render();
+  });
+
+  function say(msg){
+    toast.textContent = msg;
+    setTimeout(() => { toast.textContent = ''; }, 1800);
+  }
+  function fallback(text){
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try{ ok = document.execCommand('copy'); }catch(e){}
+    ta.remove();
+    say(ok ? '已複製到剪貼簿' : '複製失敗，請手動選取文字');
+  }
+  document.getElementById('copyBtn').onclick = () => {
+    const text = plainText();
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(text).then(() => say('已複製到剪貼簿'), () => fallback(text));
+    }else{
+      fallback(text);
+    }
+  };
+
+  render();
+})();
+</script>
+</body>
+</html>

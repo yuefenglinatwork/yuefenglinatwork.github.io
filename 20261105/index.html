@@ -67,8 +67,17 @@
   .fab button:hover{border-color:var(--green);color:var(--green);}
   .fab .ic{width:22px;height:22px;}
 
+  .scqa{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .sq{border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
+  .sq-head{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;margin-bottom:6px;}
+  .sq-letter{width:30px;height:30px;border-radius:50%;background:var(--green);color:var(--on-accent);display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;}
+  .sq-key{margin-left:auto;font-size:18px;font-weight:900;color:var(--green-dark);}
+  .sq p{font-size:14px;line-height:1.7;margin:0 0 8px;}
+  .sq-pat{font-size:13px;line-height:1.7;color:var(--brown);background:var(--brown-light);border-radius:8px;padding:8px 10px;}
+
   @media (max-width:640px){
     .timeline{flex-direction:column;}
+    .scqa{grid-template-columns:1fr;}
     .fab{right:12px;bottom:12px;}
     .fab button{width:44px;height:44px;}
   }
@@ -168,6 +177,81 @@
 【結尾｜30 秒】
 總結一句話：找出瓶頸、解決瓶頸、制度化維持成效。
 請大家支持需求一次填齊、疑點當場拍板、會簽準時完成，六個月後我們用數據報告成果。謝謝。</pre>
+      <div class="toast"></div>
+    </div>
+  </section>
+
+  <section class="step">
+    <div class="kicker">步驟三</div>
+    <h1>簡報架構與內容｜SCQA</h1>
+
+    <div class="card">
+      <h2>怎麼做</h2>
+      <div class="scqa">
+        <div class="sq">
+          <div class="sq-head"><span class="sq-letter">S</span>情境<span class="sq-key">建立共鳴</span></div>
+          <p>陳述聽眾認同且熟悉的現狀，從切身體會切入，用一段話講清楚。</p>
+          <div class="sq-pat">句型：「正如各位所知，目前我們的日常流程是……」</div>
+        </div>
+        <div class="sq">
+          <div class="sq-head"><span class="sq-letter">C</span>衝突<span class="sq-key">製造懸念</span></div>
+          <p>打破平衡，點出現狀帶來的痛點，放大「不解決後果會很嚴重」的危機感。</p>
+          <div class="sq-pat">句型：「然而，最近我們發現，這種做法開始出現……的嚴重問題。」</div>
+        </div>
+        <div class="sq">
+          <div class="sq-head"><span class="sq-letter">Q</span>問題<span class="sq-key">定義痛點</span></div>
+          <p>站在聽眾角度，把衝突提煉成一個最迫切、最想知道答案的核心問題。</p>
+          <div class="sq-pat">句型：「這時候你一定會問：『那我們要怎麼做，才能擺脫這個困境？』」</div>
+        </div>
+        <div class="sq">
+          <div class="sq-head"><span class="sq-letter">A</span>答案<span class="sq-key">提供解藥</span></div>
+          <p>結論先行，直接給出核心策略，並說明為什麼這對聽眾重要。</p>
+          <div class="sq-pat">句型：「如果你只記得一件事，請記得：透過……就能徹底搞定這個難題。」</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card result">
+      <div class="result-head">
+        <h2>最終成果：SCQA 報告稿</h2>
+        <button class="btn" data-copy="result3">複製文字</button>
+      </div>
+<pre id="result3">第一組
+主題：需求確認流程優化：六個月內將確認週期由 10 天縮短至 5 天
+
+S｜Situation 情境
+每個系統需求，都要經過多次確認才能進入開發。
+目前一個需求從提出到會簽，要經過訪談、撰寫規格、確認、修改、再確認，平均確認 5 次、歷時 10 天。
+
+C｜Complication 衝突
+但時間不是花在開發，而是花在來回確認。
+例如：
+・需求描述不完整，需要反覆追問
+・雙方理解有落差，文件反覆修訂
+・疑點靠信件逐條往返，每一輪都在等回覆
+・規格文件從零撰寫，一份要 8 小時
+即使每個人都很努力，只要流程不改，仍有約 20% 的案件在開發後需要重工。
+
+Q｜Question 問題
+如何讓需求確認不只是「跑完流程」，而是真正縮短時間？
+因此真正需要解決的問題，不只是「確認了幾次」，而是：
+「如何讓需求一次說清楚，5 天內完成確認？」
+
+A｜Answer 答案
+從「來回確認」走向「一次到位」，建立標準化、可追蹤的需求確認流程。
+建議聚焦三件事：
+1. 找原因
+   釐清需求理解落差，找出反覆確認的關鍵瓶頸。
+2. 改流程
+   標準化需求輸入，由 AI 整理與提醒缺漏，人負責判斷與決策，規格文件由 8 小時縮短至 2 小時。
+3. 建機制
+   建立時效治理，追蹤確認週期 10 天 → 5 天、確認次數 5 次 → 2 次、重工率 20% → 15%。
+
+一句話收斂
+需求確認的價值，不在確認幾次，而在一次說清楚。
+
+四頁簡報標題
+需求確認耗時 10 天 → 反覆確認成為瓶頸 → 如何一次說清楚？ → 讓 5 天成為標準。</pre>
       <div class="toast"></div>
     </div>
   </section>
