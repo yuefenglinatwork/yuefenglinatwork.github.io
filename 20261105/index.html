@@ -70,7 +70,9 @@
   .scqa{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
   .sq{border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
   .sq-head{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;margin-bottom:6px;}
-  .sq-letter{width:30px;height:30px;border-radius:50%;background:var(--green);color:var(--on-accent);display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0;}
+  /* 圓形固定 30px 由 ::before 繪製，字母用 flex 置中 */
+  .sq-letter{position:relative;isolation:isolate;flex:0 0 30px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1;font-weight:900;color:var(--on-accent);}
+  .sq-letter::before{content:"";position:absolute;top:0;left:0;width:30px;height:30px;border-radius:50%;background:var(--green);z-index:-1;}
   .sq-key{margin-left:auto;font-size:18px;font-weight:900;color:var(--green-dark);}
   .sq p{font-size:14px;line-height:1.7;margin:0 0 8px;}
   .sq-pat{font-size:13px;line-height:1.7;color:var(--brown);background:var(--brown-light);border-radius:8px;padding:8px 10px;}
