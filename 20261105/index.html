@@ -6,21 +6,27 @@
 <title>專案規劃步驟</title>
 <style>
   :root{
-    --green:#006747; --green-dark:#004d35; --green-light:#e6efe9;
-    --brown:#8b5e3c; --brown-light:#f1e6d8;
-    --bg:#f5f1e8; --card:#ffffff; --ink:#2b2620; --ink-soft:#5c564c; --line:#ddd4c6;
+    --green:#2b4a7a; --green-dark:#2b4a7a; --green-light:#e2e8f2;
+    --brown:#9a6a12; --brown-light:#f6ecd5;
+    --bg:#faf8f4; --card:#ffffff; --ink:#24211d; --ink-soft:#6f685e; --line:#e4ddd1;
+    --btn-bg:#e2e8f2;
+    --shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.05);
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --green:#5fbf96; --green-dark:#8fd6b5; --green-light:#1d3a2f;
-      --brown:#d4a57e; --brown-light:#3a2c20;
-      --bg:#1a1814; --card:#24211c; --ink:#efe9de; --ink-soft:#b3ab9d; --line:#3d382f;
+      --green:#8fb3e6; --green-dark:#8fb3e6; --green-light:#1e293b;
+      --brown:#e0b45a; --brown-light:#332a18;
+      --bg:#16151a; --card:#211f25; --ink:#ece7df; --ink-soft:#a49c90; --line:#35323a;
+      --btn-bg:#8fb3e6;
+      --shadow:none;
     }
   }
   :root[data-theme="dark"]{
-    --green:#5fbf96; --green-dark:#8fd6b5; --green-light:#1d3a2f;
-    --brown:#d4a57e; --brown-light:#3a2c20;
-    --bg:#1a1814; --card:#24211c; --ink:#efe9de; --ink-soft:#b3ab9d; --line:#3d382f;
+    --green:#8fb3e6; --green-dark:#8fb3e6; --green-light:#1e293b;
+    --brown:#e0b45a; --brown-light:#332a18;
+    --bg:#16151a; --card:#211f25; --ink:#ece7df; --ink-soft:#a49c90; --line:#35323a;
+    --btn-bg:#8fb3e6;
+    --shadow:none;
   }
   *{box-sizing:border-box;}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:'Noto Sans TC','Microsoft JhengHei','PingFang TC',sans-serif;}
@@ -29,7 +35,7 @@
   .kicker{font-size:13px;font-weight:700;letter-spacing:.12em;color:var(--green);margin-bottom:8px;}
   h1{font-size:clamp(24px,4vw,34px);font-weight:900;margin:0 0 20px;color:var(--green-dark);}
 
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-bottom:20px;}
+  .card{background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:14px;padding:22px 24px;margin-bottom:20px;}
   .card h2{margin:0 0 12px;font-size:18px;color:var(--green-dark);}
   ol.how{margin:0;padding-left:22px;}
   ol.how li{font-size:15px;line-height:1.8;margin-bottom:6px;}
@@ -48,12 +54,19 @@
   .result{border:2px solid var(--green);}
   .result-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
   .result-head h2{margin:0;}
-  .btn{border:1px solid var(--green);background:var(--green);color:#000;font-weight:700;font-size:13px;padding:7px 16px;border-radius:999px;cursor:pointer;font-family:inherit;}
+  .btn{border:1px solid var(--green);background:var(--btn-bg);color:#000;font-weight:700;font-size:13px;padding:7px 16px;border-radius:999px;cursor:pointer;font-family:inherit;}
   pre{margin:0;white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:15.5px;line-height:1.9;}
   .toast{font-size:13px;color:var(--green);font-weight:700;min-height:20px;margin-top:8px;}
 
+  .fab{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:10px;z-index:20;}
+  .fab button{width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);box-shadow:0 2px 10px rgba(0,0,0,.12);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;}
+  .fab button:hover{border-color:var(--green);color:var(--green);}
+  .fab .ic{width:22px;height:22px;}
+
   @media (max-width:640px){
     .timeline{flex-direction:column;}
+    .fab{right:12px;bottom:12px;}
+    .fab button{width:44px;height:44px;}
   }
 </style>
 </head>
@@ -154,7 +167,32 @@
 
 </div>
 
+<div class="fab">
+  <button id="themeBtn" title="切換深淺色" aria-label="切換深淺色"></button>
+  <button id="topBtn" title="回到頂端" aria-label="回到頂端"><svg class="ic" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-528 324-372q-11 11-28 11t-28-11q-11-11-11-28t11-28l184-184q12-12 28-12t28 12l184 184q11 11 11 28t-11 28q-11 11-28 11t-28-11L480-528Z"/></svg></button>
+</div>
+
 <script>
+(function(){
+  // 深淺色切換，記住使用者選擇
+  const root = document.documentElement;
+  const themeBtn = document.getElementById('themeBtn');
+  const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  // 圖示取自福岡旅遊頁
+  const SUN = '<svg class="ic" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M565-395q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35Zm-226.5 56.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM80-440q-17 0-28.5-11.5T40-480q0-17 11.5-28.5T80-520h80q17 0 28.5 11.5T200-480q0 17-11.5 28.5T160-440H80Zm720 0q-17 0-28.5-11.5T760-480q0-17 11.5-28.5T800-520h80q17 0 28.5 11.5T920-480q0 17-11.5 28.5T880-440h-80ZM451.5-771.5Q440-783 440-800v-80q0-17 11.5-28.5T480-920q17 0 28.5 11.5T520-880v80q0 17-11.5 28.5T480-760q-17 0-28.5-11.5Zm0 720Q440-63 440-80v-80q0-17 11.5-28.5T480-200q17 0 28.5 11.5T520-160v80q0 17-11.5 28.5T480-40q-17 0-28.5-11.5ZM226-678l-43-42q-12-11-11.5-28t11.5-29q12-12 29-12t28 12l42 43q11 12 11 28t-11 28q-11 12-27.5 11.5T226-678Zm494 495-42-43q-11-12-11-28.5t11-27.5q11-12 27.5-11.5T734-282l43 42q12 11 11.5 28T777-183q-12 12-29 12t-28-12Zm-42-495q-12-11-11.5-27.5T678-734l42-43q11-12 28-11.5t29 11.5q12 12 12 29t-12 28l-43 42q-12 11-28 11t-28-11ZM183-183q-12-12-12-29t12-28l43-42q12-11 28.5-11t27.5 11q12 11 11.5 27.5T282-226l-42 43q-11 12-28 11.5T183-183Zm297-297Z"/></svg>';
+  const MOON = '<svg class="ic" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="M480-120q-151 0-255.5-104.5T120-480q0-138 90-239.5T440-838q13-2 23 3.5t16 14.5q6 9 6.5 21t-7.5 23q-17 26-25.5 55t-8.5 61q0 90 63 153t153 63q31 0 61.5-9t54.5-25q11-7 22.5-6.5T819-479q10 5 15.5 15t3.5 24q-14 138-117.5 229T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/></svg>';
+  const syncIcon = () => { themeBtn.innerHTML = isDark() ? SUN : MOON; };
+  try{ const saved = localStorage.getItem('theme'); if(saved) root.dataset.theme = saved; }catch(e){}
+  syncIcon();
+  themeBtn.onclick = () => {
+    root.dataset.theme = isDark() ? 'light' : 'dark';
+    try{ localStorage.setItem('theme', root.dataset.theme); }catch(e){}
+    syncIcon();
+  };
+
+  document.getElementById('topBtn').onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+})();
+
 (function(){
   function fallback(text){
     const ta = document.createElement('textarea');
