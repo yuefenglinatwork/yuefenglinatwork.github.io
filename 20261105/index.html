@@ -3,13 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
 <title>專案規劃步驟</title>
 <style>
   :root{
     --green:#2b4a7a; --green-dark:#2b4a7a; --green-light:#e2e8f2;
     --brown:#9a6a12; --brown-light:#f6ecd5;
     --bg:#faf8f4; --card:#ffffff; --ink:#24211d; --ink-soft:#6f685e; --line:#e4ddd1;
-    --btn-bg:#e2e8f2;
+    --on-accent:#fff;
     --shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.05);
   }
   @media (prefers-color-scheme: dark){
@@ -17,7 +20,7 @@
       --green:#8fb3e6; --green-dark:#8fb3e6; --green-light:#1e293b;
       --brown:#e0b45a; --brown-light:#332a18;
       --bg:#16151a; --card:#211f25; --ink:#ece7df; --ink-soft:#a49c90; --line:#35323a;
-      --btn-bg:#8fb3e6;
+      --on-accent:#10192b;
       --shadow:none;
     }
   }
@@ -25,7 +28,7 @@
     --green:#8fb3e6; --green-dark:#8fb3e6; --green-light:#1e293b;
     --brown:#e0b45a; --brown-light:#332a18;
     --bg:#16151a; --card:#211f25; --ink:#ece7df; --ink-soft:#a49c90; --line:#35323a;
-    --btn-bg:#8fb3e6;
+    --on-accent:#10192b;
     --shadow:none;
   }
   *{box-sizing:border-box;}
@@ -54,7 +57,8 @@
   .result{border:2px solid var(--green);}
   .result-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
   .result-head h2{margin:0;}
-  .btn{border:1px solid var(--green);background:var(--btn-bg);color:#000;font-weight:700;font-size:13px;padding:7px 16px;border-radius:999px;cursor:pointer;font-family:inherit;}
+  .btn{border:1.5px solid var(--green);background:transparent;color:var(--green);font-weight:700;font-size:13px;padding:7px 16px;border-radius:999px;cursor:pointer;font-family:inherit;transition:background .15s,color .15s;}
+  .btn:hover{background:var(--green);color:var(--on-accent);}
   pre{margin:0;white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:15.5px;line-height:1.9;}
   .toast{font-size:13px;color:var(--green);font-weight:700;min-height:20px;margin-top:8px;}
 
